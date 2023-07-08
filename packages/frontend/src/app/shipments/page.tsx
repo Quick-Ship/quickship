@@ -1,7 +1,7 @@
 "use client";
 
-import { API_URL } from "@/common";
 import { Header, Table } from "@/components";
+import { graphQLClient, ShipmentsQuery } from "@/graphql";
 import {
   EuiBasicTableColumn,
   EuiHorizontalRule,
@@ -11,39 +11,6 @@ import {
   EuiSkeletonText,
 } from "@elastic/eui";
 import { useQuery } from "@tanstack/react-query";
-import { GraphQLClient, gql } from "graphql-request";
-
-const ShipmentsQuery = gql`
-  query getShipments {
-    shipments {
-      nodes {
-        id
-        shipmentStatus {
-          id
-          status
-        }
-        warehouseShipment {
-          id
-          client {
-            id
-          }
-        }
-        packages {
-          nodes {
-            id
-            guide
-          }
-        }
-        messenger {
-          id
-        }
-        updatedAt
-      }
-    }
-  }
-`;
-
-const graphQLClient = new GraphQLClient(`${API_URL}/graphql`);
 
 const fetchShipments = async () => {
   return await graphQLClient.request(ShipmentsQuery);
