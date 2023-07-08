@@ -1,7 +1,7 @@
 "use client";
 
 import { Providers } from "@/common";
-
+import { ToastsProvider } from "@/hooks";
 
 export default function ClientsLayout({
   children,
@@ -9,8 +9,10 @@ export default function ClientsLayout({
   children: React.ReactNode;
 }) {
   return (
-      <Providers>
+    <Providers>
+      <ToastsProvider>
         <main>{children}</main>
-      </Providers>
+      </ToastsProvider>
+    </Providers>
   );
 }

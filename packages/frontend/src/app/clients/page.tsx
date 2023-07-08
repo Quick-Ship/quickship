@@ -1,46 +1,90 @@
 "use client";
 
-import { API_URL } from "@/common";
-import { ErrorPage, Header, Table } from "@/components";
+import { ErrorPage, GeneralForm, Header, Modal, Table } from "@/components";
+import { ClientsQuery, CreateOneClientQuery, graphQLClient } from "@/graphql";
+import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
+import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import {
   EuiBasicTableColumn,
   EuiButton,
+  EuiForm,
   EuiHorizontalRule,
+  EuiModalFooter,
   EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
   EuiSkeletonText,
+  EuiSpacer,
 } from "@elastic/eui";
-import { useQuery } from "@tanstack/react-query";
-import { GraphQLClient, gql } from "graphql-request";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-const ClientsQuery = gql`
-  query getClients {
-    clients {
-      nodes {
-        id
-        firstName
-        lastName
-        phone
-        email
-      }
-    }
-  }
-`;
-
-const graphQLClient = new GraphQLClient(`${API_URL}/graphql`);
-
-const fetchClients = async () => {
+const fetchGetClients = async () => {
   return await graphQLClient.request(ClientsQuery);
 };
 
 export default function Clients() {
-  const { isLoading, error, data, isFetching }: any = useQuery({
-    queryKey: ["clients"],
-    queryFn: fetchClients,
+  const [showModal, setShowModal] = useState(false);
+  const {
+    isLoading,
+    error,
+    data,
+    isFetching,
+    status: getQueryStatus,
+  }: any = useQuery({
+    queryKey: ["getClients"],
+    queryFn: fetchGetClients,
   });
 
-  console.log(data)
+  const { mutate, status: createOneQueryStatus } = useMutation({
+    mutationKey: ["createOneClient"],
+    mutationFn: (client: any) => {
+      return graphQLClient.request(CreateOneClientQuery, client);
+    },
+  });
+
+  const { globalToasts, pushToast } = useToastsContext();
+
+  const {
+    register,
+    formState: { errors },
+    setValue,
+    handleSubmit,
+  } = useForm();
+
+  const queryCache: any = useQueryClient();
+
+  const onSubmit = (data: any) => {
+    mutate(
+      {
+        input: {
+          client: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            phone: `+52 ${data.phone}`,
+            email: data.email,
+          },
+        },
+      },
+      {
+        onSuccess: () => {
+          if (isFetching === false) {
+            queryCache.removeQueries("getClients", { stale: false });
+          }
+          setShowModal(false);
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "1",
+            title: "Cliente",
+            text: <p>Creado correctamente</p>,
+            color: "success",
+          });
+          pushToast(newToast);
+        },
+      }
+    );
+  };
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -67,25 +111,25 @@ export default function Clients() {
 
   return (
     <EuiPageHeaderContent>
-      {isLoading ? (
+      {isLoading && getQueryStatus === "loading" ? (
         <EuiPanel style={{ margin: "2vh" }}>
           <EuiPageHeader>
             <EuiSkeletonText
               lines={1}
               size={"relative"}
-              isLoading={isLoading}
+              isLoading={isLoading && getQueryStatus === "loading"}
             ></EuiSkeletonText>
           </EuiPageHeader>
           <EuiSkeletonText
             lines={6}
             size={"m"}
-            isLoading={isLoading}
+            isLoading={isLoading && getQueryStatus === "loading"}
           ></EuiSkeletonText>
         </EuiPanel>
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
           <Header title={`Clientes (${data?.clients.nodes.length})`}>
-            <EuiButton onClick={() => "/createClient"} href="/createClient">
+            <EuiButton onClick={() => setShowModal(!showModal)}>
               Crear cliente
             </EuiButton>
           </Header>
@@ -95,7 +139,37 @@ export default function Clients() {
           </EuiPanel>
         </EuiPanel>
       )}
+      {showModal && (
+        <>
+          <Modal
+            onCloseModal={() => setShowModal(!showModal)}
+            titleModal={"Crear CLiente"}
+          >
+            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+              <GeneralForm
+                register={register}
+                setValue={setValue}
+                errors={errors}
+              />
+              <EuiSpacer />
+              <EuiModalFooter>
+                <EuiButton onClick={() => setShowModal(!showModal)}>
+                  cancelar
+                </EuiButton>
+                <EuiButton
+                  type="submit"
+                  fill
+                  isLoading={createOneQueryStatus === "loading"}
+                >
+                  guardar
+                </EuiButton>
+              </EuiModalFooter>
+            </EuiForm>
+          </Modal>
+        </>
+      )}
       {error && <ErrorPage message="Error al cargar clientes" />}
+      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

@@ -14,23 +14,8 @@ import { useMutation } from "@tanstack/react-query";
 import { GraphQLClient, gql } from "graphql-request";
 import { useForm } from "react-hook-form";
 
-const CreateClientQuery = gql`
-  mutation createClient($input: ClientInput!) {
-    createClient(createClient: $input) {
-      id
-    }
-  }
-`;
-
-const graphQLClient = new GraphQLClient(`${API_URL}/graphql`);
-
 export default function CreateClient() {
-  const mutation = useMutation({
-    mutationKey: ["createClient"],
-    mutationFn: (client: CreateClientType) => {
-      return graphQLClient.request(CreateClientQuery, client);
-    },
-  });
+
   const {
     register,
     formState: { errors },
@@ -38,22 +23,31 @@ export default function CreateClient() {
     handleSubmit,
   } = useForm();
 
-  const onSubmit = (data: any) => {
-    mutation.mutate({ input: data });
-  };
+  // const onSubmit = (data: any) => {
+  //   mutation.mutate({
+  //     input: {
+  //       client: {
+  //         firstName: data.firstName,
+  //         lastName: data.lastName,
+  //         phone: `+52 ${data.phone}`,
+  //         email: data.email,
+  //       },
+  //     },
+  //   });
+  // };
 
-  if (mutation.isLoading) return <p>loading</p>;
+  // if (mutation.isLoading) return <p>loading</p>;
 
   return (
     <EuiPageHeaderContent>
       <EuiPanel style={{ margin: "2vh" }}>
-        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+        {/* <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}> */}
           <Header title={`Crear cliente`}>
             <EuiButton
               fill
               type="submit"
-              onClick={() => "/clients"}
-              href="/clients"
+              // onClick={() => "/clients"}
+              // href="/clients"
             >
               Guardar
             </EuiButton>
@@ -67,8 +61,9 @@ export default function CreateClient() {
             />
             <EuiSpacer />
           </EuiPanel>
-        </EuiForm>
+        {/* </EuiForm> */}
       </EuiPanel>
     </EuiPageHeaderContent>
+
   );
 }
