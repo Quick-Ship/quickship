@@ -68,6 +68,16 @@ export default function Clients() {
         },
       },
       {
+        onError: () => {
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "2",
+            title: "Cliente",
+            text: <p>No se pudo guardar correctamente, intenta de nuevo</p>,
+            color: "danger",
+          });
+          pushToast(newToast);
+        },
         onSuccess: () => {
           if (isFetching === false) {
             queryCache.removeQueries("getClients", { stale: false });
