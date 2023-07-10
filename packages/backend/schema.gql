@@ -1721,6 +1721,8 @@ type Mutation {
   addPackageShipment(input: InputAddPackageShipment!): Shipment!
   assignCourierShipment(input: InputAssignCourier!): Shipment!
   openPackage(input: InputOpenPackage!): Shipment!
+  closePackage(input: InputClosePackage!): Shipment!
+  cancelPackage(input: InputCancelPackage!): Shipment!
   addShipmentsToShipmentStatus(input: AddShipmentsToShipmentStatusInput!): ShipmentStatus!
   setShipmentsOnShipmentStatus(input: SetShipmentsOnShipmentStatusInput!): ShipmentStatus!
   removeShipmentsFromShipmentStatus(input: RemoveShipmentsFromShipmentStatusInput!): ShipmentStatus!
@@ -2644,6 +2646,25 @@ input InputAssignCourier {
 input InputOpenPackage {
   shipmentId: Float!
   packageId: Float!
+}
+
+input InputClosePackage {
+  shipmentId: Float!
+  packageId: Float!
+  evidence: InputEvidence!
+}
+
+input InputEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
+}
+
+input InputCancelPackage {
+  shipmentId: Float!
+  packageId: Float!
+  statusCancelation: Float!
+  evidence: InputEvidence!
 }
 
 input AddShipmentsToShipmentStatusInput {

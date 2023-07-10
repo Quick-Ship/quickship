@@ -11,7 +11,7 @@ export default registerAs('config', () => {
     // synchronize: true,
     //entities: [__dirname + '/../**/*.entity{.ts,.js}'],
 
-    logging: process.env.NODE_ENV === 'staging',
+    logging: process.env.NODE_ENV === 'production',
 
     ssl: {
       rejectUnauthorized: false,

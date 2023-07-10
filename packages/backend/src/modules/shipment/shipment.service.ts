@@ -17,7 +17,15 @@ import { ShipmentStatusEnum } from 'src/common/shipment-status-enum';
 import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
 import { PackageStatusEnum } from 'src/common/package-status.enum';
 import { InputOpenPackageDTO } from './dto/open-package.dto';
-import { validTransaction } from 'src/common/utils';
+import {
+  getStatusByIdStatus,
+  getStatusDescriptionByIdStatus,
+  validTransaction,
+} from 'src/common/utils';
+import { InputClosePackageDTO } from './dto/close-package.dto';
+import { EvidenceEntity } from '../evidences/entities/evidence.entity';
+import { InputCancelPackageDTO } from './dto/cancel-package.dto';
+import { PackageStatusCancelTypes } from 'src/common/package-status-cancelatio.enum.dto';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -55,7 +63,8 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       return shipment;
     } catch (error) {
-      validTransaction(queryRunner, error);
+      await validTransaction(queryRunner)
+      throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
     }
@@ -94,23 +103,6 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
         );
       }
 
-      const validaPackages = packages.map(
-        (pack, index) => pack.guide !== input.guides[index],
-      );
-
-      if (!validaPackages || validaPackages.length > 1) {
-        this.logger.warn({
-          event: 'shipmentService.addPackageShipment.validaPackages',
-          data: validaPackages,
-        });
-        throw new GraphQLError(
-          Error.GUIDE_NOT_FOUND_ADD_SHIPMENT.replace(
-            '$guides',
-            validaPackages.toString(),
-          ),
-        );
-      }
-
       this.logger.debug({
         event: 'shipmentService.addPackageShipment.packageEntity',
         data: packages,
@@ -120,17 +112,17 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
         packages.map(async (pack) => {
           await queryRunner.manager.update(PackageEntity, pack.id, {
             shipmentId: shipment.id,
-            statusId: PackageStatusEnum.PU,
+            statusId: PackageStatusEnum.WC,
           });
 
           await queryRunner.manager.save(PackageHistoryEntity, {
-            status: 'PU',
+            status: getStatusByIdStatus(PackageStatusEnum.PU),
             idPackage: pack.id,
             description: PackageStatusDescriptionEnum.PU,
           });
 
           await queryRunner.manager.save(PackageHistoryEntity, {
-            status: 'WC',
+            status: getStatusByIdStatus(PackageStatusEnum.WC),
             idPackage: pack.id,
             description: PackageStatusDescriptionEnum.WC,
           });
@@ -146,7 +138,8 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       return shipment;
     } catch (error) {
-      validTransaction(queryRunner, error);
+      await validTransaction(queryRunner)
+      throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
     }
@@ -206,7 +199,8 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
       return shipment;
     } catch (error) {
-      validTransaction(queryRunner, error);
+      await validTransaction(queryRunner)
+      throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
     }
@@ -242,20 +236,21 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
         data: packages,
       });
 
-      if (!packages) {
-        this.logger.warn({
-          event: 'shipmentService.openPackage.guideNotFound',
-          warning: Error.GUIDE_NOT_FOUND,
-        });
-        throw new GraphQLError(Error.GUIDE_NOT_FOUND);
-      }
+      this.validatePackage(packages, shipment.id);
 
-      if (packages.shipmentId !== shipment.id) {
+      console.log(
+        !PackageStatusCancelTypes.includes(packages.statusId),
+        packages.statusId !== PackageStatusEnum.WC,
+      );
+      if (
+        !PackageStatusCancelTypes.includes(packages.statusId) &&
+        packages.statusId !== PackageStatusEnum.WC
+      ) {
         this.logger.warn({
-          event: 'shipmentService.openPackage.guideNotFoundInShipment',
-          warning: Error.GUIDE_NOT_FOUND_SHIPMENT,
+          event: 'shipmentService.openPackage.invalidProcessPackage',
+          warning: Error.INVALID_PROCESS_PACKAGE,
         });
-        throw new GraphQLError(Error.GUIDE_NOT_FOUND_SHIPMENT);
+        throw new GraphQLError(Error.INVALID_PROCESS_PACKAGE);
       }
 
       await queryRunner.manager.update(PackageEntity, packages.id, {
@@ -263,9 +258,9 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
 
       await queryRunner.manager.save(PackageHistoryEntity, {
-        status: 'PL',
+        status: getStatusByIdStatus(PackageStatusEnum.PL),
         idPackage: packages.id,
-        description: PackageStatusDescriptionEnum.PL,
+        description: getStatusDescriptionByIdStatus(PackageStatusEnum.PL),
       });
 
       await queryRunner.commitTransaction();
@@ -276,30 +271,164 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
       return shipment;
     } catch (error) {
-      validTransaction(queryRunner, error);
+      await validTransaction(queryRunner)
+      throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
     }
   }
 
-  private async validateShipmentStatus(
+  private validateShipmentStatus(
     shipment: ShipmentEntity,
     status: ShipmentStatusEnum,
   ) {
     if (!shipment) {
       this.logger.warn({
-        event: 'shipmentService.openPackage.shipmentNotFound',
+        event: 'shipmentService.validateShipmentStatus.shipmentNotFound',
         warning: Error.SHIPMENT_NOT_FOUND,
       });
-      throw new GraphQLError(Error.SHIPMENT_NOT_FOUND);
+      new GraphQLError(Error.SHIPMENT_NOT_FOUND);
     }
 
     if (shipment?.shipmentStatusId !== status) {
       this.logger.warn({
-        event: 'shipmentService.openPackage.shipmentInvalidStatus',
+        event: 'shipmentService.validateShipmentStatus.shipmentInvalidStatus',
         warning: Error.SHIPMENT_STATUS_INVALID,
       });
-      throw new GraphQLError(Error.SHIPMENT_STATUS_INVALID);
+      new GraphQLError(Error.SHIPMENT_STATUS_INVALID);
+    }
+  }
+
+  private validatePackage(packages: PackageEntity, shipmentId: number) {
+    if (!packages) {
+      this.logger.warn({
+        event: 'shipmentService.validatePackage.guideNotFound',
+        warning: Error.GUIDE_NOT_FOUND,
+      });
+      throw new GraphQLError(Error.GUIDE_NOT_FOUND);
+    }
+
+    if (packages.shipmentId !== shipmentId) {
+      this.logger.warn({
+        event: 'shipmentService.validatePackage.guideNotFoundInShipment',
+        warning: Error.GUIDE_NOT_FOUND_SHIPMENT,
+      });
+      throw new GraphQLError(Error.GUIDE_NOT_FOUND_SHIPMENT);
+    }
+  }
+
+  public async closePackage(
+    input: InputClosePackageDTO | InputCancelPackageDTO,
+  ) {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const hasCanceled = input instanceof InputCancelPackageDTO;
+      this.logger.debug({
+        event: 'shipmentService.closePackage.input',
+        data: { ...input, hasCanceled },
+      });
+      let status: number;
+      if ('statusCancelation' in input) {
+        status = input.statusCancelation;
+      }
+      const { evidence, packageId, shipmentId } = input;
+
+      const [shipment] = await queryRunner.manager.find(ShipmentEntity, {
+        where: { id: shipmentId },
+      });
+
+      this.logger.debug({
+        event: 'shipmentService.closePackage.shipmentEntity',
+        data: shipment,
+      });
+
+      this.validateShipmentStatus(shipment, ShipmentStatusEnum.IN_PROCESS);
+
+      const [packages]: PackageEntity[] = await queryRunner.manager.find(
+        PackageEntity,
+        { where: { id: packageId } },
+      );
+
+      this.logger.debug({
+        event: 'shipmentService.closePackage.packageEntity',
+        data: packages,
+      });
+
+      this.validatePackage(packages, shipment.id);
+
+      if (!hasCanceled && packages.statusId !== PackageStatusEnum.PL) {
+        throw new GraphQLError(Error.INVALID_PACKAGE_STATUS);
+      }
+
+      this.logger.debug({
+        event: 'shipmentService.openPackage.packagesEntity',
+        data: packages,
+      });
+
+      const pack: PackageEntity[] = await queryRunner.manager.find(
+        PackageEntity,
+        {
+          where: {
+            shipmentId: shipmentId,
+          },
+        },
+      );
+
+      if (hasCanceled) {
+        await queryRunner.manager.update(PackageEntity, packageId, {
+          statusId: status,
+        });
+
+        await queryRunner.manager.save(PackageHistoryEntity, {
+          status: getStatusByIdStatus(status),
+          idPackage: packageId,
+          description: getStatusDescriptionByIdStatus(status),
+        });
+
+        await queryRunner.manager.save(EvidenceEntity, {
+          ...evidence,
+          packageId: packages.id,
+        });
+
+        await queryRunner.commitTransaction();
+        return shipment;
+      }
+
+      await queryRunner.manager.save(EvidenceEntity, {
+        ...evidence,
+        packageId: packages.id,
+      });
+
+      await queryRunner.manager.update(PackageEntity, packageId, {
+        statusId: PackageStatusEnum.DE,
+      });
+
+      await queryRunner.manager.save(PackageHistoryEntity, {
+        status: getStatusByIdStatus(PackageStatusEnum.DE),
+        idPackage: packageId,
+        description: getStatusDescriptionByIdStatus(PackageStatusEnum.DE),
+      });
+
+      const includeCancelation = pack.some((pack) =>
+        PackageStatusCancelTypes.includes(pack.statusId),
+      );
+
+      if (!includeCancelation) {
+        await queryRunner.manager.update(ShipmentEntity, shipment.id, {
+          shipmentStatusId: ShipmentStatusEnum.COMPLETED,
+        });
+      }
+
+      await queryRunner.commitTransaction();
+      return shipment;
+    } catch (error) {
+      await validTransaction(queryRunner)
+      throw new GraphQLError(error?.message || error);
+    } finally {
+      await queryRunner.release();
     }
   }
 }
