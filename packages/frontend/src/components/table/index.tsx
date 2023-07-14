@@ -27,6 +27,9 @@ export interface TableProps<T> {
   selection?: any;
   tableRef?: any;
   downloadButton?: any;
+  itemId: string;
+  pagination?: any;
+  onChange?: ({ page, sort }: any) => void;
 }
 
 export const Table: React.FC<TableProps<any>> = ({
@@ -44,16 +47,21 @@ export const Table: React.FC<TableProps<any>> = ({
   selection,
   tableRef,
   downloadButton,
+  itemId,
+  pagination,
+  onChange
 }) => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable with expanding rows"
       items={items}
-      itemId="id"
+      itemId={itemId}
       isExpandable={true}
       hasActions={true}
       columns={columns}
       ref={tableRef}
+      pagination={pagination}
+      onChange={onChange}
       itemIdToExpandedRowMap={itemIdToExpandedRowMap}
       noItemsMessage={noItemsMessage}
       isSelectable={isSelectable}

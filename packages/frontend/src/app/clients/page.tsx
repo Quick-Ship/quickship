@@ -1,7 +1,12 @@
 "use client";
 
 import { ErrorPage, GeneralForm, Header, Modal, Table } from "@/components";
-import { ClientsQuery, CreateOneClientQuery, graphQLClient } from "@/graphql";
+import {
+  ClientsQuery,
+  CreateOneClientQuery,
+  graphQLClient,
+  useGeneratedGQLQuery,
+} from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import {
@@ -16,26 +21,35 @@ import {
   EuiSkeletonText,
   EuiSpacer,
 } from "@elastic/eui";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-
-const fetchGetClients = async () => {
-  return await graphQLClient.request(ClientsQuery);
-};
+import { API_URL } from "@/common";
 
 export default function Clients() {
   const [showModal, setShowModal] = useState(false);
+  // const {
+  //   isLoading,
+  //   error,
+  //   data,
+  //   isFetching,
+  //   status: getQueryStatus,
+  // }: any = useQuery({
+  //   queryKey: ["getClients"],
+  //   queryFn: fetchGetClients,
+  // });
+
   const {
     isLoading,
     error,
     data,
     isFetching,
     status: getQueryStatus,
-  }: any = useQuery({
-    queryKey: ["getClients"],
-    queryFn: fetchGetClients,
-  });
+  }: any = useGeneratedGQLQuery(
+    `${API_URL}/graphql`,
+    "getClients",
+    ClientsQuery
+  );
 
   const { mutate, status: createOneQueryStatus } = useMutation({
     mutationKey: ["createOneClient"],
@@ -145,7 +159,11 @@ export default function Clients() {
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={data?.clients.nodes} columns={columns} />
+            <Table
+              items={data?.clients.nodes}
+              columns={columns}
+              itemId={"id"}
+            />
           </EuiPanel>
         </EuiPanel>
       )}

@@ -1,10 +1,12 @@
 "use client";
 
+import { API_URL } from "@/common";
 import { GeneralForm, Header, Modal, Table } from "@/components";
 import {
   CreateMessengerQuery,
-  getMessengersQuery,
+  GetMessengersQuery,
   graphQLClient,
+  useGeneratedGQLQuery,
 } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
@@ -19,26 +21,24 @@ import {
   EuiSkeletonText,
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
-const fetchMessengers = async () => {
-  return await graphQLClient.request(getMessengersQuery);
-};
-
 export default function Messengers() {
   const [showModal, setShowModal] = useState(false);
+
   const {
     isLoading,
     error,
     data,
     isFetching,
     status: getMessengerQuerystatus,
-  }: any = useQuery({
-    queryKey: ["getMessengers"],
-    queryFn: fetchMessengers,
-  });
+  } = useGeneratedGQLQuery<unknown | any, unknown, unknown, unknown>(
+    `${API_URL}/graphql`,
+    "getMessengers",
+    GetMessengersQuery
+  );
 
   const {
     mutate,
@@ -53,7 +53,6 @@ export default function Messengers() {
 
   const queryCache: any = useQueryClient();
   const { globalToasts, pushToast } = useToastsContext();
-  console.log(data)
 
   const {
     register,
@@ -152,7 +151,11 @@ export default function Messengers() {
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={data?.messengers?.edges} columns={columns} />
+            <Table
+              items={data?.messengers?.edges}
+              columns={columns}
+              itemId={"id"}
+            />
           </EuiPanel>
         </EuiPanel>
       )}

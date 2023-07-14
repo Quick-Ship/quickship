@@ -1,6 +1,6 @@
 import { gql } from "graphql-request";
 
-export const getMessengersQuery = gql`
+export const GetMessengersQuery = gql`
   query getMessengers {
     messengers {
       edges {

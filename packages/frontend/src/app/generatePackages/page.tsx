@@ -346,7 +346,7 @@ export default function GeneratePackages() {
               items={files}
               itemIdToExpandedRowMap={itemIdToExpandedRowMap}
               columns={columns}
-              isSelectable={true}
+              itemId={"id"}
             />
           )}
         </EuiPanel>
