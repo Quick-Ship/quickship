@@ -1,11 +1,11 @@
 "use client";
 
 import { Providers } from "@/common";
-import { CreateOrderProvider } from "@/hooks";
+import { ToastsProvider } from "@/hooks";
 import { EuiProvider } from "@elastic/eui";
 import "@elastic/eui/dist/eui_theme_light.css";
 
-export default function CreateOrderLayout({
+export default function GeneratePackagesLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -13,9 +13,9 @@ export default function CreateOrderLayout({
   return (
     <EuiProvider colorMode="light">
       <Providers>
-        <CreateOrderProvider>
+        <ToastsProvider>
           <main>{children}</main>
-        </CreateOrderProvider>
+        </ToastsProvider>
       </Providers>
     </EuiProvider>
   );

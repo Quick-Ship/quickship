@@ -1,9 +1,4 @@
-import {
-
-  EuiBasicTable,
-  EuiBasicTableColumn,
-
-} from "@elastic/eui";
+import { EuiBasicTable, EuiBasicTableColumn } from "@elastic/eui";
 // type User = {
 //   id: number;
 //   firstName: string | null | undefined;
@@ -20,37 +15,36 @@ import {
 export interface TableProps<T> {
   items: Array<any>;
   columns: Array<EuiBasicTableColumn<T>>;
+  pageIndex?: number;
+  setPageIndex?: (index: number) => void;
+  pageSize?: number;
+  setPageSize?: (size: number) => void;
+  totalItemCount?: number;
+  itemIdToExpandedRowMap?: any;
+  pageSizeOptions?: Array<number>;
+  noItemsMessage?: string;
+  isSelectable?: boolean;
+  selection?: any;
+  tableRef?: any;
+  downloadButton?: any;
 }
 
-// const columns: Array<EuiBasicTableColumn<any>> = [
-//   {
-//     field: "firstName",
-//     name: "First Name",
-//   },
-//   {
-//     field: "lastName",
-//     name: "Last Name",
-//   },
-//   {
-//     field: "dateOfBirth",
-//     name: "Date of Birth",
-//     dataType: "date",
-//   },
-//   {
-//     name: "Actions",
-//     actions: [
-//       {
-//         name: "Clone",
-//         description: "Clone this person",
-//         type: "icon",
-//         icon: "copy",
-//         onClick: () => "",
-//       },
-//     ],
-//   },
-// ];
-
-export const Table: React.FC<TableProps<any>> = ({ columns, items }) => {
+export const Table: React.FC<TableProps<any>> = ({
+  columns,
+  items,
+  pageIndex,
+  setPageIndex,
+  pageSize,
+  setPageSize,
+  totalItemCount,
+  itemIdToExpandedRowMap,
+  pageSizeOptions,
+  noItemsMessage,
+  isSelectable,
+  selection,
+  tableRef,
+  downloadButton,
+}) => {
   return (
     <EuiBasicTable
       tableCaption="Demo of EuiBasicTable with expanding rows"
@@ -59,6 +53,11 @@ export const Table: React.FC<TableProps<any>> = ({ columns, items }) => {
       isExpandable={true}
       hasActions={true}
       columns={columns}
+      ref={tableRef}
+      itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+      noItemsMessage={noItemsMessage}
+      isSelectable={isSelectable}
+      selection={selection}
     />
   );
 };

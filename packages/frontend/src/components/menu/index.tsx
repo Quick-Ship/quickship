@@ -23,11 +23,25 @@ export const Menu = () => {
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
-        iconType="visMapRegion"
+        iconType="importAction"
         iconProps={{ color: "default" }}
-        onClick={() => "/createOrder"}
-        label="Crear Orden"
-        href="/createOrder"
+        onClick={() => "/generatePackages"}
+        label="Generar paquetes"
+        href="/generatePackages"
+      />
+      <EuiHorizontalRule />
+      <EuiListGroupItem
+        iconType="package"
+        label="Packages"
+        onClick={() => "/packages"}
+        href="/packages"
+      />
+      <EuiHorizontalRule />
+      <EuiListGroupItem
+        iconType="visMapRegion"
+        label="Generar Envio"
+        onClick={() => "/generateShipments"}
+        href="/generateShipments"
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
@@ -39,7 +53,7 @@ export const Menu = () => {
       <EuiHorizontalRule />
       <EuiListGroupItem
         onClick={() => "/messengers"}
-        iconType="dotInCircle"
+        iconType="timeline"
         label="Mensajeros"
         href="/messengers"
       />

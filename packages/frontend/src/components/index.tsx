@@ -5,6 +5,5 @@ export * from "./table";
 export * from "./Error";
 export * from "./header";
 export * from "./generalForm";
-export * from "./formCreateOrder";
 export * from "./loading";
 export * from "./modal";
