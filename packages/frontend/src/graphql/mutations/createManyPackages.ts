@@ -1,9 +1,11 @@
 import { gql } from "graphql-request";
 
-export const CreateOManyPackages = gql`
-  mutation CreateManyPackages($input: CreateManyPackagesInput!) {
-    createManyPackages(input: $input) {
-      id
-    }
+export const CreatePackages = gql`
+  mutation CreateOneDelivery($input: InputCreatePackage!){
+  createDelivery(
+    input: $input
+  ) {
+    id
   }
+}
 `;

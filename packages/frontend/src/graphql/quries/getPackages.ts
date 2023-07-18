@@ -2,31 +2,33 @@ import { gql } from "graphql-request";
 
 export const GetPackages = gql`
   query GetPackages(
-    $paging: CursorPaging
+    $paging: OffsetPaging
     $filter: PackageFilter
     $sorting: [PackageSort!]
   ) {
     packages(paging: $paging, filter: $filter, sorting: $sorting) {
-      edges {
-        node {
+      nodes {
+        id
+        guide
+        createdAt
+        updatedAt
+        clientId
+        client {
           id
-          guide
-          createdAt
-        #   client {
-        #     id
-        #   }
-        #   status {
-        #     id
-        #     status
-        #     description
-        #   }
+        }
+        shipment {
+          id
+        }
+        status {
+          id
+          status
+          description
         }
       }
+      totalCount
       pageInfo {
         hasNextPage
         hasPreviousPage
-        startCursor
-        endCursor
       }
     }
   }

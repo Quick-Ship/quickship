@@ -1,42 +1,25 @@
 import { create } from "zustand";
 
 interface PaginationStoreState {
-  pageInfo: {
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor?: string;
-    endCursor?: string;
-  };
-  setPageInfo: (pageInfo: any) => void;
-  pagingData: {
-    startCursor?: string;
-    endCursor?: string;
-  };
-  setPagingData: (pagingData: {
-    startCursor?: string;
-    endCursor?: string;
-  }) => void;
+  total: number;
+  take: number;
+  skip: number;
+
+  setPagination: (data: { total: number; take: number; skip: number }) => void;
+  resetPagination: () => void;
 }
 
 export const usePaginationStore = create<PaginationStoreState>((set) => ({
-  pageInfo: {
-    hasNextPage: false,
-    hasPreviousPage: false,
-    startCursor: "",
-    endCursor: "",
-  },
-  setPageInfo: (pageInfo: any) =>
+  total: 1,
+  take: 20,
+  skip: 0,
+
+  setPagination: (data) =>
     set({
-      pageInfo: {
-        hasNextPage: pageInfo.hasNextPage,
-        hasPreviousPage: pageInfo.hasPreviousPage,
-        startCursor: pageInfo.startCursor,
-        endCursor: pageInfo.endCursor,
-      },
+      total: data.total,
+      skip: data.skip,
+      take: data.take,
     }),
-  pagingData: {
-    startCursor: "",
-    endCursor: "",
-  },
-  setPagingData: (pagingData) => set({ pagingData }),
+
+  resetPagination: () => set({ skip: 0 }),
 }));

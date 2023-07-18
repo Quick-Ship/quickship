@@ -2,18 +2,20 @@
 
 import { API_URL } from "@/common";
 import { Header, Table } from "@/components";
-import { GetPackages, graphQLClient, useGeneratedGQLQuery } from "@/graphql";
-import { usePaginationStore } from "@/zustand";
+import { GenerateShipment, GetPackages } from "@/graphql";
+import { useGeneratedGQLQuery, useGeneratedMutation } from "@/hooks";
 import {
   EuiBasicTableColumn,
+  EuiFieldSearch,
+  EuiFormRow,
   EuiHorizontalRule,
   EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
   EuiSkeletonText,
+  EuiSpacer,
   EuiTableSelectionType,
 } from "@elastic/eui";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
 type Packages = {
@@ -23,6 +25,9 @@ type Packages = {
   client: {
     id: string;
   };
+  shipment: {
+    id: string;
+  };
   status: {
     id: number;
     status: string;
@@ -30,72 +35,79 @@ type Packages = {
   };
 };
 
-const fetchGetPackages = async () => {
-  return await graphQLClient.request(GetPackages);
-};
-
 export default function Packages() {
-  const [page, setPage] = useState(0);
-  // const { isLoading, error, data, isFetching, status }: any = useQuery({
-  //   queryKey: ["getPackages"],
-  //   queryFn: fetchGetPackages,
-  // });
+  const initialIndex = 0;
+  const initialPageZize = 10;
+  const pageSizeOptions = [
+    initialPageZize,
+    initialPageZize * 2,
+    initialPageZize * 4,
+  ];
+  const [pageIndex, setPageIndex] = useState<number>(initialIndex);
+  const [pageSize, setPageSize] = useState<number>(initialPageZize);
+  const [actionsPaging, setActionsPaging] = useState<any>({
+    limit: pageSize,
+    offset: pageIndex * pageSize,
+  });
 
-  const rowsSize = [10, 20, 30];
-
-  const {
-    pageInfo: { hasNextPage, hasPreviousPage, endCursor, startCursor },
-    pagingData,
-    setPageInfo,
-    setPagingData,
-  } = usePaginationStore();
+  const [clientId, setClientId] = useState("");
 
   const queryVars = {
-    filter: {},
-    paging: {
-      first: 30,
+    filter: {
+      ...(clientId != "" && {
+        clientId: {
+          eq: Number(clientId),
+        },
+      }),
     },
+    paging: actionsPaging,
     sort: {},
   };
 
-  useEffect(() => {
-    setPagingData({
-      endCursor: "",
-      startCursor: "",
-    });
-  }, []);
+  const { data, status, isFetching } = useGeneratedGQLQuery<
+    unknown | any,
+    unknown,
+    unknown,
+    unknown
+  >(`${API_URL}/graphql`, "getPackages", GetPackages, queryVars);
 
-  const { data, status }: any = useGeneratedGQLQuery(
+  const { mutate } = useGeneratedMutation(
     `${API_URL}/graphql`,
-    "getPackages",
-    GetPackages,
-    queryVars
+    GenerateShipment
   );
+
+  useEffect(() => {
+    const newPaging = {
+      limit: pageSize,
+      offset: pageSize * pageIndex,
+    };
+    setActionsPaging(newPaging);
+  }, [pageIndex, pageSize]);
 
   const [dataPackages, setDataPackages] = useState<Array<Packages>>([]);
 
   useEffect(() => {
     if (status === "success") {
-      console.log(data);
       setDataPackages(
-        data.packages.edges.map((pkg: any) => ({
-          id: pkg.node.id,
-          guide: pkg.node.guide,
-          createdAt: pkg.node.createdAt,
-          // client: {
-          //   id: pkg.node.client.id,
-          // },
-          // status: {
-          //   id: pkg.node.status.id,
-          //   status: pkg.node.status.status,
-          //   description: pkg.node.status.description,
-          // },
+        data?.packages?.nodes.map((pkg: any) => ({
+          id: pkg.id,
+          guide: pkg.guide,
+          updatedAt: pkg.updatedAt,
+          client: {
+            id: pkg.client.id,
+          },
+          shipment: {
+            id: pkg?.shipment === null ? "No tiene orden" : pkg.shipment.id,
+          },
+          status: {
+            id: pkg.status.id,
+            status: pkg.status.status,
+            description: pkg.status.description,
+          },
         }))
       );
     }
-  }, [data]);
-
-  console.log(dataPackages);
+  }, [data, status]);
 
   const [selectItems, setSelectItems] = useState<Packages[]>([]);
 
@@ -104,8 +116,7 @@ export default function Packages() {
   };
 
   const selection: EuiTableSelectionType<Packages> = {
-    selectable: (pkg: Packages) =>
-      pkg.id === 84,
+    selectable: (pkg: Packages) => pkg.id !== 0,
     selectableMessage: (selectable) => (!selectable ? "packages main" : ""),
     onSelectionChange: onSelectionChange,
   };
@@ -114,41 +125,43 @@ export default function Packages() {
     {
       field: "id",
       name: "ID",
+      width: "50px",
+    },
+    {
+      field: "guide",
+      name: "Guia",
     },
     {
       field: "status.description",
       name: "Estatus",
     },
-    // {
-    //   field: "client.id",
-    //   name: "Cliente",
-    // },
     {
-      field: "createdAt",
-      name: "Creado",
+      field: "shipment.id",
+      name: "Numero de envio",
+    },
+    {
+      field: "client.id",
+      name: "Cliente",
+    },
+    {
+      field: "updatedAt",
+      name: "Actualizado",
     },
   ];
 
-  const totalItemCount = 80;
+  const onTableChange = ({ page = {} }: any) => {
+    const { index: pageIndex, size: pageSize } = page;
 
-  const pagination = {
-    // pageIndex: pageIndex,
-    // pageSize: pageSize,
-    // totalItemCount: totalItemCount,
-    // pageSizeOptions: [3, 5, 8],
+    setPageIndex(pageIndex);
+    setPageSize(pageSize);
   };
 
-  const onTableChange = ({ page, sort }: any) => {
-    // if (page) {
-    //   const { index: pageIndex, size: pageSize } = page;
-    //   setPageIndex(pageIndex);
-    //   setPageSize(pageSize);
-    // }
-    // if (sort) {
-    //   const { field: sortField, direction: sortDirection } = sort;
-    //   setSortField(sortField);
-    //   setSortDirection(sortDirection);
-    // }
+  const pagination = {
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    totalItemCount: data?.packages?.totalCount,
+    pageSizeOptions: pageSizeOptions,
+    hidePerPageOptions: false,
   };
 
   if (status === "loading") {
@@ -173,21 +186,32 @@ export default function Packages() {
   return (
     <EuiPageHeaderContent>
       <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Paquetes (${dataPackages.length})`}>
+        <Header title={`Paquetes (${data?.packages?.totalCount})`}>
           {/* <EuiButton onClick={() => setShowModal(!showModal)}>
               Crear cliente
             </EuiButton> */}
         </Header>
         <EuiHorizontalRule />
         <EuiPanel>
+          <EuiFormRow label="Id de cliente">
+            <EuiFieldSearch
+              style={{ minWidth: 160 }}
+              onChange={(e) => {
+                setClientId(e.target.value);
+              }}
+              placeholder="id"
+              value={clientId}
+            />
+          </EuiFormRow>
+          <EuiSpacer />
           <Table
             items={dataPackages}
             itemId="id"
             columns={columns}
             selection={selection}
             isSelectable={true}
-            // pagination={pagination}
-            // onChange={onTableChange}
+            pagination={pagination}
+            onChange={onTableChange}
           />
         </EuiPanel>
       </EuiPanel>

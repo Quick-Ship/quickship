@@ -6,8 +6,8 @@ import {
   CreateMessengerQuery,
   GetMessengersQuery,
   graphQLClient,
-  useGeneratedGQLQuery,
-} from "@/graphql";
+  } from "@/graphql";
+import { useGeneratedGQLQuery } from "@/hooks";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,

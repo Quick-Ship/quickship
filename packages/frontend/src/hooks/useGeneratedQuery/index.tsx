@@ -6,7 +6,6 @@ import {
 import {
   gql,
   GraphQLClient,
-  Variables,
 } from "graphql-request";
 
 export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
@@ -30,8 +29,8 @@ export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
       const client_ = new GraphQLClient(graphqlUrl);
 
       try {
-        //@ts-ignore
-        const result = await client_.request<TQuery, TVariables>(
+        
+        const result = await client_.request<TQuery, TVariables | any>(
           gqlQuery,
           queryVariables
         );
@@ -40,9 +39,9 @@ export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
       } catch (error: any) {
         error?.response?.errors?.forEach((error: any) => {
           if (
-            error?.message.includes("Context creation failed: Unverified user")
+            error?.message.includes("Context creation failedr")
           ) {
-            window.alert("Usuario no autenticado, intenta recargar la página");
+            window.alert("No se puede ingresar a la pagina");
           }
         });
         return error;

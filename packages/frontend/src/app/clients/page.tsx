@@ -5,7 +5,6 @@ import {
   ClientsQuery,
   CreateOneClientQuery,
   graphQLClient,
-  useGeneratedGQLQuery,
 } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
@@ -25,6 +24,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { API_URL } from "@/common";
+import { useGeneratedGQLQuery } from "@/hooks";
 
 export default function Clients() {
   const [showModal, setShowModal] = useState(false);
@@ -45,7 +45,7 @@ export default function Clients() {
     data,
     isFetching,
     status: getQueryStatus,
-  }: any = useGeneratedGQLQuery(
+  } = useGeneratedGQLQuery<unknown | any, unknown | any, unknown, unknown>(
     `${API_URL}/graphql`,
     "getClients",
     ClientsQuery

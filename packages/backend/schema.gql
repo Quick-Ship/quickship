@@ -79,6 +79,7 @@ input ShipmentFilterPackageFilter {
   and: [ShipmentFilterPackageFilter!]
   or: [ShipmentFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -99,6 +100,26 @@ input StringFieldComparison {
   notILike: String
   in: [String!]
   notIn: [String!]
+}
+
+input NumberFieldComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: Float
+  neq: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  in: [Float!]
+  notIn: [Float!]
+  between: NumberFieldComparisonBetween
+  notBetween: NumberFieldComparisonBetween
+}
+
+input NumberFieldComparisonBetween {
+  lower: Float!
+  upper: Float!
 }
 
 input ShipmentSort {
@@ -151,6 +172,7 @@ input PackageFilter {
   and: [PackageFilter!]
   or: [PackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -222,6 +244,7 @@ input PackageSort {
 
 enum PackageSortFields {
   guide
+  clientId
   createdAt
   updatedAt
   deletedAt
@@ -355,10 +378,11 @@ type Package {
   width: Float!
   heigth: Float!
   length: Float!
+  clientId: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  shipment: Shipment!
+  shipment: Shipment
   direction: Direction!
   contact: Contact!
   client: Client!
@@ -388,6 +412,7 @@ input EvidenceFilterPackageFilter {
   and: [EvidenceFilterPackageFilter!]
   or: [EvidenceFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -862,29 +887,26 @@ type PackageDeleteResponse {
   width: Float
   heigth: Float
   length: Float
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
 }
 
-type PackageEdge {
-  """The node containing the Package"""
-  node: Package!
-
-  """Cursor for this node."""
-  cursor: ConnectionCursor!
-}
-
 type PackageConnection {
   """Paging information"""
-  pageInfo: PageInfo!
+  pageInfo: OffsetPageInfo!
 
-  """Array of edges."""
-  edges: [PackageEdge!]!
+  """Array of nodes."""
+  nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type PackageAggregateGroupBy {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -892,13 +914,23 @@ type PackageAggregateGroupBy {
 
 type PackageCountAggregate {
   guide: Int
+  clientId: Int
   createdAt: Int
   updatedAt: Int
   deletedAt: Int
 }
 
+type PackageSumAggregate {
+  clientId: Float
+}
+
+type PackageAvgAggregate {
+  clientId: Float
+}
+
 type PackageMinAggregate {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -906,6 +938,7 @@ type PackageMinAggregate {
 
 type PackageMaxAggregate {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -969,6 +1002,9 @@ type ShipmentPackagesConnection {
 
   """Array of nodes."""
   nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type ShipmentStatusDeleteResponse {
@@ -1094,6 +1130,9 @@ type PackageStatusPackagesConnection {
 
   """Array of nodes."""
   nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type WarehouseShipmentDeleteResponse {
@@ -1284,7 +1323,7 @@ type Query {
   ): Package
   packages(
     """Limit or page results."""
-    paging: CursorPaging = {first: 10}
+    paging: OffsetPaging = {limit: 10}
 
     """Specify to filter the records returned."""
     filter: PackageFilter = {}
@@ -1378,6 +1417,7 @@ input ClientFilterPackageFilter {
   and: [ClientFilterPackageFilter!]
   or: [ClientFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1424,6 +1464,7 @@ input ContactFilterPackageFilter {
   and: [ContactFilterPackageFilter!]
   or: [ContactFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1457,6 +1498,7 @@ input DirectionFilterPackageFilter {
   and: [DirectionFilterPackageFilter!]
   or: [DirectionFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1491,26 +1533,6 @@ input InvoiceFilter {
   createAt: DateFieldComparison
   updateAt: DateFieldComparison
   deleteAt: DateFieldComparison
-}
-
-input NumberFieldComparison {
-  is: Boolean
-  isNot: Boolean
-  eq: Float
-  neq: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
-  in: [Float!]
-  notIn: [Float!]
-  between: NumberFieldComparisonBetween
-  notBetween: NumberFieldComparisonBetween
-}
-
-input NumberFieldComparisonBetween {
-  lower: Float!
-  upper: Float!
 }
 
 input InvoiceSort {
@@ -1613,6 +1635,7 @@ input PackageStatusFilterPackageFilter {
   and: [PackageStatusFilterPackageFilter!]
   or: [PackageStatusFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -2467,6 +2490,7 @@ input PackageUpdateFilter {
   and: [PackageUpdateFilter!]
   or: [PackageUpdateFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -2486,6 +2510,7 @@ input PackageDeleteFilter {
   and: [PackageDeleteFilter!]
   or: [PackageDeleteFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
