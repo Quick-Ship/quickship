@@ -1,14 +1,23 @@
 "use client";
 
 import { API_URL } from "@/common";
-import { Header, Table } from "@/components";
-import { GenerateShipment, GetPackages } from "@/graphql";
+import { GenerateShipmentInput, Header, Modal, Table } from "@/components";
+import {
+  AddPackagesToShipments,
+  GenerateShipment,
+  GetPackages,
+} from "@/graphql";
 import { useGeneratedGQLQuery, useGeneratedMutation } from "@/hooks";
+import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
+  EuiButton,
   EuiFieldSearch,
+  EuiFieldText,
+  EuiForm,
   EuiFormRow,
   EuiHorizontalRule,
+  EuiModalFooter,
   EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
@@ -16,7 +25,10 @@ import {
   EuiSpacer,
   EuiTableSelectionType,
 } from "@elastic/eui";
+import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 type Packages = {
   id: number;
@@ -49,8 +61,19 @@ export default function Packages() {
     limit: pageSize,
     offset: pageIndex * pageSize,
   });
-
+  const [showModal, setShowModal] = useState(false);
   const [clientId, setClientId] = useState("");
+  const [selectItems, setSelectItems] = useState<Packages[]>([]);
+  const [dataPackages, setDataPackages] = useState<Array<Packages>>([]);
+  const queryCache = useQueryClient();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm();
+
+  const { globalToasts, pushToast } = useToastsContext();
 
   const queryVars = {
     filter: {
@@ -64,6 +87,16 @@ export default function Packages() {
     sort: {},
   };
 
+  const onSelectionChange = (selectedItems: Packages[]) => {
+    setSelectItems(selectedItems);
+  };
+
+  const selection: EuiTableSelectionType<Packages> = {
+    selectable: (pkg: Packages) => pkg.status.id === 1,
+    selectableMessage: (selectable) => (!selectable ? "packages main" : ""),
+    onSelectionChange: onSelectionChange,
+  };
+
   const { data, status, isFetching } = useGeneratedGQLQuery<
     unknown | any,
     unknown,
@@ -71,10 +104,89 @@ export default function Packages() {
     unknown
   >(`${API_URL}/graphql`, "getPackages", GetPackages, queryVars);
 
-  const { mutate } = useGeneratedMutation(
-    `${API_URL}/graphql`,
-    GenerateShipment
-  );
+  const {
+    mutate: mutateGenerateShipment,
+    status: statusGenerateShipment,
+    error: ErrorGenerateShipment,
+  } = useGeneratedMutation(`${API_URL}/graphql`, GenerateShipment);
+
+  const {
+    mutate: mutateAddPackagesShipment,
+    status: statusAddPackagesShipment,
+    error: errorAddPackagesShipment,
+  } = useGeneratedMutation(`${API_URL}/graphql`, AddPackagesToShipments);
+
+  const onSubmit = (data: any) => {
+    mutateGenerateShipment(
+      {
+        input: {
+          comments: data.comments,
+          clientId: Number(data.clientId),
+          warehouseShipmentId: Number(data.warehouseShipmentId),
+        },
+      },
+      {
+        onSuccess: (data: any) => {
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "1",
+            title: "Envio",
+            text: <p>Envio creado</p>,
+            color: "success",
+          });
+          pushToast(newToast);
+
+          const selectPackages = selectItems.map((item: any) => item.guide);
+          mutateAddPackagesShipment(
+            {
+              input: {
+                shipmentId: data.generateShipment.id,
+                guides: selectPackages,
+              },
+            },
+            {
+              onSuccess: () => {
+                const newToast: Toast[] = [];
+                newToast.push({
+                  id: "2",
+                  title: "Paquetes",
+                  text: (
+                    <p>Se agregaron correctamente los paquetes a la orden</p>
+                  ),
+                  color: "success",
+                });
+                pushToast(newToast);
+                setShowModal(!showModal);
+                if (isFetching === false) {
+                  queryCache.removeQueries(["getPackages"], { stale: false });
+                }
+              },
+              onError: () => {
+                const newToast: Toast[] = [];
+                newToast.push({
+                  id: "3",
+                  title: "Paquetes",
+                  text: <p>No se pudieron agregar packates a la orden</p>,
+                  color: "danger",
+                });
+                pushToast(newToast);
+              },
+            }
+          );
+        },
+        onError: () => {
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "4",
+            title: "Envio",
+            text: <p>No se genero correctamenta la orden</p>,
+            color: "danger",
+          });
+          pushToast(newToast);
+        },
+      }
+    );
+  };
 
   useEffect(() => {
     const newPaging = {
@@ -83,8 +195,6 @@ export default function Packages() {
     };
     setActionsPaging(newPaging);
   }, [pageIndex, pageSize]);
-
-  const [dataPackages, setDataPackages] = useState<Array<Packages>>([]);
 
   useEffect(() => {
     if (status === "success") {
@@ -97,7 +207,7 @@ export default function Packages() {
             id: pkg.client.id,
           },
           shipment: {
-            id: pkg?.shipment === null ? "No tiene orden" : pkg.shipment.id,
+            id: pkg?.shipment === null ? "Sin N. envio" : pkg.shipment.id,
           },
           status: {
             id: pkg.status.id,
@@ -108,18 +218,6 @@ export default function Packages() {
       );
     }
   }, [data, status]);
-
-  const [selectItems, setSelectItems] = useState<Packages[]>([]);
-
-  const onSelectionChange = (selectedItems: Packages[]) => {
-    setSelectItems(selectedItems);
-  };
-
-  const selection: EuiTableSelectionType<Packages> = {
-    selectable: (pkg: Packages) => pkg.id !== 0,
-    selectableMessage: (selectable) => (!selectable ? "packages main" : ""),
-    onSelectionChange: onSelectionChange,
-  };
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -187,9 +285,13 @@ export default function Packages() {
     <EuiPageHeaderContent>
       <EuiPanel style={{ margin: "2vh" }}>
         <Header title={`Paquetes (${data?.packages?.totalCount})`}>
-          {/* <EuiButton onClick={() => setShowModal(!showModal)}>
-              Crear cliente
-            </EuiButton> */}
+          <EuiButton
+            disabled={selectItems.length <= 0}
+            fill
+            onClick={() => setShowModal(!showModal)}
+          >
+            Crear orden
+          </EuiButton>
         </Header>
         <EuiHorizontalRule />
         <EuiPanel>
@@ -215,14 +317,14 @@ export default function Packages() {
           />
         </EuiPanel>
       </EuiPanel>
-      {/* {showModal && (
+      {showModal && (
         <>
           <Modal
             onCloseModal={() => setShowModal(!showModal)}
-            titleModal={"Crear CLiente"}
+            titleModal={"Crear Orden"}
           >
             <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-              <GeneralForm
+              <GenerateShipmentInput
                 register={register}
                 setValue={setValue}
                 errors={errors}
@@ -235,15 +337,16 @@ export default function Packages() {
                 <EuiButton
                   type="submit"
                   fill
-                  isLoading={createOneQueryStatus === "loading"}
+                  isLoading={statusGenerateShipment === "loading"}
                 >
                   guardar
                 </EuiButton>
               </EuiModalFooter>
             </EuiForm>
-          </Modal> 
-      </> 
-      )}*/}
+          </Modal>
+        </>
+      )}
+      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

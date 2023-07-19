@@ -22,6 +22,7 @@ import Papa from "papaparse";
 import { CreatePackages, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
+import { useRouter } from "next/navigation";
 
 interface DataFile {
   guide: string;
@@ -50,6 +51,7 @@ interface DataFile {
 }
 
 export default function GeneratePackages() {
+  const router = useRouter();
   const [files, setFiles] = useState<any>([]);
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<
     Record<string, ReactNode>
@@ -127,6 +129,7 @@ export default function GeneratePackages() {
               color: "success",
             });
             pushToast(newToast);
+            router.push("/packages");
           },
           onError: () => {
             const newToast: Toast[] = [];
@@ -327,6 +330,7 @@ export default function GeneratePackages() {
           <EuiButton
             onClick={submitManyPackages}
             isLoading={status === "loading"}
+            // href={"/packages"}
             fill
           >
             Agregar guias

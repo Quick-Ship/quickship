@@ -83,7 +83,7 @@ export const GeneralForm: React.FC<GeneralFormProps> = ({
         </EuiFormRow>
         <EuiFormRow
           id="3"
-          error={errors.phone && errors.phone.message}
+          error={errors.phone && "Ingresa nuemero tefefonico a 10 digitos"}
           isInvalid={inputValue.phone === ""}
         >
           <EuiFieldText

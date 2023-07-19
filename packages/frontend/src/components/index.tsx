@@ -7,3 +7,4 @@ export * from "./header";
 export * from "./generalForm";
 export * from "./loading";
 export * from "./modal";
+export * from "./inputs";

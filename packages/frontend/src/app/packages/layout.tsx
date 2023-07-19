@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import { Providers } from "@/common";
+import { ToastsProvider } from "@/hooks";
 
 export default function PackagesLayout({
   children,
@@ -9,7 +10,9 @@ export default function PackagesLayout({
 }) {
   return (
     <Providers>
-      <main>{children}</main>
+      <ToastsProvider>
+        <main>{children}</main>
+      </ToastsProvider>
     </Providers>
   );
 }
