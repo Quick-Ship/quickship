@@ -1,10 +1,14 @@
-import { OrderEntity } from 'src/modules/orders/entities/order.entity';
-import { PackageEntity } from 'src/modules/packages/entities/package.entity';
+import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
+import { WarehouseShipmentEntity } from 'src/modules/warehouse-shipment/entities/warehouse-shipment.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
+  ObjectType,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -27,11 +31,11 @@ export class DirectionEntity {
   @Column({ name: 'state' })
   state: string;
 
-  @Column({ name: 'external_number' })
-  externalNumber: number;
+  @Column({ name: 'external_number', nullable: false })
+  externalNumber: string;
 
-  @Column({ name: 'internal_number' })
-  internalNumber: number;
+  @Column({ name: 'internal_number', nullable: true })
+  internalNumber: string;
 
   @Column({ name: 'zip_code' })
   zipCode: string;
@@ -42,45 +46,47 @@ export class DirectionEntity {
   @Column({ name: 'longitude', type: 'float' })
   longitude: number;
 
-  @Column({
-    name: 'order_id',
-    type: 'text',
-    nullable: true,
-  })
-  orderId?: number;
+  @Column({ name: 'shipment_id', nullable: true })
+  shipmentId: number;
+  @OneToMany(
+    (): ObjectType<ShipmentEntity> => ShipmentEntity,
+    (shipment) => shipment.id,
+    {
+      onDelete: 'CASCADE',
+      nullable: false,
+    },
+  )
+  @JoinColumn({ name: 'shipment_id' })
+  shipment?: ShipmentEntity;
 
-  @OneToOne(() => OrderEntity, (order) => order.direction, {
-    nullable: true,
-  })
-  order?: OrderEntity;
-
-  @Column({
-    type: 'text',
-    name: 'package_id',
-    nullable: true,
-  })
-  packageId: number;
-
-  @OneToOne(() => PackageEntity, (packge) => packge.direction, {
-    nullable: true,
-  })
-  packge?: PackageEntity;
+  @Column({ name: 'warehouse_shipment_id', nullable: true })
+  warehouseShipmentId: number;
+  @OneToMany(
+    (): ObjectType<WarehouseShipmentEntity> => WarehouseShipmentEntity,
+    (shipment) => shipment.id,
+    {
+      onDelete: 'CASCADE',
+      nullable: false,
+    },
+  )
+  @JoinColumn({ name: 'warehouse_shipment_id' })
+  warehouseShipment?: WarehouseShipmentEntity;
 
   @CreateDateColumn({
     type: 'timestamp',
-    name: 'create_at',
+    name: 'created_at',
   })
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
-    name: 'update_at',
+    name: 'updates_at',
   })
-  updateAt!: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({
     type: 'timestamp',
-    name: 'delete_at',
+    name: 'deleted_at',
   })
-  deleteAt!: Date;
+  deletedAt!: Date;
 }

@@ -1,8 +1,30 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { PackageDto } from 'src/modules/packages/dto/packages.dto';
+import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import {
+  CursorConnection,
+  FilterableField,
+  FilterableRelation,
+  KeySet,
+  PagingStrategies,
+} from '@nestjs-query/query-graphql';
+import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
+import { SortDirection } from '@nestjs-query/core';
+import { WarehouseShipmentDTO } from 'src/modules/warehouse-shipment/dto/warehouse-shipment.dto';
 
-@ObjectType('contact')
-export class ContactDto {
+@ObjectType('Contact')
+@KeySet(['id'])
+@FilterableRelation('packages', () => PackageDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@CursorConnection('warehouseShipment', () => WarehouseShipmentDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+export class ContactDTO {
   @Field()
   id!: number;
 
@@ -15,21 +37,15 @@ export class ContactDto {
   @Field()
   phone!: string;
 
-  @Field()
+  @FilterableField()
   email!: string;
 
-  @Field()
-  packageId: number;
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt!: Date;
 
-  @Field(() => PackageDto, { nullable: true })
-  package: PackageDto;
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt!: Date;
 
-  @Field(() => GraphQLISODateTime)
-  createAt!: Date;
-
-  @Field(() => GraphQLISODateTime)
-  updateAt!: Date;
-
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  deleteAt?: Date;
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
+  deletedAt?: Date;
 }

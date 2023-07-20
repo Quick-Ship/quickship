@@ -1,45 +1,55 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+
+/*Local Imports */
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppResolver } from './app.resolver';
-import { DatabaseModule } from './database/database.module';
-import { ConfigModule } from '@nestjs/config';
-import { enviroments } from './config/enviroments';
-import config from './config';
-import { ClientsModule } from './modules/clients/clients.module';
-import { DirectionsModule } from './modules/directions/directions.module';
-import { MessengersModule } from './modules/messengers/messengers.module';
-import { InvoicesModule } from './modules/invoices/invoices.module';
-import { OrderStatusModule } from './modules/order-status/order-status.module';
-import { PackagesModule } from './modules/packages/packages.module';
-import { OrdersModule } from './modules/orders/orders.module';
+import { ClientModule } from './modules/client/client.module';
+import appConfig from './config/app.config';
 import { ContactModule } from './modules/contact/contact.module';
-import { PackagesHistoryModule } from './modules/package-history/package-history.module';
+import { DirectionModule } from './modules/directions/directions.module';
+import { InvoicesModule } from './modules/invoices/invoices.module';
+import { MessengersModule } from './modules/messengers/messengers.module';
+import { PackageHistoryModule } from './modules/package-history/package-history.module';
+import { PackagesModule } from './modules/packages/packages.module';
+import { ShipmentModule } from './modules/shipment/shipment.module';
+import { ShipmentStatusModule } from './modules/shipmet-status/shipment-status.module';
+import { PackageStatusModule } from './modules/package-status/package-status.module';
+import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-shipment.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: enviroments[process.env.NODE_ENV] || '.env',
-      load: [config],
+      load: [appConfig],
+      cache: true,
       isGlobal: true,
     }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigService],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return configService.get('config.database');
+      },
+    }),
     GraphQLModule.forRoot({
-      autoSchemaFile: 'schema.gql',
+      autoSchemaFile: join(process.cwd(), 'schema.gql'),
       playground: true,
     }),
-    DatabaseModule,
-    ClientsModule,
-    DirectionsModule,
-    ClientsModule,
-    MessengersModule,
-    DirectionsModule,
-    InvoicesModule,
-    OrderStatusModule,
-    PackagesModule,
-    OrdersModule,
+    ClientModule,
     ContactModule,
-    PackagesHistoryModule,
+    DirectionModule,
+    InvoicesModule,
+    MessengersModule,
+    PackageHistoryModule,
+    PackagesModule,
+    ShipmentModule,
+    ShipmentStatusModule,
+    PackageStatusModule,
+    WarehouseShipmentModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

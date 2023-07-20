@@ -1,8 +1,8 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 
-@InputType('CreateContactInput')
-export class CreateContactInput {
+@InputType('InputCreateContact')
+export class InputCreateContactDTO {
   @Field()
   @IsString()
   @IsNotEmpty()

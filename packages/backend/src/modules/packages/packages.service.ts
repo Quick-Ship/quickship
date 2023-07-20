@@ -1,107 +1,62 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePackageInput } from './dto/create-package.input';
-import { UpdatePackageInput } from './dto/update-package.input';
+import { QueryService } from '@nestjs-query/core';
+import { TypeOrmQueryService } from '@nestjs-query/query-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository, getConnection } from 'typeorm';
 import { PackageEntity } from './entities/package.entity';
-import { Repository } from 'typeorm';
-import { OrdersService } from '../orders/orders.service';
-import { OrderEntity } from '../orders/entities/order.entity';
-import { DirectionsService } from '../directions/directions.service';
-import { DirectionEntity } from '../directions/entities/direction.entity';
+import { InputCreatePackageDTO } from './dto/create-package.input';
+import { GraphQLError } from 'graphql';
 import { ContactEntity } from '../contact/entities/contact.entity';
-import { ContactService } from '../contact/contact.service';
+import { DirectionEntity } from '../directions/entities/direction.entity';
+import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
+import { PackageStatusEnum } from 'src/common/package-status.enum';
+import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
 
-@Injectable()
-export class PackagesService {
+@QueryService(PackageEntity)
+export class PackagesService extends TypeOrmQueryService<PackageEntity> {
   constructor(
-    @InjectRepository(PackageEntity)
-    private readonly packagesRepository: Repository<PackageEntity>,
-    private ordersService: OrdersService,
-    private directionsService: DirectionsService,
-    private contactsService: ContactService,
-  ) {}
-
-  async findAllPackages(): Promise<PackageEntity[]> {
-    const packages = await this.packagesRepository.find();
-
-    return packages;
+    @InjectRepository(PackageEntity) repo: Repository<PackageEntity>,
+  ) {
+    super(repo);
   }
 
-  async findOnePackage(id: number): Promise<PackageEntity> {
-    const onePackage = await this.packagesRepository.findOne({
-      where: { id: id },
-    });
+  public async createPackages(input: InputCreatePackageDTO) {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      const contact = await queryRunner.manager.save(ContactEntity, {
+        ...input.contact,
+      });
+      const direction = await queryRunner.manager.save(DirectionEntity, {
+        ...input.direction,
+      });
+      const packages = await queryRunner.manager.save(PackageEntity, {
+        clientId: input.idClient,
+        contactId: contact.id,
+        directionId: direction.id,
+        statusId: PackageStatusEnum.SC,
+        guide: input.guide,
+        heigth: input.heigth,
+        length: input.length,
+        weigth: input.weigth,
+        width: input.width,
+      });
+      await queryRunner.manager.save(PackageHistoryEntity, {
+        status: 'SC',
+        idPackage: packages.id,
+        description: PackageStatusDescriptionEnum.SC,
+      });
 
-    return onePackage;
+      await queryRunner.commitTransaction();
+
+      return packages;
+    } catch (error) {
+      if (queryRunner.isTransactionActive)
+        await queryRunner.rollbackTransaction();
+      throw new GraphQLError(error?.message || error);
+    } finally {
+      await queryRunner.release();
+    }
   }
-
-  async createPackage(
-    createPackageInput: CreatePackageInput,
-  ): Promise<PackageEntity> {
-    const { contact, direction, ...packageData } = createPackageInput;
-
-    const zone = {
-      CDMX: '10',
-    };
-
-    const idContact = await this.contactsService.createContact(contact);
-
-    const idDirection = await this.directionsService.createDirection(direction);
-
-    this.packagesRepository.create({
-      direction: idDirection,
-      directionId: idDirection.id,
-      contact: contact,
-      contactId: idContact.id,
-      ...packageData,
-    });
-
-    const guide = `OD0623${Math.floor(Math.random() * 100 + 1)}${zone.CDMX}`;
-
-    const savedPackage = await this.packagesRepository.save({
-      direction: idDirection,
-      directionId: idDirection.id,
-      concat: contact,
-      contactId: idContact.id,
-      guide: guide,
-      ...packageData,
-    });
-
-    await this.contactsService.updateContact(idContact.id, {
-      packageId: savedPackage.id,
-    });
-
-    await this.directionsService.updateDirection(idDirection.id, {
-      packageId: savedPackage.id,
-    });
-
-    return savedPackage;
-  }
-
-  async updatePackage(
-    id: number,
-    updatePackageInput: UpdatePackageInput,
-  ): Promise<any> {
-    const updatePackage = await this.findOnePackage(id);
-
-    this.packagesRepository.merge(updatePackage, updatePackageInput);
-
-    return this.packagesRepository.save(updatePackage);
-  }
-
-  getOrder(orderId: number): Promise<OrderEntity> {
-    return this.ordersService.findOneOrder(orderId);
-  }
-
-  getDirection(directionId: number): Promise<DirectionEntity> {
-    return this.directionsService.findOneDirection(directionId);
-  }
-
-  getContact(contactId: number): Promise<ContactEntity> {
-    return this.contactsService.findOneContact(contactId);
-  }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} package`;
-  // }
 }

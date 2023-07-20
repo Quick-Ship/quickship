@@ -1,0 +1,135 @@
+name: deploy-backend
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        type: choice
+        description: Select package to promote
+        options:
+        - backend
+
+concurrency: 
+  group: promote
+  cancel-in-progress: true
+
+permissions:
+  id-token: write
+  actions: write
+  contents: read
+  packages: write
+  deployments: write
+
+env:
+  GCP_SA: ${{ secrets.GCP_SA }}
+  GCP_WIF: ${{ secrets.GCP_WIF }}
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  ENV: production
+  SERVICE_NAME: backend
+  WORKING_DIR: ./packages/backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+      - uses: actions/checkout@v3
+
+      - uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ env.GCP_WIF }}
+          service_account: ${{ env.GCP_SA }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Configure Docker to use Google Cloud Platform
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          context: .
+          file: ${{ env.WORKING_DIR }}/Dockerfile
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        region: [us-central1]
+    outputs:
+      url: ${{ steps.cloudrun.outputs.url }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: chrnorm/deployment-action@releases/v1
+        name: Create GitHub deployment
+        id: deployment
+        with:
+          token: "${{ github.token }}"
+          environment: ${{ env.SERVICE_NAME }}-${{ env.ENV }}
+
+      - uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ env.GCP_WIF }}
+          service_account: ${{ env.GCP_SA }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v1
+        id: cloudrun
+        with:
+          image: gcr.io/${{ env.GCP_PROJECT_ID }}/${{ env.SERVICE_NAME }}:${{ github.sha }}
+          service: ${{ env.SERVICE_NAME }}-${{ env.ENV }}
+          region: ${{ matrix.region }}
+          env_vars: LOG_LEVEL=debug,DATABASE_URL=${{ secrets.DATABASE_URL }},DATABASE_PORT=${{ secrets.DATABASE_PORT }},DATABASE=${{secrets.DATABASE }}
+          secrets:
+          flags: "--cpu=1 --memory=512Mi --concurrency=100 --min-instances=0 --max-instances=100"
+          tag: beta
+          no_traffic: true
+
+      - name: Update deployment status (success)
+        if: success()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          target_url: ${{ steps.cloudrun.outputs.url }}
+          state: "success"
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+
+      - name: Update deployment status (failure)
+        if: failure()
+        uses: chrnorm/deployment-status@releases/v1
+        with:
+          token: "${{ github.token }}"
+          target_url: ${{ steps.cloudrun.outputs.url }}
+          state: "failure"
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}

@@ -1,33 +1,43 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsNotEmpty, IsNumber } from 'class-validator';
-import { CreateContactInput } from 'src/modules/contact/dto/create-contact.input';
-import { CreateDirectionInput } from 'src/modules/directions/dto/create-direction.input';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { InputCreateContactDTO } from 'src/modules/contact/dto/create-contact.input';
+import { InputCreateDirectionDTO } from 'src/modules/directions/dto/create-direction.input';
 
-@InputType('packagesInput')
-export class CreatePackageInput {
-  @Field()
+@InputType('InputCreatePackage')
+export class InputCreatePackageDTO {
+  @Field({ defaultValue: 1.0 })
   @IsNumber()
   @IsNotEmpty()
   weigth!: number;
 
-  @Field()
+  @Field({ defaultValue: 1.0 })
   @IsNumber()
   @IsNotEmpty()
   width!: number;
 
-  @Field()
+  @Field({ defaultValue: 1.0 })
   @IsNumber()
   @IsNotEmpty()
   heigth!: number;
 
+  @Field({ defaultValue: 1.0 })
+  @IsNumber()
+  @IsNotEmpty()
+  length!: number;
+
+  @Field()
+  @IsString()
+  @IsOptional()
+  guide?: string;
+
+  @Field(() => InputCreateContactDTO, { nullable: false })
+  contact: InputCreateContactDTO;
+
+  @Field(() => InputCreateDirectionDTO, { nullable: false })
+  direction: InputCreateDirectionDTO;
+
   @Field()
   @IsNumber()
   @IsNotEmpty()
-  legth!: number;
-
-  @Field(() => CreateContactInput, { nullable: false })
-  contact: CreateContactInput;
-
-  @Field(() => CreateDirectionInput, { nullable: false })
-  direction: CreateDirectionInput;
+  idClient: number;
 }

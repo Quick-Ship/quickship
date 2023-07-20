@@ -1,69 +1,23 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Int,
-  ResolveField,
-  Parent,
-} from '@nestjs/graphql';
+import { CRUDResolver } from '@nestjs-query/query-graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
+
+/*Local Imports */
 import { PackagesService } from './packages.service';
-import { CreatePackageInput } from './dto/create-package.input';
-import { UpdatePackageInput } from './dto/update-package.input';
-import { PackageDto } from './dto/packages.dto';
-import { OrderDto } from '../orders/dto/orders.dto';
-import { OrderEntity } from '../orders/entities/order.entity';
-import { DirectionsDto } from '../directions/dto/directions.dto';
-import { DirectionEntity } from '../directions/entities/direction.entity';
-import { ContactDto } from '../contact/dto/contact.dto';
-import { ContactEntity } from '../contact/entities/contact.entity';
+import { PackageDTO } from './dto/packages.dto';
+import { InputCreatePackageDTO } from './dto/create-package.input';
+import { ValidationPipe } from '@nestjs/common';
 
-@Resolver(() => PackageDto)
-export class PackagesResolver {
-  constructor(private readonly packagesService: PackagesService) {}
-
-  @Query(() => [PackageDto], { name: 'packages' })
-  findAll() {
-    return this.packagesService.findAllPackages();
+@Resolver(() => PackageDTO)
+export class PackagesResolver extends CRUDResolver(PackageDTO) {
+  constructor(readonly packagesService: PackagesService) {
+    super(packagesService);
   }
 
-  @Query(() => PackageDto, { name: 'package' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.packagesService.findOnePackage(id);
+  @Mutation(() => PackageDTO)
+  public async createDelivery(
+    @Args('input', new ValidationPipe())
+    input: InputCreatePackageDTO,
+  ): Promise<PackageDTO> {
+    return this.packagesService.createPackages(input);
   }
-
-  @Mutation(() => PackageDto)
-  async createPackage(
-    @Args('createPackageInput') createPackageInput: CreatePackageInput,
-  ) {
-    return await this.packagesService.createPackage(createPackageInput);
-  }
-
-  @Mutation(() => PackageDto)
-  updatePackage(
-    @Args('updatePackageInput') updatePackageInput: UpdatePackageInput,
-    id: number,
-  ) {
-    return this.packagesService.updatePackage(id, updatePackageInput);
-  }
-
-  @ResolveField(() => OrderDto, { name: 'order' })
-  getOrder(@Parent() orderId: PackageDto): Promise<OrderEntity> {
-    return this.packagesService.getOrder(orderId.orderId);
-  }
-
-  @ResolveField(() => DirectionsDto, { name: 'direction' })
-  getDirection(@Parent() direction: PackageDto): Promise<DirectionEntity> {
-    return this.packagesService.getDirection(direction.directionId);
-  }
-
-  @ResolveField(() => ContactDto, { name: 'contact' })
-  getContact(@Parent() contact: PackageDto): Promise<ContactEntity> {
-    return this.packagesService.getContact(contact.contactId);
-  }
-
-  // @Mutation(() => PackageDto)
-  // removePackage(@Args('id', { type: () => Int }) id: number) {
-  //   return this.packagesService.remove(id);
-  // }
 }

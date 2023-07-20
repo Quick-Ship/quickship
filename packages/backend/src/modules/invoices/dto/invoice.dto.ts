@@ -1,15 +1,21 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { ClientDto } from 'src/modules/clients/dto/client.dto';
+import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import {
+  FilterableField,
+  FilterableRelation,
+  KeySet,
+  PagingStrategies,
+} from '@nestjs-query/query-graphql';
 
-@ObjectType('invoice')
-export class InvoiceDto {
+@ObjectType('Invoice')
+@KeySet(['id'])
+export class InvoiceDTO {
   @Field()
   id!: number;
 
   @Field()
   socialReazon!: string;
 
-  @Field()
+  @FilterableField()
   rfc!: string;
 
   @Field()
@@ -30,7 +36,7 @@ export class InvoiceDto {
   @Field()
   internalNumber?: number;
 
-  @Field()
+  @FilterableField()
   zipCode!: number;
 
   @Field()
@@ -39,20 +45,12 @@ export class InvoiceDto {
   @Field()
   cfdi!: string;
 
-  @Field({
-    nullable: true,
-  })
-  clientId?: number;
-
-  @Field(() => ClientDto, { nullable: true })
-  client: ClientDto;
-
-  @Field(() => GraphQLISODateTime)
+  @FilterableField(() => GraphQLISODateTime)
   createAt!: Date;
 
-  @Field(() => GraphQLISODateTime)
+  @FilterableField(() => GraphQLISODateTime)
   updateAt!: Date;
 
-  @Field(() => GraphQLISODateTime, { nullable: true })
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
   deleteAt?: Date;
 }

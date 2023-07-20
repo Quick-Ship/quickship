@@ -1,4 +1,4 @@
-import { OrderEntity } from 'src/modules/orders/entities/order.entity';
+import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
 import {
   Column,
   CreateDateColumn,
@@ -26,26 +26,27 @@ export class MessengerEntity {
   @Column({ name: 'phone' })
   phone: string;
 
-  @OneToMany(() => OrderEntity, (order) => order.messenger, {
+  @OneToMany(() => ShipmentEntity, (shipment) => shipment.messenger, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
-  orders?: OrderEntity[];
+  shipment: ShipmentEntity;
 
   @CreateDateColumn({
     type: 'timestamp',
-    name: 'create_at',
+    name: 'created_at',
   })
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
-    name: 'update_at',
+    name: 'updated_at',
   })
-  updateAt!: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({
     type: 'timestamp',
-    name: 'delete_at',
+    name: 'deleted_at',
   })
-  deleteAt!: Date;
+  deletedAt!: Date;
 }

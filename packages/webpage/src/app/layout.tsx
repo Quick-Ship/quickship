@@ -1,4 +1,4 @@
-import { Nabvar } from '@/components'
+import { Nabvar,Footer } from '@/components'
 import './globals.css'
 
 
@@ -13,6 +13,7 @@ export default function RootLayout({
 
         <Nabvar></Nabvar>
         {children}
+        <Footer></Footer>
         </body>
     </html>
   )

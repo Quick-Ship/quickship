@@ -1,10 +1,11 @@
 {
-  "name": "root",
+  "name": "quickship",
   "private": true,
   "devDependencies": {
     "lerna": "5.6.2"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "packageManager": "yarn@3.1.1"
 }

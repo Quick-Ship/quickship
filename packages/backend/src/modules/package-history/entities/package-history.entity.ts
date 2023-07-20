@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('PackagesHistory')
+@Entity('package_history')
 export class PackageHistoryEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,10 +15,10 @@ export class PackageHistoryEntity {
     name: 'package_status',
     nullable: true,
   })
-  packagaStatus: string;
+  status: string;
 
   @Column({
-    name: 'id_package',
+    name: 'package_id',
     nullable: true,
   })
   idPackage: number;
@@ -27,24 +27,24 @@ export class PackageHistoryEntity {
     name: 'client_description',
     nullable: true,
   })
-  clientDescription: string;
+  description: string;
 
   @CreateDateColumn({
     type: 'timestamp',
-    name: 'create_at',
+    name: 'created_at',
   })
-  createAt!: Date;
+  createdAt!: Date;
 
   @CreateDateColumn({
     type: 'timestamp',
-    name: 'update_at',
+    name: 'updated_at',
   })
-  updateAt!: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({
     type: 'timestamp',
-    name: 'delete_at',
+    name: 'deleted_at',
     nullable: true,
   })
-  deleteAt?: Date;
+  deletedAt?: Date;
 }

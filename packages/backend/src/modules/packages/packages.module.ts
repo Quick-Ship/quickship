@@ -1,18 +1,35 @@
 import { Module } from '@nestjs/common';
+import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
+import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
+
+/*Local Imports */
 import { PackagesService } from './packages.service';
 import { PackagesResolver } from './packages.resolver';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { PackageEntity } from './entities/package.entity';
-import { OrdersModule } from '../orders/orders.module';
-import { DirectionsModule } from '../directions/directions.module';
+import { PackageDTO } from './dto/packages.dto';
+import { InputCreatePackageDTO } from './dto/create-package.input';
+import { InputUpdatePackageDTO } from './dto/update-package.input';
 import { ContactModule } from '../contact/contact.module';
+import { DirectionModule } from '../directions/directions.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PackageEntity]),
-    OrdersModule,
-    DirectionsModule,
-    ContactModule,
+    NestjsQueryGraphQLModule.forFeature({
+      imports: [
+        NestjsQueryTypeOrmModule.forFeature([PackageEntity]), //ContactModule, DirectionModule
+      ],
+      services: [PackagesService],
+      resolvers: [
+        {
+          delete: { disabled: true },
+          DTOClass: PackageDTO,
+          EntityClass: PackageEntity,
+          ServiceClass: PackagesService,
+          CreateDTOClass: InputCreatePackageDTO,
+          UpdateDTOClass: InputUpdatePackageDTO,
+        },
+      ],
+    }),
   ],
   providers: [PackagesResolver, PackagesService],
   exports: [PackagesService],

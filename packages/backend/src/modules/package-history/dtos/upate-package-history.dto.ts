@@ -1,13 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
 
-@InputType('UpdatePackageHistory')
-export class UpdatePackageHistoryDTO {
+@InputType('InputUpdatePackageHistory')
+export class InputUpdatePackageHistoryDTO {
   @Field({ nullable: true })
-  packagaStatus?: string;
+  status?: string;
 
   @Field({ nullable: true })
   idPackage?: number;
 
   @Field({ nullable: true })
-  clientDescription?: string;
+  description?: string;
 }

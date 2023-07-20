@@ -1,13 +1,13 @@
 import { Field, InputType } from '@nestjs/graphql';
 
-@InputType('CreatePackageHistory')
-export class CreatePackageHistoryDTO {
+@InputType('InputCreatePackageHistory')
+export class InputCreatePackageHistoryDTO {
   @Field({ nullable: false })
-  packagaStatus: string;
+  status: string;
 
   @Field({ nullable: false })
   idPackage: number;
 
   @Field({ nullable: false })
-  clientDescription: string;
+  description: string;
 }

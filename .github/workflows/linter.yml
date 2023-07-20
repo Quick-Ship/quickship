@@ -1,0 +1,29 @@
+name: linter
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  linter:
+    if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: github/super-linter/slim@v4
+        env:
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ANSIBLE: false
+          VALIDATE_GO: false
+          VALIDATE_COFFEE: false
+          VALIDATE_RUBY: false
+          VALIDATE_PYTHON: false
+          VALIDATE_PERL: false
+          VALIDATE_TYPESCRIPT_STANDARD: false
+          VALIDATE_JAVASCRIPT_STANDARD: false
+          FILTER_REGEX_EXCLUDE: (\.github/.*|\.yarn/.*)

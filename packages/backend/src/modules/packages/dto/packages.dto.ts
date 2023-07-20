@@ -1,14 +1,54 @@
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { ContactDto } from 'src/modules/contact/dto/contact.dto';
-import { DirectionsDto } from 'src/modules/directions/dto/directions.dto';
-import { OrderDto } from 'src/modules/orders/dto/orders.dto';
+import {
+  FilterableField,
+  FilterableRelation,
+  KeySet,
+  PagingStrategies,
+} from '@nestjs-query/query-graphql';
+import { ContactDTO } from 'src/modules/contact/dto/contact.dto';
+import { DirectionDTO } from 'src/modules/directions/dto/directions.dto';
+import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
+import { SortDirection } from '@nestjs-query/core';
+import { ClientDTO } from 'src/modules/client/dto/client.dto';
+import { PackageStatusDTO } from 'src/modules/package-status/dto/package-status-dto';
 
-@ObjectType('package')
-export class PackageDto {
+@ObjectType('Package')
+@KeySet(['id'])
+@FilterableRelation('shipment', () => ShipmentDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableRelation('direction', () => DirectionDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableRelation('contact', () => ContactDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableRelation('client', () => ClientDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableRelation('status', () => PackageStatusDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+export class PackageDTO {
   @Field()
   id!: number;
 
-  @Field()
+  @FilterableField()
   guide!: string;
 
   @Field()
@@ -21,35 +61,14 @@ export class PackageDto {
   heigth!: number;
 
   @Field()
-  legth!: number;
+  length!: number;
 
-  @Field({ nullable: true })
-  packageStatus?: string;
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt!: Date;
 
-  @Field({ nullable: true })
-  orderId?: number;
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt!: Date;
 
-  @Field(() => OrderDto, { nullable: true })
-  order?: OrderDto;
-
-  @Field({ nullable: true })
-  directionId: number;
-
-  @Field(() => DirectionsDto, { nullable: true })
-  direction: DirectionsDto;
-
-  @Field({ nullable: true, name: 'contact_id' })
-  contactId: number;
-
-  @Field(() => ContactDto, { nullable: true })
-  contact: ContactDto;
-
-  @Field(() => GraphQLISODateTime)
-  createAt!: Date;
-
-  @Field(() => GraphQLISODateTime)
-  updateAt!: Date;
-
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  deleteAt?: Date;
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
+  deletedAt?: Date;
 }

@@ -1,55 +1,13 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Args,
-  Int,
-  Parent,
-  ResolveField,
-} from '@nestjs/graphql';
+import { CRUDResolver } from '@nestjs-query/query-graphql';
+import { Resolver } from '@nestjs/graphql';
+
+/*Local Imports */
 import { InvoicesService } from './invoices.service';
-import { CreateInvoiceInput } from './dto/create-invoice.input';
-import { UpdateInvoiceInput } from './dto/update-invoice.input';
-import { InvoiceDto } from './dto/invoice.dto';
-import { ClientDto } from '../clients/dto/client.dto';
-import { ClientEntity } from '../clients/entities/client.entity';
+import { InvoiceDTO } from './dto/invoice.dto';
 
-@Resolver(() => InvoiceDto)
-export class InvoicesResolver {
-  constructor(private readonly invoicesService: InvoicesService) {}
-
-  @Query(() => [InvoiceDto], { name: 'invoices' })
-  findAll() {
-    return this.invoicesService.findAllInvoices();
+@Resolver(() => InvoiceDTO)
+export class InvoicesResolver extends CRUDResolver(InvoiceDTO) {
+  constructor(readonly invoicesService: InvoicesService) {
+    super(invoicesService);
   }
-
-  @Query(() => InvoiceDto, { name: 'invoice' })
-  findOne(@Args('id', { type: () => Int }) id: number) {
-    return this.invoicesService.findOneInvoice(id);
-  }
-
-  @Mutation(() => InvoiceDto)
-  createInvoice(
-    @Args('createInvoiceInput') createInvoiceInput: CreateInvoiceInput,
-  ) {
-    return this.invoicesService.createInvoice(createInvoiceInput);
-  }
-
-  @Mutation(() => InvoiceDto)
-  updateInvoice(
-    @Args('updateInvoiceInput') updateInvoiceInput: UpdateInvoiceInput,
-    id: number,
-  ) {
-    return this.invoicesService.updateInvoice(id, updateInvoiceInput);
-  }
-
-  @ResolveField(() => ClientDto)
-  getClient(@Parent() clientId: InvoiceDto): Promise<ClientEntity> {
-    return this.invoicesService.getClient(clientId.id);
-  }
-
-  // @Mutation(() => Invoice)
-  // removeInvoice(@Args('id', { type: () => Int }) id: number) {
-  //   return this.invoicesService.remove(id);
-  // }
 }

@@ -1,9 +1,38 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { OrderDto } from 'src/modules/orders/dto/orders.dto';
-import { PackageDto } from 'src/modules/packages/dto/packages.dto';
+import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import {
+  CursorConnection,
+  FilterableField,
+  FilterableRelation,
+  KeySet,
+  PagingStrategies,
+  Relation,
+} from '@nestjs-query/query-graphql';
+import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
+import { SortDirection } from '@nestjs-query/core';
+import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
+import { WarehouseShipmentDTO } from 'src/modules/warehouse-shipment/dto/warehouse-shipment.dto';
 
-@ObjectType('directions')
-export class DirectionsDto {
+@ObjectType('Direction')
+@KeySet(['id'])
+@FilterableRelation('shipment', () => ShipmentDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableRelation('package', () => PackageDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@CursorConnection('warehouseShipment', () => WarehouseShipmentDTO, {
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+export class DirectionDTO {
   @Field()
   id!: number;
 
@@ -25,7 +54,7 @@ export class DirectionsDto {
   @Field()
   internalNumber?: string;
 
-  @Field()
+  @FilterableField()
   zipCode!: string;
 
   @Field()
@@ -34,24 +63,12 @@ export class DirectionsDto {
   @Field()
   longitude!: number;
 
-  @Field()
-  orderId: number;
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt!: Date;
 
-  @Field(() => OrderDto, { nullable: true })
-  order: OrderDto;
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt!: Date;
 
-  @Field()
-  packageId: number;
-
-  @Field(() => PackageDto, { nullable: true })
-  packages: PackageDto;
-
-  @Field(() => GraphQLISODateTime)
-  createAt!: Date;
-
-  @Field(() => GraphQLISODateTime)
-  updateAt!: Date;
-
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  deleteAt?: Date;
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
+  deletedAt?: Date;
 }

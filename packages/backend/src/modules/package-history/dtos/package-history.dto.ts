@@ -1,25 +1,39 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import {
+  FilterableField,
+  KeySet,
+  PagingStrategies,
+  QueryOptions,
+} from '@nestjs-query/query-graphql';
+import { SortDirection } from '@nestjs-query/core';
 
 @ObjectType('PackageHistory')
+@KeySet(['id'])
+@QueryOptions({
+  defaultResultSize: 100,
+  maxResultsSize: 200,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
 export class PackageHistoryDTO {
   @Field()
   id!: number;
 
-  @Field()
-  packagaStatus: string;
+  @FilterableField()
+  status: string;
 
-  @Field()
+  @FilterableField()
   idPackage: number;
 
   @Field()
-  clientDescription: string;
+  description: string;
 
-  @Field(() => GraphQLISODateTime)
-  createAt!: Date;
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt!: Date;
 
-  @Field(() => GraphQLISODateTime)
-  updateAt!: Date;
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt!: Date;
 
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  deleteAt?: Date;
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
+  deletedAt?: Date;
 }

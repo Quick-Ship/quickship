@@ -1,6 +1,8 @@
+import { ClientEntity } from 'src/modules/client/entities/client.entity';
 import { ContactEntity } from 'src/modules/contact/entities/contact.entity';
 import { DirectionEntity } from 'src/modules/directions/entities/direction.entity';
-import { OrderEntity } from 'src/modules/orders/entities/order.entity';
+import { PackageStatusEntity } from 'src/modules/package-status/entities/package-status.entity';
+import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
 import {
   Column,
   CreateDateColumn,
@@ -13,41 +15,39 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('Packages')
+@Entity('packages')
 export class PackageEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'guide', primary: true })
+  @Column({ name: 'guide', unique: true })
   guide: string;
 
-  @Column({ name: 'package_status', type: 'text', nullable: true })
-  packageStatus: string;
-
-  @Column({ name: 'weigth', type: 'float' })
+  @Column({ name: 'weigth', type: 'float', default: 1.0 })
   weigth: number;
 
-  @Column({ name: 'width', type: 'float' })
+  @Column({ name: 'width', type: 'float', default: 1.0 })
   width: number;
 
-  @Column({ name: 'heigth', type: 'float' })
+  @Column({ name: 'heigth', type: 'float', default: 1.0 })
   heigth: number;
 
-  @Column({ name: 'length', type: 'float' })
-  legth: number;
+  @Column({ name: 'length', type: 'float', default: 1.0 })
+  length: number;
 
   @Column({
-    type: 'text',
-    name: 'order_id',
+    type: 'int',
+    name: 'shipment_id',
     nullable: true,
   })
-  orderId?: string;
+  shipmentId?: number;
 
-  @ManyToOne(() => OrderEntity, (order) => order.packages, {
+  @ManyToOne(() => ShipmentEntity, (shipment) => shipment.id, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
-  @JoinColumn({ name: 'order_id' })
-  order?: OrderEntity;
+  @JoinColumn({ name: 'shipment_id' })
+  shipment?: ShipmentEntity;
 
   @Column({
     type: 'text',
@@ -56,8 +56,9 @@ export class PackageEntity {
   })
   directionId: number;
 
-  @OneToOne(() => DirectionEntity, (direction) => direction.packge, {
+  @ManyToOne(() => DirectionEntity, (direction) => direction.id, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'direction_id' })
   direction?: DirectionEntity;
@@ -69,27 +70,55 @@ export class PackageEntity {
   })
   contactId: number;
 
-  @OneToOne(() => ContactEntity, (contact) => contact.package, {
+  @OneToOne(() => ContactEntity, (contact) => contact.id, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'contact_id' })
   contact: ContactEntity;
 
+  @Column({
+    type: 'int',
+    name: 'client_id',
+    nullable: true,
+  })
+  clientId: number;
+
+  @ManyToOne(() => ClientEntity, (client) => client.id, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'client_id' })
+  client: ClientEntity;
+
+  @Column({
+    type: 'text',
+    name: 'status_id',
+    nullable: true,
+  })
+  statusId: number;
+  @ManyToOne(() => PackageStatusEntity, (status) => status.id, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'status_id' })
+  status?: PackageStatusEntity;
+
   @CreateDateColumn({
     type: 'timestamp',
-    name: 'create_at',
+    name: 'created_at',
   })
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn({
     type: 'timestamp',
-    name: 'update_at',
+    name: 'updated_at',
   })
-  updateAt!: Date;
+  updatedAt!: Date;
 
   @DeleteDateColumn({
     type: 'timestamp',
-    name: 'delete_at',
+    name: 'deleted_at',
   })
-  deleteAt!: Date;
+  deletedAt!: Date;
 }

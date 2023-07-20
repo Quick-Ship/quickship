@@ -1,10 +1,18 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { OrderDto } from 'src/modules/orders/dto/orders.dto';
+import { Field, ID, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { SortDirection } from '@nestjs-query/core';
+import {
+  FilterableField,
+  FilterableRelation,
+  KeySet,
+  PagingStrategies,
+} from '@nestjs-query/query-graphql';
+import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
 
-@ObjectType('messenger')
-export class MessengerDto {
+@ObjectType('Messenger')
+@KeySet(['id'])
+export class MessengerDTO {
   @Field()
-  id!: string;
+  id!: number;
 
   @Field()
   firstName!: string;
@@ -12,21 +20,18 @@ export class MessengerDto {
   @Field()
   lastName!: string;
 
-  @Field()
+  @FilterableField()
   phone!: string;
 
-  @Field()
+  @FilterableField()
   email!: string;
 
-  @Field(() => OrderDto, { nullable: true })
-  orders?: OrderDto[];
+  @FilterableField(() => GraphQLISODateTime)
+  createdAt!: Date;
 
-  @Field(() => GraphQLISODateTime)
-  createAt!: Date;
+  @FilterableField(() => GraphQLISODateTime)
+  updatedAt!: Date;
 
-  @Field(() => GraphQLISODateTime)
-  updateAt!: Date;
-
-  @Field(() => GraphQLISODateTime, { nullable: true })
-  deleteAt?: Date;
+  @FilterableField(() => GraphQLISODateTime, { nullable: true })
+  deletedAt?: Date;
 }

@@ -1,13 +1,8 @@
-import { ClientEntity } from 'src/modules/clients/entities/client.entity';
-import { OrderEntity } from 'src/modules/orders/entities/order.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -50,30 +45,6 @@ export class InvoiceEntity {
   @Column({ name: 'cfdi' })
   cfdi: string;
 
-  @Column({
-    type: 'text',
-    name: 'client_id',
-    nullable: true,
-  })
-  clientId?: string;
-
-  @ManyToOne(() => ClientEntity, (client) => client.invoices, {
-    nullable: true,
-  })
-  @JoinColumn({ name: 'client_id' })
-  client?: ClientEntity;
-
-  @Column({
-    type: 'text',
-    name: 'order_id',
-    nullable: true,
-  })
-  orderId?: string;
-
-  @OneToOne(() => OrderEntity, (order) => order.invoice)
-  @JoinColumn({ name: 'order_id' })
-  order: OrderEntity;
-
   @CreateDateColumn({
     type: 'timestamp',
     name: 'create_at',
@@ -92,5 +63,3 @@ export class InvoiceEntity {
   })
   deleteAt!: Date;
 }
-
-// muchos a uno
