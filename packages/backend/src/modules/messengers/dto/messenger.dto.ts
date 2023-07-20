@@ -1,12 +1,5 @@
-import { Field, ID, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { SortDirection } from '@nestjs-query/core';
-import {
-  FilterableField,
-  FilterableRelation,
-  KeySet,
-  PagingStrategies,
-} from '@nestjs-query/query-graphql';
-import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { FilterableField, KeySet } from '@nestjs-query/query-graphql';
 
 @ObjectType('Messenger')
 @KeySet(['id'])

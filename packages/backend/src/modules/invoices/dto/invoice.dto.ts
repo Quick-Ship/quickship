@@ -1,10 +1,5 @@
-import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
-import {
-  FilterableField,
-  FilterableRelation,
-  KeySet,
-  PagingStrategies,
-} from '@nestjs-query/query-graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { FilterableField, KeySet } from '@nestjs-query/query-graphql';
 
 @ObjectType('Invoice')
 @KeySet(['id'])

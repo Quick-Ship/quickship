@@ -1,11 +1,10 @@
-import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
   CursorConnection,
   FilterableField,
   FilterableRelation,
   KeySet,
   PagingStrategies,
-  Relation,
 } from '@nestjs-query/query-graphql';
 import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
 import { SortDirection } from '@nestjs-query/core';

@@ -7,7 +7,7 @@ import {
   Relation,
   CursorConnection,
 } from '@nestjs-query/query-graphql';
-import { Field, GraphQLISODateTime, ID, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import { ClientDTO } from 'src/modules/client/dto/client.dto';
 
 /*Local Imports */

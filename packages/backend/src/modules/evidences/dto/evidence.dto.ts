@@ -1,4 +1,4 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { SortDirection } from '@nestjs-query/core';
 import {
   FilterableField,
   FilterableRelation,
@@ -6,10 +6,13 @@ import {
   PagingStrategies,
   QueryOptions,
 } from '@nestjs-query/query-graphql';
-import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
-import { SortDirection } from '@nestjs-query/core';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { IsNumber, IsString } from 'class-validator';
 
-@ObjectType('Client')
+/*Local Imports */
+import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
+
+@ObjectType('Evidence')
 @KeySet(['id'])
 @QueryOptions({
   defaultResultSize: 100,
@@ -22,21 +25,22 @@ import { SortDirection } from '@nestjs-query/core';
   defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
   pagingStrategy: PagingStrategies.OFFSET,
 })
-export class ClientDTO {
+export class EvidenceDTO {
   @Field()
-  id!: number;
+  @IsNumber()
+  id: number;
 
   @Field()
-  firstName!: string;
+  @IsString()
+  personReceived: string;
+
+  @Field({ nullable: true })
+  @IsString()
+  comments?: string;
 
   @Field()
-  lastName!: string;
-
-  @Field()
-  phone!: string;
-
-  @FilterableField()
-  email!: string;
+  @IsString()
+  url: string;
 
   @FilterableField(() => GraphQLISODateTime)
   createdAt!: Date;

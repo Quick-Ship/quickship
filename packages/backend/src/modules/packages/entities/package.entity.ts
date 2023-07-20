@@ -1,6 +1,7 @@
 import { ClientEntity } from 'src/modules/client/entities/client.entity';
 import { ContactEntity } from 'src/modules/contact/entities/contact.entity';
 import { DirectionEntity } from 'src/modules/directions/entities/direction.entity';
+import { EvidenceEntity } from 'src/modules/evidences/entities/evidence.entity';
 import { PackageStatusEntity } from 'src/modules/package-status/entities/package-status.entity';
 import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
 import {
@@ -10,6 +11,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -103,6 +105,11 @@ export class PackageEntity {
   })
   @JoinColumn({ name: 'status_id' })
   status?: PackageStatusEntity;
+
+  @OneToMany(() => EvidenceEntity, (evidence) => evidence.package, {
+    nullable: true,
+  })
+  evidences?: PackageEntity[];
 
   @CreateDateColumn({
     type: 'timestamp',

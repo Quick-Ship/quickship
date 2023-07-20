@@ -1,8 +1,7 @@
-import { Field, GraphQLISODateTime, ObjectType, ID } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
   FilterableCursorConnection,
   FilterableField,
-  FilterableRelation,
   KeySet,
   PagingStrategies,
 } from '@nestjs-query/query-graphql';
