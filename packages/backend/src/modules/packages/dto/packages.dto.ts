@@ -1,5 +1,6 @@
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
+  FilterableCursorConnection,
   FilterableField,
   FilterableRelation,
   KeySet,
@@ -11,6 +12,7 @@ import { ShipmentDTO } from 'src/modules/shipment/dto/shipment.dto';
 import { SortDirection } from '@nestjs-query/core';
 import { ClientDTO } from 'src/modules/client/dto/client.dto';
 import { PackageStatusDTO } from 'src/modules/package-status/dto/package-status-dto';
+import { EvidenceDTO } from 'src/modules/evidences/dto/evidence.dto';
 
 @ObjectType('Package')
 @KeySet(['id'])
@@ -42,6 +44,13 @@ import { PackageStatusDTO } from 'src/modules/package-status/dto/package-status-
   defaultResultSize: 200,
   maxResultsSize: 500,
   defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  pagingStrategy: PagingStrategies.OFFSET,
+})
+@FilterableCursorConnection('evidences', () => EvidenceDTO, {
+  nullable: true,
+  defaultResultSize: 200,
+  maxResultsSize: 500,
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
   pagingStrategy: PagingStrategies.OFFSET,
 })
 export class PackageDTO {

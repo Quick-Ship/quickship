@@ -5,9 +5,15 @@ import {
 } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
+import { Logger } from 'nestjs-pino';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const logger = app.get(Logger);
+  const port = configService.get<number>('PORT', 3000);
+  const env = configService.get<string>('NODE_ENV', 'staging');
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,11 +34,9 @@ async function bootstrap() {
   );
 
   app.enableCors();
-
-  const port = process.env.APLICATION_PORT || 3000;
-
-  await app.listen(port).then(() => {
-    console.log(`Server is running at http://localhost:${port}/graphql`);
-  });
+  await app.listen(port);
+  logger.log(
+    `Server is running at http://localhost:${port}/graphql, environmet ${env}`,
+  );
 }
 bootstrap();

@@ -9,15 +9,11 @@ import { PackageEntity } from './entities/package.entity';
 import { PackageDTO } from './dto/packages.dto';
 import { InputCreatePackageDTO } from './dto/create-package.input';
 import { InputUpdatePackageDTO } from './dto/update-package.input';
-import { ContactModule } from '../contact/contact.module';
-import { DirectionModule } from '../directions/directions.module';
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [
-        NestjsQueryTypeOrmModule.forFeature([PackageEntity]), //ContactModule, DirectionModule
-      ],
+      imports: [NestjsQueryTypeOrmModule.forFeature([PackageEntity])],
       services: [PackagesService],
       resolvers: [
         {

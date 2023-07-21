@@ -159,6 +159,7 @@ input PackageFilter {
   contact: PackageFilterContactFilter
   direction: PackageFilterDirectionFilter
   shipment: PackageFilterShipmentFilter
+  evidences: PackageFilterEvidenceFilter
 }
 
 input PackageFilterPackageStatusFilter {
@@ -200,6 +201,14 @@ input PackageFilterDirectionFilter {
 input PackageFilterShipmentFilter {
   and: [PackageFilterShipmentFilter!]
   or: [PackageFilterShipmentFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input PackageFilterEvidenceFilter {
+  and: [PackageFilterEvidenceFilter!]
+  or: [PackageFilterEvidenceFilter!]
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -328,6 +337,17 @@ type PackageStatus {
   ): PackageStatusPackagesConnection!
 }
 
+type Evidence {
+  id: Float!
+  personReceived: String!
+  comments: String
+  url: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  packages: Package!
+}
+
 type Package {
   id: Float!
   guide: String!
@@ -343,6 +363,46 @@ type Package {
   contact: Contact!
   client: Client!
   status: PackageStatus!
+  evidences(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 200}
+
+    """Specify to filter the records returned."""
+    filter: EvidenceFilter = {}
+
+    """Specify to sort results."""
+    sorting: [EvidenceSort!] = [{field: createdAt, direction: ASC}]
+  ): PackageEvidencesConnection
+}
+
+input EvidenceFilter {
+  and: [EvidenceFilter!]
+  or: [EvidenceFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  packages: EvidenceFilterPackageFilter
+}
+
+input EvidenceFilterPackageFilter {
+  and: [EvidenceFilterPackageFilter!]
+  or: [EvidenceFilterPackageFilter!]
+  guide: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input EvidenceSort {
+  field: EvidenceSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum EvidenceSortFields {
+  createdAt
+  updatedAt
+  deletedAt
 }
 
 type Client {
@@ -851,6 +911,14 @@ type PackageMaxAggregate {
   deletedAt: DateTime
 }
 
+type PackageEvidencesConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [Evidence!]!
+}
+
 type ShipmentDeleteResponse {
   id: Float
   comments: String
@@ -1082,6 +1150,48 @@ type WarehouseShipmentShipmentsConnection {
   totalCount: Int!
 }
 
+type EvidenceDeleteResponse {
+  id: Float
+  personReceived: String
+  comments: String
+  url: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type EvidenceConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [Evidence!]!
+}
+
+type EvidenceAggregateGroupBy {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type EvidenceCountAggregate {
+  createdAt: Int
+  updatedAt: Int
+  deletedAt: Int
+}
+
+type EvidenceMinAggregate {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type EvidenceMaxAggregate {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
 type Query {
   sayHello: String!
   client(
@@ -1238,6 +1348,20 @@ type Query {
     """Specify to sort results."""
     sorting: [WarehouseShipmentSort!] = []
   ): WarehouseShipmentConnection!
+  evidence(
+    """The id of the record to find."""
+    id: ID!
+  ): Evidence
+  evidences(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 100}
+
+    """Specify to filter the records returned."""
+    filter: EvidenceFilter = {}
+
+    """Specify to sort results."""
+    sorting: [EvidenceSort!] = []
+  ): EvidenceConnection!
 }
 
 input ClientFilter {
@@ -1563,11 +1687,14 @@ type Mutation {
   setContactOnPackage(input: SetContactOnPackageInput!): Package!
   setClientOnPackage(input: SetClientOnPackageInput!): Package!
   setStatusOnPackage(input: SetStatusOnPackageInput!): Package!
+  addEvidencesToPackage(input: AddEvidencesToPackageInput!): Package!
+  setEvidencesOnPackage(input: SetEvidencesOnPackageInput!): Package!
   removeShipmentFromPackage(input: RemoveShipmentFromPackageInput!): Package!
   removeDirectionFromPackage(input: RemoveDirectionFromPackageInput!): Package!
   removeContactFromPackage(input: RemoveContactFromPackageInput!): Package!
   removeClientFromPackage(input: RemoveClientFromPackageInput!): Package!
   removeStatusFromPackage(input: RemoveStatusFromPackageInput!): Package!
+  removeEvidencesFromPackage(input: RemoveEvidencesFromPackageInput!): Package!
   createOnePackage(input: CreateOnePackageInput!): Package!
   createManyPackages(input: CreateManyPackagesInput!): [Package!]!
   updateOnePackage(input: UpdateOnePackageInput!): Package!
@@ -1594,6 +1721,8 @@ type Mutation {
   addPackageShipment(input: InputAddPackageShipment!): Shipment!
   assignCourierShipment(input: InputAssignCourier!): Shipment!
   openPackage(input: InputOpenPackage!): Shipment!
+  closePackage(input: InputClosePackage!): Shipment!
+  cancelPackage(input: InputCancelPackage!): Shipment!
   addShipmentsToShipmentStatus(input: AddShipmentsToShipmentStatusInput!): ShipmentStatus!
   setShipmentsOnShipmentStatus(input: SetShipmentsOnShipmentStatusInput!): ShipmentStatus!
   removeShipmentsFromShipmentStatus(input: RemoveShipmentsFromShipmentStatusInput!): ShipmentStatus!
@@ -1628,6 +1757,14 @@ type Mutation {
   deleteOneWarehouseShipment(input: DeleteOneWarehouseShipmentInput!): WarehouseShipmentDeleteResponse!
   deleteManyWarehouseShipments(input: DeleteManyWarehouseShipmentsInput!): DeleteManyResponse!
   createWarehouseShipment(input: InputCreateWarehouseShipment!): WarehouseShipment!
+  setPackagesOnEvidence(input: SetPackagesOnEvidenceInput!): Evidence!
+  removePackagesFromEvidence(input: RemovePackagesFromEvidenceInput!): Evidence!
+  createOneEvidence(input: CreateOneEvidenceInput!): Evidence!
+  createManyEvidences(input: CreateManyEvidencesInput!): [Evidence!]!
+  updateOneEvidence(input: UpdateOneEvidenceInput!): Evidence!
+  updateManyEvidences(input: UpdateManyEvidencesInput!): UpdateManyResponse!
+  deleteOneEvidence(input: DeleteOneEvidenceInput!): EvidenceDeleteResponse!
+  deleteManyEvidences(input: DeleteManyEvidencesInput!): DeleteManyResponse!
 }
 
 input SetPackagesOnClientInput {
@@ -2218,6 +2355,22 @@ input SetStatusOnPackageInput {
   relationId: ID!
 }
 
+input AddEvidencesToPackageInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetEvidencesOnPackageInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
 input RemoveShipmentFromPackageInput {
   """The id of the record."""
   id: ID!
@@ -2256,6 +2409,14 @@ input RemoveStatusFromPackageInput {
 
   """The id of relation."""
   relationId: ID!
+}
+
+input RemoveEvidencesFromPackageInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
 }
 
 input CreateOnePackageInput {
@@ -2485,6 +2646,25 @@ input InputAssignCourier {
 input InputOpenPackage {
   shipmentId: Float!
   packageId: Float!
+}
+
+input InputClosePackage {
+  shipmentId: Float!
+  packageId: Float!
+  evidence: InputEvidence!
+}
+
+input InputEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
+}
+
+input InputCancelPackage {
+  shipmentId: Float!
+  packageId: Float!
+  statusCancelation: Float!
+  evidence: InputEvidence!
 }
 
 input AddShipmentsToShipmentStatusInput {
@@ -2799,6 +2979,86 @@ input DeleteManyWarehouseShipmentsInput {
 input WarehouseShipmentDeleteFilter {
   and: [WarehouseShipmentDeleteFilter!]
   or: [WarehouseShipmentDeleteFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input SetPackagesOnEvidenceInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input RemovePackagesFromEvidenceInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
+}
+
+input CreateOneEvidenceInput {
+  """The record to create"""
+  evidence: InputCreateEvidence!
+}
+
+input InputCreateEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
+}
+
+input CreateManyEvidencesInput {
+  """Array of records to create"""
+  evidences: [InputCreateEvidence!]!
+}
+
+input UpdateOneEvidenceInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: InputUpdateEvidence!
+}
+
+input InputUpdateEvidence {
+  personReceived: String
+  comments: String
+  url: String
+}
+
+input UpdateManyEvidencesInput {
+  """Filter used to find fields to update"""
+  filter: EvidenceUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: InputUpdateEvidence!
+}
+
+input EvidenceUpdateFilter {
+  and: [EvidenceUpdateFilter!]
+  or: [EvidenceUpdateFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input DeleteOneEvidenceInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteManyEvidencesInput {
+  """Filter to find records to delete"""
+  filter: EvidenceDeleteFilter!
+}
+
+input EvidenceDeleteFilter {
+  and: [EvidenceDeleteFilter!]
+  or: [EvidenceDeleteFilter!]
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison

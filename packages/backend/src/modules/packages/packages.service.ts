@@ -10,11 +10,14 @@ import { DirectionEntity } from '../directions/entities/direction.entity';
 import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
 import { PackageStatusEnum } from 'src/common/package-status.enum';
 import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {
   constructor(
     @InjectRepository(PackageEntity) repo: Repository<PackageEntity>,
+    @InjectPinoLogger(PackagesService.name)
+    private readonly logger: PinoLogger,
   ) {
     super(repo);
   }
@@ -25,6 +28,10 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
+      this.logger.debug({
+        event: 'packageService.createPackages.input',
+        data: input,
+      });
       const contact = await queryRunner.manager.save(ContactEntity, {
         ...input.contact,
       });
@@ -49,6 +56,11 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
       });
 
       await queryRunner.commitTransaction();
+
+      this.logger.debug({
+        event: 'packageService.createPackages.response',
+        data: packages,
+      });
 
       return packages;
     } catch (error) {

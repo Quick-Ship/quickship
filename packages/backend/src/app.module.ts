@@ -3,6 +3,9 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
+import { LoggerModule } from 'nestjs-pino';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
+import { isArray } from 'class-validator';
 
 /*Local Imports */
 import { AppController } from './app.controller';
@@ -20,6 +23,7 @@ import { ShipmentModule } from './modules/shipment/shipment.module';
 import { ShipmentStatusModule } from './modules/shipmet-status/shipment-status.module';
 import { PackageStatusModule } from './modules/package-status/package-status.module';
 import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-shipment.module';
+import { EvidenceModule } from './modules/evidences/evidence.module';
 
 @Module({
   imports: [
@@ -27,6 +31,16 @@ import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-
       load: [appConfig],
       cache: true,
       isGlobal: true,
+    }),
+    LoggerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          pinoHttp: {
+            level: configService.get<string>('config.app.logLevel', 'info'),
+          },
+        };
+      },
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigService],
@@ -37,7 +51,26 @@ import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
-      playground: true,
+      playground: process.env.NODE_ENV === 'staging',
+      introspection: process.env.NODE_ENV === 'staging',
+      formatError: (error: GraphQLError) => {
+        const formattedError: GraphQLFormattedError = {
+          message: isArray(error.extensions?.response?.['message'])
+            ? error.extensions?.response?.['message'][0]
+            : error.extensions?.response?.['message'] ||
+              error.extensions?.response ||
+              error.message ||
+              error.extensions?.response?.['message'] ||
+              error.extensions?.exception?.['response']?.message ||
+              error.extensions?.exception?.['message']?.message ||
+              error.extensions?.exception?.['response'] ||
+              error.extensions?.exception?.['message'] ||
+              error?.extensions ||
+              error,
+        };
+
+        return formattedError;
+      },
     }),
     ClientModule,
     ContactModule,
@@ -50,6 +83,7 @@ import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-
     ShipmentStatusModule,
     PackageStatusModule,
     WarehouseShipmentModule,
+    EvidenceModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],
