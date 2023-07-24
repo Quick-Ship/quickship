@@ -12,7 +12,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
   const logger = app.get(Logger);
-  const port = configService.get<number>('PORT', 4000);
+  const port = configService.get<number>('APLICATION_PORT', 3000);
   const env = configService.get<string>('NODE_ENV', 'staging');
 
   app.useGlobalPipes(

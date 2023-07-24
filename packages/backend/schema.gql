@@ -507,6 +507,13 @@ type ClientMaxAggregate {
   deletedAt: DateTime
 }
 
+type ClientAggregateResponse {
+  groupBy: ClientAggregateGroupBy
+  count: ClientCountAggregate
+  min: ClientMinAggregate
+  max: ClientMaxAggregate
+}
+
 type ContactDeleteResponse {
   id: Float
   firstName: String
@@ -1247,6 +1254,10 @@ type Query {
     """Specify to sort results."""
     sorting: [ClientSort!] = []
   ): ClientConnection!
+  clientAggregate(
+    """Filter to find records to aggregate on"""
+    filter: ClientAggregateFilter
+  ): [ClientAggregateResponse!]!
   contact(
     """The id of the record to find."""
     id: ID!
@@ -1434,6 +1445,15 @@ enum ClientSortFields {
   createdAt
   updatedAt
   deletedAt
+}
+
+input ClientAggregateFilter {
+  and: [ClientAggregateFilter!]
+  or: [ClientAggregateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
 }
 
 input CursorPaging {

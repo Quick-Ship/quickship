@@ -80,7 +80,7 @@ export class PackageDTO {
   length!: number;
 
   @FilterableField()
-  clientId: number
+  clientId: number;
 
   @FilterableField(() => GraphQLISODateTime)
   createdAt!: Date;

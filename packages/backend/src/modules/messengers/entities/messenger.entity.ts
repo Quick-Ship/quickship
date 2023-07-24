@@ -1,4 +1,3 @@
-import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EncryptionTransformer } from 'typeorm-encrypted';
+
+/*Local Imports */
+import { ENCRYPTION_IV, ENCRYPTION_KEY } from 'src/config/encripted.config';
+import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
 
 @Entity({ name: 'messengers' })
 export class MessengerEntity {
@@ -20,10 +24,24 @@ export class MessengerEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({ name: 'email' })
+  @Column({
+    name: 'email', unique: true, transformer: new EncryptionTransformer({
+      key: ENCRYPTION_KEY,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+      iv: ENCRYPTION_IV,
+    }),
+  })
   email: string;
 
-  @Column({ name: 'phone' })
+  @Column({
+    name: 'phone', unique: true, transformer: new EncryptionTransformer({
+      key: ENCRYPTION_KEY,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+      iv: ENCRYPTION_IV,
+    }),
+  })
   phone: string;
 
   @OneToMany(() => ShipmentEntity, (shipment) => shipment.messenger, {

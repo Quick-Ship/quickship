@@ -63,7 +63,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       return shipment;
     } catch (error) {
-      await validTransaction(queryRunner)
+      await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
@@ -138,7 +138,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       return shipment;
     } catch (error) {
-      await validTransaction(queryRunner)
+      await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
@@ -199,7 +199,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
       return shipment;
     } catch (error) {
-      await validTransaction(queryRunner)
+      await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
@@ -271,7 +271,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
       return shipment;
     } catch (error) {
-      await validTransaction(queryRunner)
+      await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
@@ -425,7 +425,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       await queryRunner.commitTransaction();
       return shipment;
     } catch (error) {
-      await validTransaction(queryRunner)
+      await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
