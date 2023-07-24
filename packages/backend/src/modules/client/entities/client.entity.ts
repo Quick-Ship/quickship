@@ -6,6 +6,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { EncryptionTransformer } from 'typeorm-encrypted';
+/*Local Imports */
+import {
+  ENCRYPTION_KEY,
+  ENCRYPTION_IV,
+} from '../../../config/encripted.config';
 
 @Entity({ name: 'client' })
 export class ClientEntity {
@@ -18,10 +24,30 @@ export class ClientEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({ name: 'email' })
+  @Column({
+    name: 'email',
+    type: 'text',
+    unique: true,
+    transformer: new EncryptionTransformer({
+      key: ENCRYPTION_KEY,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+      iv: ENCRYPTION_IV,
+    }),
+  })
   email: string;
 
-  @Column({ name: 'phone' })
+  @Column({
+    name: 'phone',
+    type: 'text',
+    unique: true,
+    transformer: new EncryptionTransformer({
+      key: ENCRYPTION_KEY,
+      algorithm: 'aes-256-cbc',
+      ivLength: 16,
+      iv: ENCRYPTION_IV,
+    }),
+  })
   phone: string;
 
   @CreateDateColumn({

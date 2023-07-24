@@ -3353,6 +3353,7 @@ __metadata:
     class-transformer: 0.5.1
     class-validator: 0.13.2
     dataloader: 2.0.0
+    dotenv: ^16.3.1
     eslint: 8.0.1
     eslint-config-prettier: 8.3.0
     eslint-plugin-prettier: 4.0.0
@@ -3381,6 +3382,7 @@ __metadata:
     ts-node: 10.0.0
     tsconfig-paths: 3.10.1
     typeorm: 0.2.41
+    typeorm-encrypted: 0.8.0
     typescript: 4.3.5
   languageName: unknown
   linkType: soft
@@ -6854,6 +6856,13 @@ __metadata:
   version: 16.0.0
   resolution: "dotenv@npm:16.0.0"
   checksum: 664cebb51f0a9a1d1b930f51f0271e72e26d62feaecc9dc03df39453dd494b4e724809ca480fb3ec3213382b1ed3f791aaeb83569a137f9329ce58efd4853dbf
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^16.3.1":
+  version: 16.3.1
+  resolution: "dotenv@npm:16.3.1"
+  checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
   languageName: node
   linkType: hard
 
@@ -15775,6 +15784,15 @@ __metadata:
   version: 0.0.6
   resolution: "typedarray@npm:0.0.6"
   checksum: 33b39f3d0e8463985eeaeeacc3cb2e28bc3dfaf2a5ed219628c0b629d5d7b810b0eb2165f9f607c34871d5daa92ba1dc69f49051cf7d578b4cbd26c340b9d1b1
+  languageName: node
+  linkType: hard
+
+"typeorm-encrypted@npm:0.8.0":
+  version: 0.8.0
+  resolution: "typeorm-encrypted@npm:0.8.0"
+  peerDependencies:
+    typeorm: ^0.3.7
+  checksum: 1f66e4b22ab1f46631afcf374f1c571c0e3730540a6cbf6a62cf7e09c7d1722d73d88eaf1a0c3d33497d1012ab72875c2d4faac5590be5e0bc496ea3bbfca1c3
   languageName: node
   linkType: hard
 

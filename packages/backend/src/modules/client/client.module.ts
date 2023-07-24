@@ -9,14 +9,18 @@ import { ClientEntity } from './entities/client.entity';
 import { ClientDTO } from './dto/client.dto';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { InputUpdateClientDTO } from './dto/update-client.input';
+import { ConfigModule } from '@nestjs/config';
+import appConfig from 'src/config/app.config';
 
 @Module({
   imports: [
+    ConfigModule.forFeature(appConfig),
     NestjsQueryGraphQLModule.forFeature({
       imports: [NestjsQueryTypeOrmModule.forFeature([ClientEntity])],
       services: [ClientService],
       resolvers: [
         {
+          aggregate: { enabled: true },
           delete: { disabled: true },
           DTOClass: ClientDTO,
           EntityClass: ClientEntity,

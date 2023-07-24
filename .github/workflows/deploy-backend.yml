@@ -112,6 +112,8 @@ jobs:
           region: ${{ matrix.region }}
           env_vars: LOG_LEVEL=debug,DATABASE_URL=${{ secrets.DATABASE_URL }},DATABASE_PORT=${{ secrets.DATABASE_PORT }},DATABASE=${{secrets.DATABASE }}
           secrets:
+          ENCRYPTION_KEY=encriyption-key:latest
+          ENCRYPTION_IV=encriyption-iv:latest
           flags: "--cpu=1 --memory=512Mi --concurrency=100 --min-instances=0 --max-instances=100"
           tag: beta
           no_traffic: true
