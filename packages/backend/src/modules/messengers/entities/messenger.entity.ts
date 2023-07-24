@@ -25,7 +25,9 @@ export class MessengerEntity {
   lastName: string;
 
   @Column({
-    name: 'email', unique: true, transformer: new EncryptionTransformer({
+    name: 'email',
+    unique: true,
+    transformer: new EncryptionTransformer({
       key: ENCRYPTION_KEY,
       algorithm: 'aes-256-cbc',
       ivLength: 16,
@@ -35,7 +37,9 @@ export class MessengerEntity {
   email: string;
 
   @Column({
-    name: 'phone', unique: true, transformer: new EncryptionTransformer({
+    name: 'phone',
+    unique: true,
+    transformer: new EncryptionTransformer({
       key: ENCRYPTION_KEY,
       algorithm: 'aes-256-cbc',
       ivLength: 16,
