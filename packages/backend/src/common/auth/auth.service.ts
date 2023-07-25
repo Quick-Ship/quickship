@@ -17,7 +17,7 @@ export class AuthService {
       const register = await this.firebaseAuth.createUser({
         email: input?.email,
         password: input?.password,
-          phoneNumber: input?.phone,
+        phoneNumber: input?.phone,
       });
       this.logger.debug({
         event: 'authService.registerFirebase.response',

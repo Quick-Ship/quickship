@@ -19,8 +19,6 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
         try {
           const verifyToken = await this.firebaseAuth.verifyIdToken(token);
 
-          console.log(verifyToken);
-
           if (verifyToken) {
             // const verifyEmail = verifyToken.email_verified
             // if (!verifyEmail) {
@@ -57,7 +55,19 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
             );
           }
         } catch (error) {
-          this.logger.error(error.message);
+          this.logger.error({
+            event: 'authStrategy.error',
+            error: error.message,
+          });
+          const errorMessage: string = error.message;
+          if (errorMessage.startsWith('Firebase ID token has expired')) {
+            return done(
+              new UnauthorizedException({
+                statusCode: 401,
+                message: 'The token has expired.',
+              }),
+            );
+          }
 
           return done(
             new UnauthorizedException({
