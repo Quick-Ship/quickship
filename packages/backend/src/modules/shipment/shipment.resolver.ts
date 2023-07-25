@@ -13,7 +13,7 @@ import { InputClosePackageDTO } from './dto/close-package.dto';
 import { InputCancelPackageDTO } from './dto/cancel-package.dto';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 import { CurrentUser } from 'src/common/auth/current-user.decorator';
-import { IPayloadUser } from 'src/common/auth/auth.interface';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
 @Resolver(() => ShipmentDTO)
 export class ShipmentResolver extends CRUDResolver(ShipmentDTO) {

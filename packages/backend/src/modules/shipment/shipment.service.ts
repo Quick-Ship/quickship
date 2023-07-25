@@ -26,7 +26,8 @@ import { InputClosePackageDTO } from './dto/close-package.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { InputCancelPackageDTO } from './dto/cancel-package.dto';
 import { PackageStatusCancelTypes } from 'src/common/package-status-cancelatio.enum.dto';
-import { IPayloadUser } from 'src/common/auth/auth.interface';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {

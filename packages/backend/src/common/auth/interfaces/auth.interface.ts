@@ -1,5 +1,5 @@
 export interface IPayloadUser {
-  id: string;
+  id: number;
   email?: string;
-  username?: string;
+  tenant?: string;
 }

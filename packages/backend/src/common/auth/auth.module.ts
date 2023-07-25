@@ -9,6 +9,7 @@ import { HttpModule } from '@nestjs/axios';
 import appConfig from 'src/config/app.config';
 import { AuthStrategy } from './auth.strategy';
 import { ClientModule } from 'src/modules/client/client.module';
+import { AuthService } from './auth.service';
 
 @Module({
   imports: [
@@ -29,8 +30,7 @@ import { ClientModule } from 'src/modules/client/client.module';
       }),
     }),
     PassportModule,
-    ClientModule,
   ],
-  providers: [AuthStrategy],
+  providers: [AuthService, AuthStrategy],
 })
 export class AuthModule {}
