@@ -26,6 +26,7 @@ import { InputClosePackageDTO } from './dto/close-package.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { InputCancelPackageDTO } from './dto/cancel-package.dto';
 import { PackageStatusCancelTypes } from 'src/common/package-status-cancelatio.enum.dto';
+import { IPayloadUser } from 'src/common/auth/auth.interface';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -37,7 +38,10 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     super(repo);
   }
 
-  public async generateShipment(input: InputGenerateShipmentDTO) {
+  public async generateShipment(
+    input: InputGenerateShipmentDTO,
+    user: IPayloadUser,
+  ) {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -45,8 +49,9 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     try {
       this.logger.debug({
         event: 'shipmentService.generateShipment.input',
-        data: input,
+        data: { input, user },
       });
+
       const shipment = await queryRunner.manager.save(ShipmentEntity, {
         comments: input.comments,
         price: 0,

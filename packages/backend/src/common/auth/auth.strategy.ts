@@ -9,6 +9,7 @@ import { HttpService } from '@nestjs/axios';
 /*Local Imports */
 import appConfig from 'src/config/app.config';
 import { ClientService } from 'src/modules/client/client.service';
+import { IPayloadUser } from './auth.interface';
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
@@ -16,9 +17,6 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
     @InjectPinoLogger(AuthStrategy.name)
     private readonly logger: PinoLogger,
     private readonly firebaseAuth: FirebaseAuthenticationService,
-    @Inject(appConfig.KEY)
-    private readonly appConfiguration: ConfigType<typeof appConfig>,
-    private readonly httpService: HttpService,
     private readonly clientsService: ClientService,
   ) {
     super(
@@ -26,8 +24,25 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
         try {
           const verifyToken = await this.firebaseAuth.verifyIdToken(token);
 
+          console.log(verifyToken);
+
           if (verifyToken) {
-            const user = {
+            const verifyEmail = verifyToken.email_verified
+            if (!verifyEmail) {
+              return done(
+                new UnauthorizedException({
+                  statusCode: 401,
+                  message: 'Email no verificado',
+                }),
+              );
+            }
+            const expiredToken = verifyToken.exp;
+            const dataInit = new Date().getMilliseconds();
+            const dateExpired = new Date(expiredToken).getMilliseconds();
+
+            console.log(dataInit, dateExpired);
+
+            const user: IPayloadUser = {
               id: String(verifyToken?.customClaims?.idUser),
               email: verifyToken?.email,
               username: verifyToken?.displayName,

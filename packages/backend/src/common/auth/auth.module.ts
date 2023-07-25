@@ -29,7 +29,6 @@ import { ClientModule } from 'src/modules/client/client.module';
       }),
     }),
     PassportModule,
-    HttpModule,
     ClientModule,
   ],
   providers: [AuthStrategy],

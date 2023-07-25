@@ -25,7 +25,6 @@ export default registerAs('config', () => {
 
   const auth = {
     serviceAccount: process.env.AUTH_SERVICE_ACCOUNT,
-
   };
 
   return { database, app, auth };

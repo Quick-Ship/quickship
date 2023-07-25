@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { ExecutionContext, Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -54,6 +54,15 @@ import { AuthModule } from './common/auth/auth.module';
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
       playground: process.env.NODE_ENV === 'staging',
       introspection: process.env.NODE_ENV === 'staging',
+      // context: async ({ req, request }): Promise<ExecutionContext> => {
+      //   if (req?.headers['']) {
+      //     return { user: JSON.parse(req.headers['']) };
+      //   }
+      //   if (request?.headers['']) {
+      //     return { user: JSON.parse(request.headers['']) };
+      //   }
+      //   return;
+      // },
       formatError: (error: GraphQLError) => {
         const formattedError: GraphQLFormattedError = {
           message: isArray(error.extensions?.response?.['message'])
