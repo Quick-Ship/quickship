@@ -6,7 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EncryptionTransformer } from 'typeorm-encrypted';
+import {
+  EncryptionTransformer,
+  ExtendedColumnOptions,
+} from 'typeorm-encrypted';
 /*Local Imports */
 import {
   ENCRYPTION_KEY,
@@ -24,7 +27,7 @@ export class ClientEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({
+  @Column(<ExtendedColumnOptions>{
     name: 'email',
     type: 'text',
     unique: true,
@@ -37,7 +40,7 @@ export class ClientEntity {
   })
   email: string;
 
-  @Column({
+  @Column(<ExtendedColumnOptions>{
     name: 'phone',
     type: 'text',
     unique: true,

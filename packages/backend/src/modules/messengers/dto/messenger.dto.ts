@@ -1,8 +1,18 @@
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
-import { FilterableField, KeySet } from '@nestjs-query/query-graphql';
+import {
+  FilterableField,
+  KeySet,
+  PagingStrategies,
+  QueryOptions,
+} from '@nestjs-query/query-graphql';
 
 @ObjectType('Messenger')
 @KeySet(['id'])
+@QueryOptions({
+  defaultResultSize: 100,
+  maxResultsSize: 500,
+  pagingStrategy: PagingStrategies.OFFSET,
+})
 export class MessengerDTO {
   @Field()
   id!: number;

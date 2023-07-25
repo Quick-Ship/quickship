@@ -771,20 +771,12 @@ type MessengerDeleteResponse {
   deletedAt: DateTime
 }
 
-type MessengerEdge {
-  """The node containing the Messenger"""
-  node: Messenger!
-
-  """Cursor for this node."""
-  cursor: ConnectionCursor!
-}
-
 type MessengerConnection {
   """Paging information"""
-  pageInfo: PageInfo!
+  pageInfo: OffsetPageInfo!
 
-  """Array of edges."""
-  edges: [MessengerEdge!]!
+  """Array of nodes."""
+  nodes: [Messenger!]!
 }
 
 type MessengerAggregateGroupBy {
@@ -1306,7 +1298,7 @@ type Query {
   ): Messenger
   messengers(
     """Limit or page results."""
-    paging: CursorPaging = {first: 10}
+    paging: OffsetPaging = {limit: 100}
 
     """Specify to filter the records returned."""
     filter: MessengerFilter = {}

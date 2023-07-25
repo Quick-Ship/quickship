@@ -7,7 +7,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EncryptionTransformer } from 'typeorm-encrypted';
+import {
+  EncryptionTransformer,
+  ExtendedColumnOptions,
+} from 'typeorm-encrypted';
 
 /*Local Imports */
 import { ENCRYPTION_IV, ENCRYPTION_KEY } from 'src/config/encripted.config';
@@ -24,7 +27,7 @@ export class MessengerEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({
+  @Column(<ExtendedColumnOptions>{
     name: 'email',
     unique: true,
     transformer: new EncryptionTransformer({
@@ -36,7 +39,7 @@ export class MessengerEntity {
   })
   email: string;
 
-  @Column({
+  @Column(<ExtendedColumnOptions>{
     name: 'phone',
     unique: true,
     transformer: new EncryptionTransformer({
