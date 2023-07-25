@@ -24,6 +24,7 @@ import { ShipmentStatusModule } from './modules/shipmet-status/shipment-status.m
 import { PackageStatusModule } from './modules/package-status/package-status.module';
 import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-shipment.module';
 import { EvidenceModule } from './modules/evidences/evidence.module';
+import { AuthModule } from './common/auth/auth.module';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { EvidenceModule } from './modules/evidences/evidence.module';
     PackageStatusModule,
     WarehouseShipmentModule,
     EvidenceModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

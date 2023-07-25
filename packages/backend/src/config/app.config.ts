@@ -23,5 +23,10 @@ export default registerAs('config', () => {
     nodeEnv: process.env.NODE_ENV || 'production',
   };
 
-  return { database, app };
+  const auth = {
+    serviceAccount: process.env.AUTH_SERVICE_ACCOUNT,
+
+  };
+
+  return { database, app, auth };
 });

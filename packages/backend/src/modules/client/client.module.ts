@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
@@ -11,6 +11,7 @@ import { InputCreateClientDTO } from './dto/create-client.input';
 import { InputUpdateClientDTO } from './dto/update-client.input';
 import { ConfigModule } from '@nestjs/config';
 import appConfig from 'src/config/app.config';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -27,6 +28,11 @@ import appConfig from 'src/config/app.config';
           ServiceClass: ClientService,
           CreateDTOClass: InputCreateClientDTO,
           UpdateDTOClass: InputUpdateClientDTO,
+          read: {
+            one: {
+              decorators: [UseGuards(GqlAuthGuard)],
+            },
+          },
         },
       ],
     }),
