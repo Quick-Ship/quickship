@@ -7,4 +7,5 @@ export enum Errors {
   GUIDE_NOT_FOUND_ADD_SHIPMENT = 'Guias en estatus invalido: $guides',
   INVALID_PROCESS_PACKAGE = 'EL proceso del envio de no puede ser abierto. La guia no se encuenta en el estatus correcto.',
   INVALID_PACKAGE_STATUS = 'El estatus del envío es invalido para poder cerrar el proceso.',
+  INVALID_PACKAGE_STATUS_BY_EVIDENCE = 'El estatus del envío :guide debe tener una evidencia',
 }

@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { InputCreateEvidenceDTO } from 'src/modules/evidences/dto/create-evidence.dto';
 
 @InputType('InputChangeStatus')
-class ChangeStatus {
+export class InputChangeStatus {
   @Field()
   @IsString()
   @IsNotEmpty()
@@ -19,6 +19,6 @@ class ChangeStatus {
 }
 @InputType('InputChangePackageStatus')
 export class InputChangePackageStatusDTO {
-  @Field(() => [ChangeStatus]!, { nullable: false })
-  update: ChangeStatus[];
+  @Field(() => [InputChangeStatus]!, { nullable: false })
+  update: InputChangeStatus[];
 }

@@ -12,11 +12,11 @@ import { ContactEntity } from '../contact/entities/contact.entity';
 import { DirectionEntity } from '../directions/entities/direction.entity';
 import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
 
-
 import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
 import {
   getStatusByIdStatus,
   getStatusDescriptionByIdStatus,
+  validateEvidenceByPackageStatus,
 } from 'src/common/utils';
 import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
@@ -103,8 +103,11 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
       console.log(packages);
 
       const response = await Promise.all(
-        packages.map(async (pack, index) => {
+        packages.map(async (pack) => {
           const packFind = input.update.find((p) => p.guide === pack.guide);
+
+          validateEvidenceByPackageStatus(packFind.statusId, packFind);
+
           await queryRunner.manager.update(PackageEntity, pack.id, {
             statusId: packFind.statusId,
           });
