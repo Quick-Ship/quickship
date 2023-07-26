@@ -7,20 +7,19 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /*Local Imports */
 import { ClientEntity } from './entities/client.entity';
-import { AuthService } from 'src/common/auth/auth.service';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { validTransaction } from 'src/common/utils';
-import { Injectable } from '@nestjs/common';
+import { FirebaseService } from 'src/common/firebase/firebase.service';
 
-@Injectable()
-export class ClientService {
+@QueryService(ClientEntity)
+export class ClientService extends TypeOrmQueryService<ClientEntity> {
   constructor(
     @InjectRepository(ClientEntity) repo: Repository<ClientEntity>,
     @InjectPinoLogger(ClientService.name)
     private readonly logger: PinoLogger,
-  ) //private readonly authService: AuthService
-  {
-    //super(repo);
+    private readonly firebaseService: FirebaseService,
+  ) {
+    super(repo);
   }
 
   public async registerClient(input: InputCreateClientDTO) {
@@ -34,7 +33,16 @@ export class ClientService {
         data: input,
       });
 
-      const client = queryRunner.manager.save(ClientEntity, input);
+      const client = await queryRunner.manager.save(ClientEntity, input);
+
+      await this.firebaseService.registerFirebase({
+        email: input.email,
+        phone: input.phone,
+        tenant: 'CLIENT',
+        userId: client.id,
+      });
+
+      await queryRunner.commitTransaction();
 
       return client;
     } catch (error) {

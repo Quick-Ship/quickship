@@ -1,9 +1,11 @@
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { Injectable } from '@nestjs/common';
-import { RegisterFirebase } from '../auth/interfaces/register-firebase.interface';
 import { GraphQLError } from 'graphql';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+
+/*Locl imports */
 import { Errors } from '../enums/errors.enum';
+import { RegisterFirebase } from '../auth/interfaces/register-firebase.interface';
 
 @Injectable()
 export class FirebaseService {
@@ -18,9 +20,13 @@ export class FirebaseService {
 
   public async registerFirebase(input: RegisterFirebase) {
     try {
+      this.logger.debug({
+        event: 'authService.registerFirebase.input',
+        data: input,
+      });
       const register = await this.firebaseAuth.createUser({
         email: input?.email,
-        password: input?.password,
+        password: 'fgjygmkj@3545',
         phoneNumber: input?.phone,
       });
       this.logger.debug({
@@ -33,7 +39,7 @@ export class FirebaseService {
         tenant: input.tenant,
       });
 
-      const link = await this.firebaseAuth.generateEmailVerificationLink(
+      const link = await this.firebaseAuth.generatePasswordResetLink(
         register.email,
       );
 

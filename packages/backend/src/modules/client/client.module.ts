@@ -10,13 +10,15 @@ import { ClientDTO } from './dto/client.dto';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { InputUpdateClientDTO } from './dto/update-client.input';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
-import { AuthModule } from 'src/common/auth/auth.module';
-import { AuthService } from 'src/common/auth/auth.service';
+import { FireBaseModule } from 'src/common/firebase/firebase.module';
 
 @Module({
   imports: [
     NestjsQueryGraphQLModule.forFeature({
-      imports: [NestjsQueryTypeOrmModule.forFeature([ClientEntity])],
+      imports: [
+        NestjsQueryTypeOrmModule.forFeature([ClientEntity]),
+        FireBaseModule,
+      ],
       services: [ClientService],
       resolvers: [
         {
@@ -37,9 +39,8 @@ import { AuthService } from 'src/common/auth/auth.service';
         },
       ],
     }),
-    //AuthModule,
   ],
-  providers: [ClientResolver, ClientService, AuthService],
+  providers: [ClientResolver, ClientService],
   exports: [ClientService],
 })
 export class ClientModule {}

@@ -20,33 +20,29 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
         try {
           const verifyToken = await this.firebaseAuth.verifyIdToken(token);
 
+          this.logger.debug({
+            event: 'authStrategy.verifyIdToken.response',
+            data: verifyToken,
+          });
+
           if (verifyToken) {
-            //   // const verifyEmail = verifyToken.email_verified
-            //   // if (!verifyEmail) {
-            //   //   return done(
-            //   //     new UnauthorizedException({
-            //   //       statusCode: 401,
-            //   //       message: 'Email no verificado',
-            //   //     }),
-            //   //   );
-            //   // }
-            //   // const expiredToken = verifyToken.exp;
-            //   // const dataInit = new Date().getMilliseconds();
-            //   // const dateExpired = new Date(expiredToken).getMilliseconds();
-
-            //   // console.log(dataInit, dateExpired);
-
-            //   // const [client] = await this.clientsService.query({
-            //   //   filter: { email: { eq: verifyToken.email } },
-            //   // });
+            const verifyEmail = verifyToken.email_verified;
+            if (!verifyEmail) {
+              return done(
+                new UnauthorizedException({
+                  statusCode: 401,
+                  message: 'Email no verificado',
+                }),
+              );
+            }
 
             const user: IPayloadUser = {
-              id: verifyToken?.id,
+              id: verifyToken?.idUser,
               email: verifyToken?.email,
-              tenant: 'CLIENT',
+              tenant: verifyToken?.tenant,
             };
 
-            return done(undefined, verifyToken);
+            return done(undefined, user);
           } else {
             return done(
               new UnauthorizedException({
