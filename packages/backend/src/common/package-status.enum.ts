@@ -13,4 +13,5 @@ export enum PackageStatusEnum {
   MD = 12,
   NH = 13,
   RD = 14,
+  AR = 15,
 }

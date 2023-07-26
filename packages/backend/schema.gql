@@ -879,6 +879,15 @@ type PackageHistoryMaxAggregate {
   deletedAt: DateTime
 }
 
+type ChangeStatusReponse {
+  guide: String!
+  statusId: Float!
+}
+
+type ChangePackageStatusResponseDTO {
+  data: [ChangeStatusReponse!]!
+}
+
 type PackageDeleteResponse {
   id: Float
   guide: String
@@ -1737,6 +1746,7 @@ type Mutation {
   deleteOnePackage(input: DeleteOnePackageInput!): PackageDeleteResponse!
   deleteManyPackages(input: DeleteManyPackagesInput!): DeleteManyResponse!
   createDelivery(input: InputCreatePackage!): Package!
+  changePackageStatus(input: InputChangePackageStatus!): ChangePackageStatusResponseDTO!
   setWarehouseShipmentOnShipment(input: SetWarehouseShipmentOnShipmentInput!): Shipment!
   setShipmentStatusOnShipment(input: SetShipmentStatusOnShipmentInput!): Shipment!
   setMessengerOnShipment(input: SetMessengerOnShipmentInput!): Shipment!
@@ -2528,6 +2538,22 @@ input PackageDeleteFilter {
   deletedAt: DateFieldComparison
 }
 
+input InputChangePackageStatus {
+  update: [InputChangeStatus!]!
+}
+
+input InputChangeStatus {
+  guide: String!
+  statusId: Float!
+  evidence: InputCreateEvidence
+}
+
+input InputCreateEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
+}
+
 input SetWarehouseShipmentOnShipmentInput {
   """The id of the record."""
   id: ID!
@@ -3040,12 +3066,6 @@ input RemovePackagesFromEvidenceInput {
 input CreateOneEvidenceInput {
   """The record to create"""
   evidence: InputCreateEvidence!
-}
-
-input InputCreateEvidence {
-  personReceived: String!
-  comments: String
-  url: String!
 }
 
 input CreateManyEvidencesInput {

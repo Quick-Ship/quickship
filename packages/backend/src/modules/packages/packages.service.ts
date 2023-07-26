@@ -2,15 +2,24 @@ import { QueryService } from '@nestjs-query/core';
 import { TypeOrmQueryService } from '@nestjs-query/query-typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, getConnection } from 'typeorm';
+import { GraphQLError } from 'graphql';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+
+/*Local Imports */
 import { PackageEntity } from './entities/package.entity';
 import { InputCreatePackageDTO } from './dto/create-package.input';
-import { GraphQLError } from 'graphql';
 import { ContactEntity } from '../contact/entities/contact.entity';
 import { DirectionEntity } from '../directions/entities/direction.entity';
 import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
 import { PackageStatusEnum } from 'src/common/package-status.enum';
 import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
+import {
+  getStatusByIdStatus,
+  getStatusDescriptionByIdStatus,
+} from 'src/common/utils';
+import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
+import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {
@@ -64,6 +73,74 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
 
       return packages;
     } catch (error) {
+      if (queryRunner.isTransactionActive)
+        await queryRunner.rollbackTransaction();
+      throw new GraphQLError(error?.message || error);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  public async changePackageStatus(
+    input: InputChangePackageStatusDTO,
+  ): Promise<ChangePackageStatusResponseDTO> {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      this.logger.error({
+        event: 'packageService.changePackageStatus.input',
+        data: input,
+      });
+
+      const packages: PackageEntity[] = await queryRunner.manager.query(
+        `select id, guide from packages where guide in (${input.update.map(
+          (g) => `'${g.guide}'`,
+        )})`,
+      );
+      console.log(packages);
+
+      const response = await Promise.all(
+        packages.map(async (pack, index) => {
+          const packFind = input.update.find((p) => p.guide === pack.guide);
+          await queryRunner.manager.update(PackageEntity, pack.id, {
+            statusId: packFind.statusId,
+          });
+          await queryRunner.manager.save(PackageHistoryEntity, {
+            status: getStatusByIdStatus(packFind.statusId),
+            idPackage: pack.id,
+            description: getStatusDescriptionByIdStatus(packFind.statusId),
+          });
+          if (packFind?.evidence) {
+            console.log('ENTRA_EVIDENCES', {
+              ...packFind.evidence,
+              packageId: pack.id,
+            });
+            await queryRunner.manager.save(EvidenceEntity, {
+              ...packFind?.evidence,
+              packageId: pack.id,
+            });
+          }
+          return {
+            guide: pack.guide,
+            statusId: packFind.statusId,
+          };
+        }),
+      );
+
+      this.logger.debug({
+        event: 'packageService.response',
+        data: response,
+      });
+
+      await queryRunner.commitTransaction();
+
+      return { data: response };
+    } catch (error) {
+      this.logger.error({
+        event: 'packageService.changePackageStatus.error',
+        error: error,
+      });
       if (queryRunner.isTransactionActive)
         await queryRunner.rollbackTransaction();
       throw new GraphQLError(error?.message || error);

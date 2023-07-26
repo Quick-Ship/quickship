@@ -54,6 +54,9 @@ export const getStatusByIdStatus = (status: number): string => {
     case PackageStatusEnum.WC:
       description = 'WC';
       break;
+    case PackageStatusEnum.AR:
+      description = 'AR';
+      break;
   }
   return description;
 };
@@ -104,6 +107,9 @@ export const getStatusDescriptionByIdStatus = (
       break;
     case PackageStatusEnum.WC:
       description = PackageStatusDescriptionEnum.WC;
+      break;
+    case PackageStatusEnum.AR:
+      description = PackageStatusDescriptionEnum.AR;
       break;
   }
   return description;

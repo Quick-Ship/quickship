@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { Strategy } from 'passport-http-bearer';
