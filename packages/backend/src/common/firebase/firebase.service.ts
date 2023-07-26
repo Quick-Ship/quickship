@@ -58,12 +58,12 @@ export class FirebaseService {
         event: 'authService.verifyIdToken.error',
         error: error,
       });
-        
+
       const errorMessage: string = error.message;
-        if (errorMessage.startsWith('Firebase ID token has expired')) { 
-            throw new GraphQLError(Errors.TOKEN_EXPIRED);
-        }
-        throw new GraphQLError(error)
+      if (errorMessage.startsWith('Firebase ID token has expired')) {
+        throw new GraphQLError(Errors.TOKEN_EXPIRED);
+      }
+      throw new GraphQLError(error);
     }
   }
 }

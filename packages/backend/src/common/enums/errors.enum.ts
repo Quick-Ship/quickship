@@ -10,5 +10,5 @@ export enum Errors {
   INVALID_PACKAGE_STATUS_BY_EVIDENCE = 'El estatus del envío :guide debe tener una evidencia',
   TOKEN_EXPIRED = 'The token has expired.',
   TOKEN_IVALID = 'The token is invalid.',
-  TOKEN_NOT_INFO = 'The token has not info.'
+  TOKEN_NOT_INFO = 'The token has not info.',
 }
