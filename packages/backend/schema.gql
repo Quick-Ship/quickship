@@ -1682,13 +1682,13 @@ enum PackageStatusSortFields {
 type Mutation {
   setPackagesOnClient(input: SetPackagesOnClientInput!): Client!
   removePackagesFromClient(input: RemovePackagesFromClientInput!): Client!
-  createOneClient(input: CreateOneClientInput!): Client!
-  createManyClients(input: CreateManyClientsInput!): [Client!]!
   updateOneClient(input: UpdateOneClientInput!): Client!
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
   registerClient(input: InputCreateClient!): RegisterClientResponse!
+  createOneClient(input: CreateOneClientInput!): Client!
+  createManyClients(input: CreateManyClientsInput!): [Client!]!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
@@ -1833,27 +1833,6 @@ input RemovePackagesFromClientInput {
   relationId: ID!
 }
 
-input CreateOneClientInput {
-  """The record to create"""
-  client: CreateClient!
-}
-
-input CreateClient {
-  id: Float
-  firstName: String
-  lastName: String
-  phone: String
-  email: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
-input CreateManyClientsInput {
-  """Array of records to create"""
-  clients: [CreateClient!]!
-}
-
 input UpdateOneClientInput {
   """The id of the record to update"""
   id: ID!
@@ -1910,6 +1889,16 @@ input InputCreateClient {
   lastName: String!
   phone: String!
   email: String!
+}
+
+input CreateOneClientInput {
+  """The record to create"""
+  client: InputCreateClient!
+}
+
+input CreateManyClientsInput {
+  """Array of records to create"""
+  clients: [InputCreateClient!]!
 }
 
 input SetPackagesOnContactInput {

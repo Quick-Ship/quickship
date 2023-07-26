@@ -7,7 +7,12 @@ import { CRUDResolver } from '@nestjs-query/query-graphql';
 import { RegisterClientResponseDTO } from './dto/register-client-dto';
 
 @Resolver(() => ClientDTO)
-export class ClientResolver extends CRUDResolver(ClientDTO) {
+export class ClientResolver extends CRUDResolver(ClientDTO, {
+  create: {
+    one: { disabled: true },
+    many: { disabled: true },
+  },
+}) {
   constructor(readonly clientService: ClientService) {
     super(clientService);
   }
