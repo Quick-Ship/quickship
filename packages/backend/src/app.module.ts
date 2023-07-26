@@ -46,7 +46,7 @@ import { AuthModule } from './common/auth/auth.module';
     TypeOrmModule.forRootAsync({
       inject: [appConfig.KEY],
       useFactory: async (config: ConfigType<typeof appConfig>) => ({
-        ...config.database
+        ...config.database,
       }),
     }),
     GraphQLModule.forRoot({

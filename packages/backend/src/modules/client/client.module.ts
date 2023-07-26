@@ -2,7 +2,6 @@ import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
-
 /*Local Import */
 import { ClientService } from './client.service';
 import { ClientResolver } from './client.resolver';

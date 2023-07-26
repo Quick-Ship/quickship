@@ -17,8 +17,8 @@ export class ClientService extends TypeOrmQueryService<ClientEntity> {
     @InjectRepository(ClientEntity) repo: Repository<ClientEntity>,
     @InjectPinoLogger(ClientService.name)
     private readonly logger: PinoLogger,
-    //private readonly authService: AuthService,
-  ) {
+  ) //private readonly authService: AuthService,
+  {
     super(repo);
   }
 
