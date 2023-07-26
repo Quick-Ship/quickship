@@ -23,6 +23,7 @@ import { GqlAuthGuard } from 'src/common/auth/auth.guard';
       resolvers: [
         {
           delete: { disabled: true },
+          create: { disabled: true },
           DTOClass: MessengerDTO,
           EntityClass: MessengerEntity,
           ServiceClass: MessengersService,

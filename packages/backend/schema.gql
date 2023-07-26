@@ -1687,8 +1687,6 @@ type Mutation {
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
   registerClient(input: InputCreateClient!): RegisterClientResponse!
-  createOneClient(input: CreateOneClientInput!): Client!
-  createManyClients(input: CreateManyClientsInput!): [Client!]!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
@@ -1724,8 +1722,6 @@ type Mutation {
   deleteOneMessenger(input: DeleteOneMessengerInput!): MessengerDeleteResponse!
   deleteManyMessengers(input: DeleteManyMessengersInput!): DeleteManyResponse!
   registerCourier(input: InputRegisterCourier!): RegisterClientResponse!
-  createOneMessenger(input: CreateOneMessengerInput!): Messenger!
-  createManyMessengers(input: CreateManyMessengersInput!): [Messenger!]!
   createOnePackageHistory(input: CreateOnePackageHistoryInput!): PackageHistory!
   createManyPackageHistories(input: CreateManyPackageHistoriesInput!): [PackageHistory!]!
   updateOnePackageHistory(input: UpdateOnePackageHistoryInput!): PackageHistory!
@@ -1890,16 +1886,6 @@ input InputCreateClient {
   lastName: String!
   phone: String!
   email: String!
-}
-
-input CreateOneClientInput {
-  """The record to create"""
-  client: InputCreateClient!
-}
-
-input CreateManyClientsInput {
-  """Array of records to create"""
-  clients: [InputCreateClient!]!
 }
 
 input SetPackagesOnContactInput {
@@ -2286,23 +2272,6 @@ input InputRegisterCourier {
   lastName: String!
   phone: String!
   email: String!
-}
-
-input CreateOneMessengerInput {
-  """The record to create"""
-  messenger: InputCreateMessenger!
-}
-
-input InputCreateMessenger {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyMessengersInput {
-  """Array of records to create"""
-  messengers: [InputCreateMessenger!]!
 }
 
 input CreateOnePackageHistoryInput {

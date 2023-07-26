@@ -24,7 +24,7 @@ import { FireBaseModule } from 'src/common/firebase/firebase.module';
         {
           aggregate: { enabled: true },
           delete: { disabled: true },
-
+          create: { disabled: true },
           DTOClass: ClientDTO,
           EntityClass: ClientEntity,
           ServiceClass: ClientService,
