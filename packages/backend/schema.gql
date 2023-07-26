@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type RegisterClientResponse {
+  url: String!
+}
+
 type Messenger {
   id: Float!
   firstName: String!
@@ -440,10 +444,6 @@ type Client {
   updatedAt: DateTime!
   deletedAt: DateTime
   packages: Package!
-}
-
-type RegisterClientResponse {
-  url: String!
 }
 
 type DeleteManyResponse {
@@ -1719,12 +1719,13 @@ type Mutation {
   updateManyInvoices(input: UpdateManyInvoicesInput!): UpdateManyResponse!
   deleteOneInvoice(input: DeleteOneInvoiceInput!): InvoiceDeleteResponse!
   deleteManyInvoices(input: DeleteManyInvoicesInput!): DeleteManyResponse!
-  createOneMessenger(input: CreateOneMessengerInput!): Messenger!
-  createManyMessengers(input: CreateManyMessengersInput!): [Messenger!]!
   updateOneMessenger(input: UpdateOneMessengerInput!): Messenger!
   updateManyMessengers(input: UpdateManyMessengersInput!): UpdateManyResponse!
   deleteOneMessenger(input: DeleteOneMessengerInput!): MessengerDeleteResponse!
   deleteManyMessengers(input: DeleteManyMessengersInput!): DeleteManyResponse!
+  registerCourier(input: InputRegisterCourier!): RegisterClientResponse!
+  createOneMessenger(input: CreateOneMessengerInput!): Messenger!
+  createManyMessengers(input: CreateManyMessengersInput!): [Messenger!]!
   createOnePackageHistory(input: CreateOnePackageHistoryInput!): PackageHistory!
   createManyPackageHistories(input: CreateManyPackageHistoriesInput!): [PackageHistory!]!
   updateOnePackageHistory(input: UpdateOnePackageHistoryInput!): PackageHistory!
@@ -2227,23 +2228,6 @@ input InvoiceDeleteFilter {
   deleteAt: DateFieldComparison
 }
 
-input CreateOneMessengerInput {
-  """The record to create"""
-  messenger: InputCreateMessenger!
-}
-
-input InputCreateMessenger {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyMessengersInput {
-  """Array of records to create"""
-  messengers: [InputCreateMessenger!]!
-}
-
 input UpdateOneMessengerInput {
   """The id of the record to update"""
   id: ID!
@@ -2295,6 +2279,30 @@ input MessengerDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputRegisterCourier {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+}
+
+input CreateOneMessengerInput {
+  """The record to create"""
+  messenger: InputCreateMessenger!
+}
+
+input InputCreateMessenger {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+}
+
+input CreateManyMessengersInput {
+  """Array of records to create"""
+  messengers: [InputCreateMessenger!]!
 }
 
 input CreateOnePackageHistoryInput {

@@ -1,10 +1,12 @@
 import { Args, Mutation, Resolver } from '@nestjs/graphql';
+import { ValidationPipe } from '@nestjs/common';
+import { CRUDResolver } from '@nestjs-query/query-graphql';
+
+/*Local Imports */
+import { RegisterClientResponseDTO } from './dto/register-client-dto';
+import { InputCreateClientDTO } from './dto/create-client.input';
 import { ClientService } from './client.service';
 import { ClientDTO } from './dto/client.dto';
-import { ValidationPipe } from '@nestjs/common';
-import { InputCreateClientDTO } from './dto/create-client.input';
-import { CRUDResolver } from '@nestjs-query/query-graphql';
-import { RegisterClientResponseDTO } from './dto/register-client-dto';
 
 @Resolver(() => ClientDTO)
 export class ClientResolver extends CRUDResolver(ClientDTO, {
