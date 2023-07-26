@@ -100,7 +100,6 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
           (g) => `'${g.guide}'`,
         )})`,
       );
-      console.log(packages);
 
       const response = await Promise.all(
         packages.map(async (pack) => {
@@ -117,10 +116,6 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
             description: getStatusDescriptionByIdStatus(packFind.statusId),
           });
           if (packFind?.evidence) {
-            console.log('ENTRA_EVIDENCES', {
-              ...packFind.evidence,
-              packageId: pack.id,
-            });
             await queryRunner.manager.save(EvidenceEntity, {
               ...packFind?.evidence,
               packageId: pack.id,
