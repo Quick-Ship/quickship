@@ -21,14 +21,22 @@ export class ShipmentResolver extends CRUDResolver(ShipmentDTO) {
     super(shipmentService);
   }
 
+  // @Mutation(() => ShipmentDTO)
+  // @UseGuards(GqlAuthGuard)
+  // public async generateShipment(
+  //   @Args('input', new ValidationPipe())
+  //   input: InputGenerateShipmentDTO,
+  //   @CurrentUser() user: IPayloadUser,
+  // ): Promise<ShipmentDTO> {
+  //   return this.shipmentService.generateShipment(input, user);
+  // }
+
   @Mutation(() => ShipmentDTO)
-  @UseGuards(GqlAuthGuard)
   public async generateShipment(
     @Args('input', new ValidationPipe())
     input: InputGenerateShipmentDTO,
-    @CurrentUser() user: IPayloadUser,
   ): Promise<ShipmentDTO> {
-    return this.shipmentService.generateShipment(input, user);
+    return this.shipmentService.generateShipment(input);
   }
 
   @Mutation(() => ShipmentDTO)

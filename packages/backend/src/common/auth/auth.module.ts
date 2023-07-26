@@ -3,12 +3,10 @@ import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { FirebaseAdminModule } from '@aginix/nestjs-firebase-admin';
 import * as admin from 'firebase-admin';
-import { HttpModule } from '@nestjs/axios';
 
 /*Local Imports */
 import appConfig from 'src/config/app.config';
 import { AuthStrategy } from './auth.strategy';
-import { ClientModule } from 'src/modules/client/client.module';
 import { AuthService } from './auth.service';
 
 @Module({
@@ -32,5 +30,6 @@ import { AuthService } from './auth.service';
     PassportModule,
   ],
   providers: [AuthService, AuthStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

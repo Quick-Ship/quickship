@@ -1684,6 +1684,7 @@ type Mutation {
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
+  registerClient(input: InputCreateClient!): Client!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
