@@ -12,10 +12,7 @@ import { PackageEntity } from '../packages/entities/package.entity';
 import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
 import { InputAddPackageShipmentDTO } from './dto/add-packages-shipment.dto';
 import { InputAssignCourierDTO } from './dto/assign-courier.dto';
-import { Error } from 'src/common/errors.enum';
-import { ShipmentStatusEnum } from 'src/common/shipment-status-enum';
-import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
-import { PackageStatusEnum } from 'src/common/package-status.enum';
+
 import { InputOpenPackageDTO } from './dto/open-package.dto';
 import {
   getStatusByIdStatus,
@@ -25,7 +22,12 @@ import {
 import { InputClosePackageDTO } from './dto/close-package.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { InputCancelPackageDTO } from './dto/cancel-package.dto';
-import { PackageStatusCancelTypes } from 'src/common/package-status-cancelatio.enum.dto';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+import { PackageStatusEnum } from 'src/common/enums/package-status.enum';
+import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-description.enum';
+import { ShipmentStatusEnum } from 'src/common/enums/shipment-status-enum';
+import { PackageStatusCancelTypes } from 'src/common/enums/package-status-cancelatio.enum';
+import { Errors } from 'src/common/enums/errors.enum';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -37,7 +39,10 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     super(repo);
   }
 
-  public async generateShipment(input: InputGenerateShipmentDTO) {
+  public async generateShipment(
+    input: InputGenerateShipmentDTO,
+    user?: IPayloadUser,
+  ) {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -45,8 +50,9 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     try {
       this.logger.debug({
         event: 'shipmentService.generateShipment.input',
-        data: input,
+        data: { input, user },
       });
+
       const shipment = await queryRunner.manager.save(ShipmentEntity, {
         comments: input.comments,
         price: 0,
@@ -91,12 +97,12 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       const packages: PackageEntity[] = await queryRunner.manager.query(
         `select * from packages where guide in (${input.guides.map(
           (g) => `'${g}'`,
-        )}) and status_id = ${PackageStatusEnum.SC}`,
+        )}) and status_id in (${PackageStatusEnum.SC},${PackageStatusEnum.AR})`,
       );
 
       if (packages.length === 0) {
         throw new GraphQLError(
-          Error.GUIDE_NOT_FOUND_ADD_SHIPMENT.replace(
+          Errors.GUIDE_NOT_FOUND_ADD_SHIPMENT.replace(
             '$guides',
             input.guides.toString(),
           ),
@@ -181,9 +187,9 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       if (currentShipment) {
         this.logger.warn({
           event: 'shipmentService.assignCourierShipment.courierInvalid',
-          warning: Error.COURIER_INVALID,
+          warning: Errors.COURIER_INVALID,
         });
-        throw new GraphQLError(Error.COURIER_INVALID);
+        throw new GraphQLError(Errors.COURIER_INVALID);
       }
 
       await queryRunner.manager.update(ShipmentEntity, shipment.id, {
@@ -248,9 +254,9 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       ) {
         this.logger.warn({
           event: 'shipmentService.openPackage.invalidProcessPackage',
-          warning: Error.INVALID_PROCESS_PACKAGE,
+          warning: Errors.INVALID_PROCESS_PACKAGE,
         });
-        throw new GraphQLError(Error.INVALID_PROCESS_PACKAGE);
+        throw new GraphQLError(Errors.INVALID_PROCESS_PACKAGE);
       }
 
       await queryRunner.manager.update(PackageEntity, packages.id, {
@@ -285,17 +291,17 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     if (!shipment) {
       this.logger.warn({
         event: 'shipmentService.validateShipmentStatus.shipmentNotFound',
-        warning: Error.SHIPMENT_NOT_FOUND,
+        warning: Errors.SHIPMENT_NOT_FOUND,
       });
-      new GraphQLError(Error.SHIPMENT_NOT_FOUND);
+      new GraphQLError(Errors.SHIPMENT_NOT_FOUND);
     }
 
     if (shipment?.shipmentStatusId !== status) {
       this.logger.warn({
         event: 'shipmentService.validateShipmentStatus.shipmentInvalidStatus',
-        warning: Error.SHIPMENT_STATUS_INVALID,
+        warning: Errors.SHIPMENT_STATUS_INVALID,
       });
-      new GraphQLError(Error.SHIPMENT_STATUS_INVALID);
+      new GraphQLError(Errors.SHIPMENT_STATUS_INVALID);
     }
   }
 
@@ -303,17 +309,17 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
     if (!packages) {
       this.logger.warn({
         event: 'shipmentService.validatePackage.guideNotFound',
-        warning: Error.GUIDE_NOT_FOUND,
+        warning: Errors.GUIDE_NOT_FOUND,
       });
-      throw new GraphQLError(Error.GUIDE_NOT_FOUND);
+      throw new GraphQLError(Errors.GUIDE_NOT_FOUND);
     }
 
     if (packages.shipmentId !== shipmentId) {
       this.logger.warn({
         event: 'shipmentService.validatePackage.guideNotFoundInShipment',
-        warning: Error.GUIDE_NOT_FOUND_SHIPMENT,
+        warning: Errors.GUIDE_NOT_FOUND_SHIPMENT,
       });
-      throw new GraphQLError(Error.GUIDE_NOT_FOUND_SHIPMENT);
+      throw new GraphQLError(Errors.GUIDE_NOT_FOUND_SHIPMENT);
     }
   }
 
@@ -360,7 +366,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       this.validatePackage(packages, shipment.id);
 
       if (!hasCanceled && packages.statusId !== PackageStatusEnum.PL) {
-        throw new GraphQLError(Error.INVALID_PACKAGE_STATUS);
+        throw new GraphQLError(Errors.INVALID_PACKAGE_STATUS);
       }
 
       this.logger.debug({

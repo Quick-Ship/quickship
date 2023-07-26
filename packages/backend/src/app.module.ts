@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { LoggerModule } from 'nestjs-pino';
@@ -24,6 +24,7 @@ import { ShipmentStatusModule } from './modules/shipmet-status/shipment-status.m
 import { PackageStatusModule } from './modules/package-status/package-status.module';
 import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-shipment.module';
 import { EvidenceModule } from './modules/evidences/evidence.module';
+import { AuthModule } from './common/auth/auth.module';
 
 @Module({
   imports: [
@@ -33,21 +34,20 @@ import { EvidenceModule } from './modules/evidences/evidence.module';
       isGlobal: true,
     }),
     LoggerModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
+      inject: [appConfig.KEY],
+      useFactory: async (config: ConfigType<typeof appConfig>) => {
         return {
           pinoHttp: {
-            level: configService.get<string>('config.app.logLevel', 'info'),
+            level: config.app.logLevel,
           },
         };
       },
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigService],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        return configService.get('config.database');
-      },
+      inject: [appConfig.KEY],
+      useFactory: async (config: ConfigType<typeof appConfig>) => ({
+        ...config.database,
+      }),
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
@@ -84,6 +84,7 @@ import { EvidenceModule } from './modules/evidences/evidence.module';
     PackageStatusModule,
     WarehouseShipmentModule,
     EvidenceModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

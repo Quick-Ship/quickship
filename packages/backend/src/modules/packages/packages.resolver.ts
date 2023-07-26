@@ -6,6 +6,8 @@ import { PackagesService } from './packages.service';
 import { PackageDTO } from './dto/packages.dto';
 import { InputCreatePackageDTO } from './dto/create-package.input';
 import { ValidationPipe } from '@nestjs/common';
+import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
+import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
 
 @Resolver(() => PackageDTO)
 export class PackagesResolver extends CRUDResolver(PackageDTO) {
@@ -19,5 +21,13 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
     input: InputCreatePackageDTO,
   ): Promise<PackageDTO> {
     return this.packagesService.createPackages(input);
+  }
+
+  @Mutation(() => ChangePackageStatusResponseDTO)
+  public async changePackageStatus(
+    @Args('input', new ValidationPipe())
+    input: InputChangePackageStatusDTO,
+  ): Promise<ChangePackageStatusResponseDTO> {
+    return this.packagesService.changePackageStatus(input);
   }
 }

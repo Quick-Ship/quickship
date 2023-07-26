@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type RegisterClientResponse {
+  url: String!
+}
+
 type Messenger {
   id: Float!
   firstName: String!
@@ -879,6 +883,15 @@ type PackageHistoryMaxAggregate {
   deletedAt: DateTime
 }
 
+type ChangeStatusReponse {
+  guide: String!
+  statusId: Float!
+}
+
+type ChangePackageStatusResponseDTO {
+  data: [ChangeStatusReponse!]!
+}
+
 type PackageDeleteResponse {
   id: Float
   guide: String
@@ -1669,12 +1682,11 @@ enum PackageStatusSortFields {
 type Mutation {
   setPackagesOnClient(input: SetPackagesOnClientInput!): Client!
   removePackagesFromClient(input: RemovePackagesFromClientInput!): Client!
-  createOneClient(input: CreateOneClientInput!): Client!
-  createManyClients(input: CreateManyClientsInput!): [Client!]!
   updateOneClient(input: UpdateOneClientInput!): Client!
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
+  registerClient(input: InputCreateClient!): RegisterClientResponse!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
@@ -1705,12 +1717,11 @@ type Mutation {
   updateManyInvoices(input: UpdateManyInvoicesInput!): UpdateManyResponse!
   deleteOneInvoice(input: DeleteOneInvoiceInput!): InvoiceDeleteResponse!
   deleteManyInvoices(input: DeleteManyInvoicesInput!): DeleteManyResponse!
-  createOneMessenger(input: CreateOneMessengerInput!): Messenger!
-  createManyMessengers(input: CreateManyMessengersInput!): [Messenger!]!
   updateOneMessenger(input: UpdateOneMessengerInput!): Messenger!
   updateManyMessengers(input: UpdateManyMessengersInput!): UpdateManyResponse!
   deleteOneMessenger(input: DeleteOneMessengerInput!): MessengerDeleteResponse!
   deleteManyMessengers(input: DeleteManyMessengersInput!): DeleteManyResponse!
+  registerCourier(input: InputRegisterCourier!): RegisterClientResponse!
   createOnePackageHistory(input: CreateOnePackageHistoryInput!): PackageHistory!
   createManyPackageHistories(input: CreateManyPackageHistoriesInput!): [PackageHistory!]!
   updateOnePackageHistory(input: UpdateOnePackageHistoryInput!): PackageHistory!
@@ -1737,6 +1748,7 @@ type Mutation {
   deleteOnePackage(input: DeleteOnePackageInput!): PackageDeleteResponse!
   deleteManyPackages(input: DeleteManyPackagesInput!): DeleteManyResponse!
   createDelivery(input: InputCreatePackage!): Package!
+  changePackageStatus(input: InputChangePackageStatus!): ChangePackageStatusResponseDTO!
   setWarehouseShipmentOnShipment(input: SetWarehouseShipmentOnShipmentInput!): Shipment!
   setShipmentStatusOnShipment(input: SetShipmentStatusOnShipmentInput!): Shipment!
   setMessengerOnShipment(input: SetMessengerOnShipmentInput!): Shipment!
@@ -1818,23 +1830,6 @@ input RemovePackagesFromClientInput {
   relationId: ID!
 }
 
-input CreateOneClientInput {
-  """The record to create"""
-  client: InputCreateClient!
-}
-
-input InputCreateClient {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyClientsInput {
-  """Array of records to create"""
-  clients: [InputCreateClient!]!
-}
-
 input UpdateOneClientInput {
   """The id of the record to update"""
   id: ID!
@@ -1884,6 +1879,13 @@ input ClientDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputCreateClient {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
 }
 
 input SetPackagesOnContactInput {
@@ -2212,23 +2214,6 @@ input InvoiceDeleteFilter {
   deleteAt: DateFieldComparison
 }
 
-input CreateOneMessengerInput {
-  """The record to create"""
-  messenger: InputCreateMessenger!
-}
-
-input InputCreateMessenger {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyMessengersInput {
-  """Array of records to create"""
-  messengers: [InputCreateMessenger!]!
-}
-
 input UpdateOneMessengerInput {
   """The id of the record to update"""
   id: ID!
@@ -2280,6 +2265,13 @@ input MessengerDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputRegisterCourier {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
 }
 
 input CreateOnePackageHistoryInput {
@@ -2526,6 +2518,22 @@ input PackageDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputChangePackageStatus {
+  update: [InputChangeStatus!]!
+}
+
+input InputChangeStatus {
+  guide: String!
+  statusId: Float!
+  evidence: InputCreateEvidence
+}
+
+input InputCreateEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
 }
 
 input SetWarehouseShipmentOnShipmentInput {
@@ -3040,12 +3048,6 @@ input RemovePackagesFromEvidenceInput {
 input CreateOneEvidenceInput {
   """The record to create"""
   evidence: InputCreateEvidence!
-}
-
-input InputCreateEvidence {
-  personReceived: String!
-  comments: String
-  url: String!
 }
 
 input CreateManyEvidencesInput {

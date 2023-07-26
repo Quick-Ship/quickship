@@ -21,7 +21,12 @@ export default registerAs('config', () => {
     logLevel: process.env.LOG_LEVEL || 'info',
     port: process.env.APLICATION_PORT || 3000,
     nodeEnv: process.env.NODE_ENV || 'production',
+    password: process.env.PASSWORD_REGISTER_CLIENT,
   };
 
-  return { database, app };
+  const auth = {
+    serviceAccount: process.env.AUTH_SERVICE_ACCOUNT,
+  };
+
+  return { database, app, auth };
 });

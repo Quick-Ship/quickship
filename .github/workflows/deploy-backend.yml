@@ -114,6 +114,8 @@ jobs:
           secrets: |
             ENCRYPTION_KEY=encriyption-key:latest
             ENCRYPTION_IV=encriyption-iv:latest
+            AUTH_SERVICE_ACCOUNT=auth-service-account-google:latest
+            PASSWORD_REGISTER=register-password-generic:latest
           flags: "--cpu=1 --memory=512Mi --concurrency=100 --min-instances=0 --max-instances=100"
           tag: beta
           no_traffic: true

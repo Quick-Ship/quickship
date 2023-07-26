@@ -13,4 +13,5 @@ export enum PackageStatusDescriptionEnum {
   MD = 'Ciclo del envío completado',
   NH = 'No es un hogar',
   RD = 'Envío rechazado por el destinatario',
+  AR = 'Envío en el centro de distribución.',
 }
