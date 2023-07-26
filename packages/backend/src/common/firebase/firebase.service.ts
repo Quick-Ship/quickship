@@ -1,16 +1,20 @@
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { Injectable } from '@nestjs/common';
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { RegisterFirebase } from './interfaces/register-firebase.interface';
+import { RegisterFirebase } from '../auth/interfaces/register-firebase.interface';
 import { GraphQLError } from 'graphql';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { Errors } from '../enums/errors.enum';
 
 @Injectable()
-export class AuthService {
+export class FirebaseService {
+  public firebaseAuth: FirebaseAuthenticationService;
   constructor(
-    @InjectPinoLogger(AuthService.name)
+    @InjectPinoLogger(FirebaseService.name)
     private readonly logger: PinoLogger,
-    private readonly firebaseAuth: FirebaseAuthenticationService,
-  ) {}
+    private readonly firebase: FirebaseAuthenticationService,
+  ) {
+    this.firebaseAuth = this.firebase;
+  }
 
   public async registerFirebase(input: RegisterFirebase) {
     try {
@@ -41,6 +45,25 @@ export class AuthService {
         error: error,
       });
       throw new GraphQLError(error);
+    }
+  }
+
+  public async verifyIdToken(token: string) {
+    try {
+      const verifyToken = await this.firebaseAuth.verifyIdToken(token);
+
+      return verifyToken;
+    } catch (error) {
+      this.logger.error({
+        event: 'authService.verifyIdToken.error',
+        error: error,
+      });
+        
+      const errorMessage: string = error.message;
+        if (errorMessage.startsWith('Firebase ID token has expired')) { 
+            throw new GraphQLError(Errors.TOKEN_EXPIRED);
+        }
+        throw new GraphQLError(error)
     }
   }
 }

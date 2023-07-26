@@ -8,4 +8,7 @@ export enum Errors {
   INVALID_PROCESS_PACKAGE = 'EL proceso del envio de no puede ser abierto. La guia no se encuenta en el estatus correcto.',
   INVALID_PACKAGE_STATUS = 'El estatus del envío es invalido para poder cerrar el proceso.',
   INVALID_PACKAGE_STATUS_BY_EVIDENCE = 'El estatus del envío :guide debe tener una evidencia',
+  TOKEN_EXPIRED = 'The token has expired.',
+  TOKEN_IVALID = 'The token is invalid.',
+  TOKEN_NOT_INFO = 'The token has not info.'
 }

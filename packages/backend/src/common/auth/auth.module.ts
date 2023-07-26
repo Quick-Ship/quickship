@@ -1,35 +1,15 @@
 import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { ConfigModule, ConfigType } from '@nestjs/config';
-import { FirebaseAdminModule } from '@aginix/nestjs-firebase-admin';
-import * as admin from 'firebase-admin';
 
 /*Local Imports */
-import appConfig from 'src/config/app.config';
 import { AuthStrategy } from './auth.strategy';
-import { AuthService } from './auth.service';
+import { FireBaseModule } from '../firebase/firebase.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      load: [appConfig],
-      cache: true,
-    }),
-    FirebaseAdminModule.forRootAsync({
-      inject: [appConfig.KEY],
-      useFactory: async (config: ConfigType<typeof appConfig>) => ({
-        credential: admin.credential.cert(
-          JSON.parse(
-            Buffer.from(String(config.auth.serviceAccount), 'base64').toString(
-              'ascii',
-            ),
-          ),
-        ),
-      }),
-    }),
+    FireBaseModule,
     PassportModule,
   ],
-  providers: [AuthService, AuthStrategy],
-  exports: [AuthService],
+  providers: [AuthStrategy],
 })
 export class AuthModule {}

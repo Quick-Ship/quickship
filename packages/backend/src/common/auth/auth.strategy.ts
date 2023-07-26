@@ -1,18 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
 import { Strategy } from 'passport-http-bearer';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
 /*Local Imports */
 import { IPayloadUser } from './interfaces/auth.interface';
+import { FirebaseService } from '../firebase/firebase.service';
+import { Errors } from '../enums/errors.enum';
 
 @Injectable()
 export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
   constructor(
     @InjectPinoLogger(AuthStrategy.name)
     private readonly logger: PinoLogger,
-    private readonly firebaseAuth: FirebaseAuthenticationService,
+    private readonly firebaseAuth: FirebaseService,
   ) {
     super(
       async (token: string, done: (error: unknown, user?: unknown) => void) => {
@@ -20,24 +21,24 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
           const verifyToken = await this.firebaseAuth.verifyIdToken(token);
 
           if (verifyToken) {
-            // const verifyEmail = verifyToken.email_verified
-            // if (!verifyEmail) {
-            //   return done(
-            //     new UnauthorizedException({
-            //       statusCode: 401,
-            //       message: 'Email no verificado',
-            //     }),
-            //   );
-            // }
-            // const expiredToken = verifyToken.exp;
-            // const dataInit = new Date().getMilliseconds();
-            // const dateExpired = new Date(expiredToken).getMilliseconds();
+            //   // const verifyEmail = verifyToken.email_verified
+            //   // if (!verifyEmail) {
+            //   //   return done(
+            //   //     new UnauthorizedException({
+            //   //       statusCode: 401,
+            //   //       message: 'Email no verificado',
+            //   //     }),
+            //   //   );
+            //   // }
+            //   // const expiredToken = verifyToken.exp;
+            //   // const dataInit = new Date().getMilliseconds();
+            //   // const dateExpired = new Date(expiredToken).getMilliseconds();
 
-            // console.log(dataInit, dateExpired);
+            //   // console.log(dataInit, dateExpired);
 
-            // const [client] = await this.clientsService.query({
-            //   filter: { email: { eq: verifyToken.email } },
-            // });
+            //   // const [client] = await this.clientsService.query({
+            //   //   filter: { email: { eq: verifyToken.email } },
+            //   // });
 
             const user: IPayloadUser = {
               id: verifyToken?.id,
@@ -45,12 +46,12 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
               tenant: 'CLIENT',
             };
 
-            return done(undefined, user);
+            return done(undefined, verifyToken);
           } else {
             return done(
               new UnauthorizedException({
                 statusCode: 401,
-                message: 'The token has not info',
+                message: Errors.TOKEN_NOT_INFO,
               }),
             );
           }
@@ -59,12 +60,12 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
             event: 'authStrategy.error',
             error: error.message,
           });
-          const errorMessage: string = error.message;
-          if (errorMessage.startsWith('Firebase ID token has expired')) {
+          const errorMessage: string = error.message || error;
+          if (errorMessage.startsWith('The token has expired')) {
             return done(
               new UnauthorizedException({
                 statusCode: 401,
-                message: 'The token has expired.',
+                message: Errors.TOKEN_EXPIRED,
               }),
             );
           }
@@ -72,7 +73,7 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
           return done(
             new UnauthorizedException({
               statusCode: 401,
-              message: 'The token is invalid',
+              message: Errors.TOKEN_IVALID,
             }),
           );
         }
