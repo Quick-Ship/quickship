@@ -442,6 +442,10 @@ type Client {
   packages: Package!
 }
 
+type RegisterClientResponse {
+  url: String!
+}
+
 type DeleteManyResponse {
   """The number of records deleted."""
   deletedCount: Int!
@@ -1684,7 +1688,7 @@ type Mutation {
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
-  registerClient(input: InputCreateClient!): Client!
+  registerClient(input: InputCreateClient!): RegisterClientResponse!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!

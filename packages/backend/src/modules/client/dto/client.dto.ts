@@ -1,16 +1,15 @@
 import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
 import {
-  BeforeCreateOne,
-  CreateOneInputType,
   FilterableField,
   FilterableRelation,
   KeySet,
   PagingStrategies,
   QueryOptions,
 } from '@nestjs-query/query-graphql';
+
+/*Local Imports */
 import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
 import { SortDirection } from '@nestjs-query/core';
-import { ExecutionContext } from '@nestjs/common';
 
 @ObjectType('Client')
 @KeySet(['id'])
@@ -24,11 +23,8 @@ import { ExecutionContext } from '@nestjs/common';
   maxResultsSize: 500,
   defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
   pagingStrategy: PagingStrategies.OFFSET,
+  defaultFilter: { deletedAt: { is: null } },
 })
-// @BeforeCreateOne((input: CreateOneInputType<ClientDTO>, context) => {
-//   input.input.createdBy = context.;
-//   return input;
-// })
 export class ClientDTO {
   @Field()
   id!: number;

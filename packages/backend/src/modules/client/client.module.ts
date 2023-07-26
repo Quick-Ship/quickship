@@ -31,11 +31,9 @@ import { FireBaseModule } from 'src/common/firebase/firebase.module';
           CreateDTOClass: InputCreateClientDTO,
           UpdateDTOClass: InputUpdateClientDTO,
           read: {
-            one: {
-              decorators: [UseGuards(GqlAuthGuard)],
-            },
-            many: { decorators: [UseGuards(GqlAuthGuard)] },
+            decorators: [UseGuards(GqlAuthGuard)],
           },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),

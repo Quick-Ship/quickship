@@ -1,22 +1,23 @@
 import { FirebaseAuthenticationService } from '@aginix/nestjs-firebase-admin';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { GraphQLError } from 'graphql';
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { ConfigType } from '@nestjs/config';
 
 /*Locl imports */
 import { Errors } from '../enums/errors.enum';
 import { RegisterFirebase } from '../auth/interfaces/register-firebase.interface';
+import appConfig from 'src/config/app.config';
 
 @Injectable()
 export class FirebaseService {
-  public firebaseAuth: FirebaseAuthenticationService;
   constructor(
     @InjectPinoLogger(FirebaseService.name)
     private readonly logger: PinoLogger,
-    private readonly firebase: FirebaseAuthenticationService,
-  ) {
-    this.firebaseAuth = this.firebase;
-  }
+    @Inject(appConfig.KEY)
+    private readonly config: ConfigType<typeof appConfig>,
+    private readonly firebaseAuth: FirebaseAuthenticationService,
+  ) {}
 
   public async registerFirebase(input: RegisterFirebase) {
     try {
@@ -26,7 +27,7 @@ export class FirebaseService {
       });
       const register = await this.firebaseAuth.createUser({
         email: input?.email,
-        password: 'fgjygmkj@3545',
+        password: this.config.app.password,
         phoneNumber: input?.phone,
       });
       this.logger.debug({
@@ -43,8 +44,7 @@ export class FirebaseService {
         register.email,
       );
 
-      //TODO: Remover
-      console.log(link);
+      return link;
     } catch (error) {
       this.logger.error({
         event: 'authService.registerFirebase.error',

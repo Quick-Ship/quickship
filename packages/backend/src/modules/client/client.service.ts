@@ -10,6 +10,7 @@ import { ClientEntity } from './entities/client.entity';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { validTransaction } from 'src/common/utils';
 import { FirebaseService } from 'src/common/firebase/firebase.service';
+import { RegisterClientResponseDTO } from './dto/register-client-dto';
 
 @QueryService(ClientEntity)
 export class ClientService extends TypeOrmQueryService<ClientEntity> {
@@ -22,7 +23,9 @@ export class ClientService extends TypeOrmQueryService<ClientEntity> {
     super(repo);
   }
 
-  public async registerClient(input: InputCreateClientDTO) {
+  public async registerClient(
+    input: InputCreateClientDTO,
+  ): Promise<RegisterClientResponseDTO> {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -35,7 +38,7 @@ export class ClientService extends TypeOrmQueryService<ClientEntity> {
 
       const client = await queryRunner.manager.save(ClientEntity, input);
 
-      await this.firebaseService.registerFirebase({
+      const url = await this.firebaseService.registerFirebase({
         email: input.email,
         phone: input.phone,
         tenant: 'CLIENT',
@@ -44,7 +47,7 @@ export class ClientService extends TypeOrmQueryService<ClientEntity> {
 
       await queryRunner.commitTransaction();
 
-      return client;
+      return { url: url };
     } catch (error) {
       await validTransaction(queryRunner);
       throw new GraphQLError(error?.message || error);

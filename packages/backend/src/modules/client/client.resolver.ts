@@ -4,6 +4,7 @@ import { ClientDTO } from './dto/client.dto';
 import { ValidationPipe } from '@nestjs/common';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { CRUDResolver } from '@nestjs-query/query-graphql';
+import { RegisterClientResponseDTO } from './dto/register-client-dto';
 
 @Resolver(() => ClientDTO)
 export class ClientResolver extends CRUDResolver(ClientDTO) {
@@ -11,11 +12,11 @@ export class ClientResolver extends CRUDResolver(ClientDTO) {
     super(clientService);
   }
 
-  @Mutation(() => ClientDTO)
+  @Mutation(() => RegisterClientResponseDTO)
   public async registerClient(
     @Args('input', new ValidationPipe())
     input: InputCreateClientDTO,
-  ): Promise<ClientDTO> {
+  ): Promise<RegisterClientResponseDTO> {
     return this.clientService.registerClient(input);
   }
 }
