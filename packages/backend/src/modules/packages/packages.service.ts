@@ -11,8 +11,8 @@ import { InputCreatePackageDTO } from './dto/create-package.input';
 import { ContactEntity } from '../contact/entities/contact.entity';
 import { DirectionEntity } from '../directions/entities/direction.entity';
 import { PackageHistoryEntity } from '../package-history/entities/package-history.entity';
-import { PackageStatusEnum } from 'src/common/package-status.enum';
-import { PackageStatusDescriptionEnum } from 'src/common/package-status-description.enum';
+
+
 import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
 import {
   getStatusByIdStatus,
@@ -20,6 +20,8 @@ import {
 } from 'src/common/utils';
 import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
+import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-description.enum';
+import { PackageStatusEnum } from 'src/common/enums/package-status.enum';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {

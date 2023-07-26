@@ -1,6 +1,6 @@
 import { QueryRunner } from 'typeorm';
-import { PackageStatusDescriptionEnum } from './package-status-description.enum';
-import { PackageStatusEnum } from './package-status.enum';
+import { PackageStatusDescriptionEnum } from './enums/package-status-description.enum';
+import { PackageStatusEnum } from './enums/package-status.enum';
 
 export const validTransaction = async (queryRunner: QueryRunner) => {
   if (queryRunner.isTransactionActive) {
