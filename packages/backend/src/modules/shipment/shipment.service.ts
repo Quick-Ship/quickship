@@ -28,7 +28,6 @@ import { InputCancelPackageDTO } from './dto/cancel-package.dto';
 import { PackageStatusCancelTypes } from 'src/common/package-status-cancelatio.enum.dto';
 import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
-
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
   constructor(
@@ -41,7 +40,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
   public async generateShipment(
     input: InputGenerateShipmentDTO,
-    user: IPayloadUser,
+    user?: IPayloadUser,
   ) {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
@@ -97,7 +96,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       const packages: PackageEntity[] = await queryRunner.manager.query(
         `select * from packages where guide in (${input.guides.map(
           (g) => `'${g}'`,
-        )}) and status_id = ${PackageStatusEnum.SC}`,
+        )}) and status_id in (${PackageStatusEnum.SC},${PackageStatusEnum.AR})`,
       );
 
       if (packages.length === 0) {
