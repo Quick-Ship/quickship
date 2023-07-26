@@ -1,12 +1,12 @@
 "use client";
 
-import { API_URL } from "@/common";
-import { GeneralForm, Header, Modal, Table } from "@/components";
+import { API_URL, MessengerInterface } from "@/common";
+import { GeneralForm, Header, LoadingPage, Modal, Table } from "@/components";
 import {
   CreateMessengerQuery,
   GetMessengersQuery,
   graphQLClient,
-  } from "@/graphql";
+} from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
@@ -15,22 +15,23 @@ import {
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Messengers() {
+  const queryCache = useQueryClient();
   const [showModal, setShowModal] = useState(false);
+  const [messengers, setMessengers] = useState<MessengerInterface[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const { globalToasts, pushToast } = useToastsContext();
 
   const {
-    isLoading,
-    error,
     data,
     isFetching,
     status: getMessengerQuerystatus,
@@ -43,16 +44,12 @@ export default function Messengers() {
   const {
     mutate,
     status: createOneMessengerStatus,
-    error: createOneMessengerError,
   } = useMutation({
     mutationKey: ["createOneMessenger"],
     mutationFn: (messenger: any) => {
       return graphQLClient.request(CreateMessengerQuery, messenger);
     },
   });
-
-  const queryCache: any = useQueryClient();
-  const { globalToasts, pushToast } = useToastsContext();
 
   const {
     register,
@@ -86,7 +83,7 @@ export default function Messengers() {
         },
         onSuccess: () => {
           if (isFetching === false) {
-            queryCache.removeQueries("getMessengers", { stale: false });
+            queryCache.removeQueries(["getMessengers"], { stale: false });
           }
           setShowModal(false);
           const newToast: Toast[] = [];
@@ -102,60 +99,58 @@ export default function Messengers() {
     );
   };
 
+  useEffect(() => {
+    if (getMessengerQuerystatus === "success") {
+      setMessengers(
+        data.messengers?.nodes.map((messenger: any) => ({
+          id: messenger.id,
+          firstName: messenger.firstName,
+          lastName: messenger.lastName,
+          phone: messenger.phone,
+          email: messenger.email,
+        }))
+      );
+      setTotalCount(data.messengers.totalCount);
+    }
+  }, [getMessengerQuerystatus]);
+
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
-      field: "node.id",
+      field: "id",
       name: "ID",
     },
     {
-      field: "node.firstName",
+      field: "firstName",
       name: "Nombre",
     },
     {
-      field: "node.lastName",
+      field: "lastName",
       name: "Apellido",
     },
     {
-      field: "node.phone",
+      field: "phone",
       name: "Telefono",
     },
     {
-      field: "node.email",
+      field: "email",
       name: "Correo",
     },
   ];
 
   return (
     <EuiPageHeaderContent>
-      {isLoading && getMessengerQuerystatus === "loading" ? (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              isLoading={isLoading && getMessengerQuerystatus === "loading"}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            isLoading={isLoading && getMessengerQuerystatus === "loading"}
-          ></EuiSkeletonText>
-        </EuiPanel>
+      {getMessengerQuerystatus === "loading" ? (
+        <LoadingPage isLoading={getMessengerQuerystatus === "loading"} />
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Mensajeros (${data.messengers.edges.length})`}>
+          <Header title={`Mensajeros (${totalCount})`}>
             <EuiButton onClick={() => setShowModal(!showModal)}>
               Crear mensajero
             </EuiButton>
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table
-              items={data?.messengers?.edges}
-              columns={columns}
-              itemId={"id"}
-            />
+            <Table items={messengers} columns={columns} itemId={"id"} />
           </EuiPanel>
         </EuiPanel>
       )}

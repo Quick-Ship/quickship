@@ -1,26 +1,44 @@
 "use client";
 
-import { Header, Table } from "@/components";
-import { graphQLClient, ShipmentsQuery } from "@/graphql";
+import { API_URL } from "@/common";
+import { Header, LoadingPage, Table } from "@/components";
+import { ShipmentsQuery } from "@/graphql";
+import { useGeneratedGQLQuery } from "@/hooks";
 import {
   EuiBasicTableColumn,
   EuiHorizontalRule,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
 } from "@elastic/eui";
-import { useQuery } from "@tanstack/react-query";
-
-const fetchShipments = async () => {
-  return await graphQLClient.request(ShipmentsQuery);
-};
+import { useEffect, useState } from "react";
 
 export default function Shipments() {
-  const { data, isLoading, error }: any = useQuery({
-    queryKey: ["getShipments"],
-    queryFn: fetchShipments,
-  });
+  const [shipments, setShipments] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const { data, status, isFetching } = useGeneratedGQLQuery<
+    unknown | any,
+    unknown,
+    unknown,
+    unknown
+  >(`${API_URL}/graphql`, "getShipments", ShipmentsQuery);
+
+  const [id, setId] = useState<number>(0);
+
+  useEffect(() => {
+    if (status === "success") {
+      setShipments(
+        data.shipments.nodes.map((sh: any) => ({
+          id: sh.id,
+          packages: sh.packages.totalCount,
+          updatedAt: sh.updatedAt,
+          status: sh.shipmentStatus.status,
+          messenger: sh.messenger !== null ? sh.messenger.id : "Sin asignar",
+        }))
+      );
+      setTotalCount(data.shipments.totalCount);
+    }
+  }, [status]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -28,50 +46,49 @@ export default function Shipments() {
       name: "ID",
     },
     {
-      field: "packages.nodes.length",
+      field: "packages",
       name: "Paradas",
+    },
+    {
+      field: "status",
+      name: "Estatus",
+    },
+    {
+      field: "messenger",
+      name: "Mensajero",
     },
     {
       field: "updatedAt",
       name: "Actualizada",
     },
     {
-      field: "shipmentStatus.status",
-      name: "Estatus",
-    },
-    {
-      field: "null",
+      field: "actions",
       name: "Acciones",
+      actions: [
+        {
+          name: "ruta",
+          description: "Ver ruta",
+          type: "icon",
+          icon: "visMapRegion",
+          onClick: (item) => {
+            setId(item.id);
+          },
+          href: `shipments/${id}`,
+        },
+      ],
     },
   ];
 
   return (
     <EuiPageHeaderContent>
-      {isLoading ? (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              isLoading={isLoading}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            isLoading={isLoading}
-          ></EuiSkeletonText>
-        </EuiPanel>
+      {status === "loading" ? (
+        <LoadingPage isLoading={status === "loading"} />
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Ordenes (${data?.shipments?.nodes.length})`}>
-            {/* <EuiButton onClick={() => "/"} href="/">
-                    Crear cliente
-                  </EuiButton> */}
-          </Header>
+          <Header title={`Ordenes (${totalCount})`}>{""}</Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={data?.shipments.nodes} columns={columns} />
+            <Table items={shipments} columns={columns} itemId={"id"} />
           </EuiPanel>
         </EuiPanel>
       )}

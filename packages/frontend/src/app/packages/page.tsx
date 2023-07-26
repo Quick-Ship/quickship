@@ -1,6 +1,6 @@
 "use client";
 
-import { API_URL } from "@/common";
+import { API_URL, PackagesInterface } from "@/common";
 import { GenerateShipmentInput, Header, Modal, Table } from "@/components";
 import {
   AddPackagesToShipments,
@@ -30,23 +30,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-type Packages = {
-  id: number;
-  guide: string;
-  createdAt: string;
-  client: {
-    id: string;
-  };
-  shipment: {
-    id: string;
-  };
-  status: {
-    id: number;
-    status: string;
-    description: string;
-  };
-};
-
 export default function Packages() {
   const initialIndex = 0;
   const initialPageZize = 10;
@@ -63,8 +46,10 @@ export default function Packages() {
   });
   const [showModal, setShowModal] = useState(false);
   const [clientId, setClientId] = useState("");
-  const [selectItems, setSelectItems] = useState<Packages[]>([]);
-  const [dataPackages, setDataPackages] = useState<Array<Packages>>([]);
+  const [selectItems, setSelectItems] = useState<PackagesInterface[]>([]);
+  const [dataPackages, setDataPackages] = useState<Array<PackagesInterface>>(
+    []
+  );
   const queryCache = useQueryClient();
   const {
     register,
@@ -87,12 +72,12 @@ export default function Packages() {
     sort: {},
   };
 
-  const onSelectionChange = (selectedItems: Packages[]) => {
+  const onSelectionChange = (selectedItems: PackagesInterface[]) => {
     setSelectItems(selectedItems);
   };
 
-  const selection: EuiTableSelectionType<Packages> = {
-    selectable: (pkg: Packages) => pkg.status.id === 1,
+  const selection: EuiTableSelectionType<PackagesInterface> = {
+    selectable: (pkg: PackagesInterface) => pkg?.status?.id === 1,
     selectableMessage: (selectable) => (!selectable ? "packages main" : ""),
     onSelectionChange: onSelectionChange,
   };
@@ -314,6 +299,7 @@ export default function Packages() {
             isSelectable={true}
             pagination={pagination}
             onChange={onTableChange}
+            noItemsMessage="No hay paquetes disponibles"
           />
         </EuiPanel>
       </EuiPanel>

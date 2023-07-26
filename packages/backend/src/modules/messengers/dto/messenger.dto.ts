@@ -12,6 +12,7 @@ import {
   defaultResultSize: 100,
   maxResultsSize: 500,
   pagingStrategy: PagingStrategies.OFFSET,
+  enableTotalCount: true
 })
 export class MessengerDTO {
   @Field()

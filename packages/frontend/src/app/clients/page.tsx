@@ -1,11 +1,14 @@
 "use client";
 
-import { ErrorPage, GeneralForm, Header, Modal, Table } from "@/components";
 import {
-  ClientsQuery,
-  CreateOneClientQuery,
-  graphQLClient,
-} from "@/graphql";
+  ErrorPage,
+  GeneralForm,
+  Header,
+  LoadingPage,
+  Modal,
+  Table,
+} from "@/components";
+import { ClientsQuery, CreateOneClientQuery, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import {
@@ -14,37 +17,28 @@ import {
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
   EuiSpacer,
 } from "@elastic/eui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { API_URL } from "@/common";
+import { API_URL, ClientsInterface } from "@/common";
 import { useGeneratedGQLQuery } from "@/hooks";
 
 export default function Clients() {
+  const queryCache = useQueryClient();
   const [showModal, setShowModal] = useState(false);
-  // const {
-  //   isLoading,
-  //   error,
-  //   data,
-  //   isFetching,
-  //   status: getQueryStatus,
-  // }: any = useQuery({
-  //   queryKey: ["getClients"],
-  //   queryFn: fetchGetClients,
-  // });
+  const [clients, setClients] = useState<ClientsInterface[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+
+  const { globalToasts, pushToast } = useToastsContext();
 
   const {
-    isLoading,
-    error,
     data,
     isFetching,
-    status: getQueryStatus,
+    status: getQueryClientsStatus,
   } = useGeneratedGQLQuery<unknown | any, unknown | any, unknown, unknown>(
     `${API_URL}/graphql`,
     "getClients",
@@ -58,16 +52,12 @@ export default function Clients() {
     },
   });
 
-  const { globalToasts, pushToast } = useToastsContext();
-
   const {
     register,
     formState: { errors },
     setValue,
     handleSubmit,
   } = useForm();
-
-  const queryCache: any = useQueryClient();
 
   const onSubmit = (data: any) => {
     mutate(
@@ -94,7 +84,7 @@ export default function Clients() {
         },
         onSuccess: () => {
           if (isFetching === false) {
-            queryCache.removeQueries("getClients", { stale: false });
+            queryCache.removeQueries(["getClients"], { stale: false });
           }
           setShowModal(false);
           const newToast: Toast[] = [];
@@ -109,6 +99,21 @@ export default function Clients() {
       }
     );
   };
+
+  useEffect(() => {
+    if (getQueryClientsStatus === "success") {
+      setClients(
+        data.clients.nodes.map((cl: any) => ({
+          id: cl.id,
+          firstName: cl.firstName,
+          lastName: cl.lastName,
+          phone: cl.phone,
+          email: cl.email,
+        }))
+      );
+      setTotalCount(data.clients.totalCount);
+    }
+  }, [getQueryClientsStatus]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
@@ -135,35 +140,18 @@ export default function Clients() {
 
   return (
     <EuiPageHeaderContent>
-      {isLoading && getQueryStatus === "loading" ? (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              isLoading={isLoading && getQueryStatus === "loading"}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            isLoading={isLoading && getQueryStatus === "loading"}
-          ></EuiSkeletonText>
-        </EuiPanel>
+      {getQueryClientsStatus === "loading" ? (
+        <LoadingPage isLoading={getQueryClientsStatus === "loading"} />
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Clientes (${data?.clients.nodes.length})`}>
+          <Header title={`Clientes (${totalCount})`}>
             <EuiButton onClick={() => setShowModal(!showModal)}>
               Crear cliente
             </EuiButton>
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table
-              items={data?.clients.nodes}
-              columns={columns}
-              itemId={"id"}
-            />
+            <Table items={clients} columns={columns} itemId={"id"} />
           </EuiPanel>
         </EuiPanel>
       )}
@@ -196,7 +184,9 @@ export default function Clients() {
           </Modal>
         </>
       )}
-      {error && <ErrorPage message="Error al cargar clientes" />}
+      {getQueryClientsStatus === "error" && (
+        <ErrorPage message="Error al cargar clientes" />
+      )}
       {globalToasts}
     </EuiPageHeaderContent>
   );

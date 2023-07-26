@@ -6,10 +6,11 @@ export const ClientsQuery = gql`
       nodes {
         id
         firstName
-        lastName
         phone
+        lastName
         email
       }
+      totalCount
     }
   }
 `;

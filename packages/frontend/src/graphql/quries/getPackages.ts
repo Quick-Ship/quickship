@@ -10,7 +10,6 @@ export const GetPackages = gql`
       nodes {
         id
         guide
-        createdAt
         updatedAt
         clientId
         client {
@@ -26,10 +25,6 @@ export const GetPackages = gql`
         }
       }
       totalCount
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-      }
     }
   }
 `;

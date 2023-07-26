@@ -38,13 +38,6 @@ export const Menu = () => {
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
-        iconType="visMapRegion"
-        label="Generar Envio"
-        onClick={() => "/generateShipments"}
-        href="/generateShipments"
-      />
-      <EuiHorizontalRule />
-      <EuiListGroupItem
         iconType="dotInCircle"
         label="Envios"
         onClick={() => "/shipments"}

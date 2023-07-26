@@ -477,6 +477,9 @@ type ClientConnection {
 
   """Array of nodes."""
   nodes: [Client!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type ClientAggregateGroupBy {
@@ -777,6 +780,9 @@ type MessengerConnection {
 
   """Array of nodes."""
   nodes: [Messenger!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type MessengerAggregateGroupBy {

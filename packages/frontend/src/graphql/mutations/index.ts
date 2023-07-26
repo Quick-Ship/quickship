@@ -3,3 +3,4 @@ export * from "./createOneMessenger";
 export * from "./createManyPackages";
 export * from "./generateShipment";
 export * from "./addPackagesToShipment";
+export * from "./assignCourierShipment";

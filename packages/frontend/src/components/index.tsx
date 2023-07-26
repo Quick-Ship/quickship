@@ -8,3 +8,6 @@ export * from "./generalForm";
 export * from "./loading";
 export * from "./modal";
 export * from "./inputs";
+export * from "./tabs";
+export * from "./List";
+export * from "./popover";
