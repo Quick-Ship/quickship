@@ -33,6 +33,7 @@ export class AuthService {
         register.email,
       );
 
+      //TODO: Remover
       console.log(link);
     } catch (error) {
       this.logger.error({

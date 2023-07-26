@@ -10,16 +10,17 @@ import { ClientEntity } from './entities/client.entity';
 import { AuthService } from 'src/common/auth/auth.service';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { validTransaction } from 'src/common/utils';
+import { Injectable } from '@nestjs/common';
 
-@QueryService(ClientEntity)
-export class ClientService extends TypeOrmQueryService<ClientEntity> {
+@Injectable()
+export class ClientService {
   constructor(
     @InjectRepository(ClientEntity) repo: Repository<ClientEntity>,
     @InjectPinoLogger(ClientService.name)
     private readonly logger: PinoLogger,
-  ) //private readonly authService: AuthService,
+  ) //private readonly authService: AuthService
   {
-    super(repo);
+    //super(repo);
   }
 
   public async registerClient(input: InputCreateClientDTO) {
