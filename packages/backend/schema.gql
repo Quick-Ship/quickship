@@ -447,17 +447,6 @@ type DeleteManyResponse {
   deletedCount: Int!
 }
 
-type ClientDeleteResponse {
-  id: Float
-  firstName: String
-  lastName: String
-  phone: String
-  email: String
-  createdAt: DateTime
-  updatedAt: DateTime
-  deletedAt: DateTime
-}
-
 type UpdateManyResponse {
   """The number of records updated."""
   updatedCount: Int!
@@ -1241,6 +1230,10 @@ type EvidenceMaxAggregate {
 
 type Query {
   sayHello: String!
+  clientAggregate(
+    """Filter to find records to aggregate on"""
+    filter: ClientAggregateFilter
+  ): [ClientAggregateResponse!]!
   client(
     """The id of the record to find."""
     id: ID!
@@ -1255,10 +1248,6 @@ type Query {
     """Specify to sort results."""
     sorting: [ClientSort!] = []
   ): ClientConnection!
-  clientAggregate(
-    """Filter to find records to aggregate on"""
-    filter: ClientAggregateFilter
-  ): [ClientAggregateResponse!]!
   contact(
     """The id of the record to find."""
     id: ID!
@@ -1415,6 +1404,15 @@ type Query {
   ): EvidenceConnection!
 }
 
+input ClientAggregateFilter {
+  and: [ClientAggregateFilter!]
+  or: [ClientAggregateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
 input ClientFilter {
   and: [ClientFilter!]
   or: [ClientFilter!]
@@ -1446,15 +1444,6 @@ enum ClientSortFields {
   createdAt
   updatedAt
   deletedAt
-}
-
-input ClientAggregateFilter {
-  and: [ClientAggregateFilter!]
-  or: [ClientAggregateFilter!]
-  email: StringFieldComparison
-  createdAt: DateFieldComparison
-  updatedAt: DateFieldComparison
-  deletedAt: DateFieldComparison
 }
 
 input CursorPaging {
@@ -1676,15 +1665,11 @@ enum PackageStatusSortFields {
 }
 
 type Mutation {
+  registerClient(input: InputCreateClient!): Client!
   setPackagesOnClient(input: SetPackagesOnClientInput!): Client!
   removePackagesFromClient(input: RemovePackagesFromClientInput!): Client!
-  createOneClient(input: CreateOneClientInput!): Client!
-  createManyClients(input: CreateManyClientsInput!): [Client!]!
   updateOneClient(input: UpdateOneClientInput!): Client!
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
-  deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
-  deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
-  registerClient(input: InputCreateClient!): Client!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
@@ -1813,6 +1798,13 @@ type Mutation {
   deleteManyEvidences(input: DeleteManyEvidencesInput!): DeleteManyResponse!
 }
 
+input InputCreateClient {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+}
+
 input SetPackagesOnClientInput {
   """The id of the record."""
   id: ID!
@@ -1827,23 +1819,6 @@ input RemovePackagesFromClientInput {
 
   """The id of relation."""
   relationId: ID!
-}
-
-input CreateOneClientInput {
-  """The record to create"""
-  client: InputCreateClient!
-}
-
-input InputCreateClient {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyClientsInput {
-  """Array of records to create"""
-  clients: [InputCreateClient!]!
 }
 
 input UpdateOneClientInput {
@@ -1872,25 +1847,6 @@ input UpdateManyClientsInput {
 input ClientUpdateFilter {
   and: [ClientUpdateFilter!]
   or: [ClientUpdateFilter!]
-  email: StringFieldComparison
-  createdAt: DateFieldComparison
-  updatedAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-}
-
-input DeleteOneClientInput {
-  """The id of the record to delete."""
-  id: ID!
-}
-
-input DeleteManyClientsInput {
-  """Filter to find records to delete"""
-  filter: ClientDeleteFilter!
-}
-
-input ClientDeleteFilter {
-  and: [ClientDeleteFilter!]
-  or: [ClientDeleteFilter!]
   email: StringFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison

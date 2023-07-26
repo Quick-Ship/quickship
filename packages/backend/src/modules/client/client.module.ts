@@ -10,6 +10,7 @@ import { ClientDTO } from './dto/client.dto';
 import { InputCreateClientDTO } from './dto/create-client.input';
 import { InputUpdateClientDTO } from './dto/update-client.input';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
+import { AuthModule } from 'src/common/auth/auth.module';
 import { AuthService } from 'src/common/auth/auth.service';
 
 @Module({
@@ -21,6 +22,7 @@ import { AuthService } from 'src/common/auth/auth.service';
         {
           aggregate: { enabled: true },
           delete: { disabled: true },
+          create: { one: { disabled: true }, many: { disabled: true } },
           DTOClass: ClientDTO,
           EntityClass: ClientEntity,
           ServiceClass: ClientService,
@@ -35,8 +37,9 @@ import { AuthService } from 'src/common/auth/auth.service';
         },
       ],
     }),
+    //AuthModule,
   ],
-  providers: [ClientResolver, ClientService],
+  providers: [ClientResolver, ClientService, AuthService],
   exports: [ClientService],
 })
 export class ClientModule {}
