@@ -1,7 +1,7 @@
 "use client";
 
 import { API_URL, PackagesInterface } from "@/common";
-import { GenerateShipmentInput, Header, Modal, Table } from "@/components";
+import { GenerateShipmentInput, Header, Modal, TableBody } from "@/components";
 import {
   AddPackagesToShipments,
   GenerateShipment,
@@ -13,7 +13,6 @@ import {
   EuiBasicTableColumn,
   EuiButton,
   EuiFieldSearch,
-  EuiFieldText,
   EuiForm,
   EuiFormRow,
   EuiHorizontalRule,
@@ -44,6 +43,7 @@ export default function Packages() {
     limit: pageSize,
     offset: pageIndex * pageSize,
   });
+  const [totalCount, setTotalCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [clientId, setClientId] = useState("");
   const [selectItems, setSelectItems] = useState<PackagesInterface[]>([]);
@@ -201,6 +201,7 @@ export default function Packages() {
           },
         }))
       );
+      setTotalCount(data?.packages?.totalCount);
     }
   }, [data, status]);
 
@@ -232,21 +233,6 @@ export default function Packages() {
     },
   ];
 
-  const onTableChange = ({ page = {} }: any) => {
-    const { index: pageIndex, size: pageSize } = page;
-
-    setPageIndex(pageIndex);
-    setPageSize(pageSize);
-  };
-
-  const pagination = {
-    pageIndex: pageIndex,
-    pageSize: pageSize,
-    totalItemCount: data?.packages?.totalCount,
-    pageSizeOptions: pageSizeOptions,
-    hidePerPageOptions: false,
-  };
-
   if (status === "loading") {
     return (
       <EuiPanel style={{ margin: "2vh" }}>
@@ -269,7 +255,7 @@ export default function Packages() {
   return (
     <EuiPageHeaderContent>
       <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Paquetes (${data?.packages?.totalCount})`}>
+        <Header title={`Paquetes (${totalCount})`}>
           <EuiButton
             disabled={selectItems.length <= 0}
             fill
@@ -291,15 +277,19 @@ export default function Packages() {
             />
           </EuiFormRow>
           <EuiSpacer />
-          <Table
-            items={dataPackages}
-            itemId="id"
+          <TableBody
+            pageIndex={pageIndex}
+            setPageIndex={setPageIndex}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
             columns={columns}
+            items={dataPackages}
+            totalItemCount={totalCount}
+            pageSizeOptions={pageSizeOptions}
+            noItemsMessage={"No se encontraron paquetes"}
+            itemId={"id"}
             selection={selection}
             isSelectable={true}
-            pagination={pagination}
-            onChange={onTableChange}
-            noItemsMessage="No hay paquetes disponibles"
           />
         </EuiPanel>
       </EuiPanel>

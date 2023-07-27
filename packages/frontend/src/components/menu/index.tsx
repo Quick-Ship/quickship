@@ -4,12 +4,6 @@ import {
   EuiListGroupItem,
 } from "@elastic/eui";
 
-/**
- * history packages
- * warehouse
- * create delivery
- */
-
 export const Menu = () => {
   return (
     <EuiListGroup>
@@ -20,21 +14,21 @@ export const Menu = () => {
         isActive
         href="/"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="users"
         onClick={() => "/clients"}
         label="Clientes"
         href="/clients"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="kubernetesNode"
         label="Almacenes clientes"
-        onClick={() => "/warehouseClients"}
-        href="/warehouseClients"
+        onClick={() => "/warehousesClients"}
+        href="/warehousesClients"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="importAction"
         iconProps={{ color: "default" }}
@@ -42,35 +36,35 @@ export const Menu = () => {
         label="Generar paquetes"
         href="/generatePackages"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="documentEdit"
         label="Crear Envio"
         onClick={() => "/createShipment"}
         href="/createShipment"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="package"
         label="Paquetes"
         onClick={() => "/packages"}
         href="/packages"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="kubernetesPod"
         label="historial de paquetes"
         onClick={() => "/packagesHistory"}
         href="/packagesHistory"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         iconType="dotInCircle"
         label="Envios"
         onClick={() => "/shipments"}
         href="/shipments"
       />
-      <EuiHorizontalRule />
+      <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         onClick={() => "/messengers"}
         iconType="timeline"

@@ -113,6 +113,8 @@ export default function Shipments() {
         state: data.shipment.warehouseShipment.direction.state,
         street: data.shipment.warehouseShipment.direction.street,
         zipCode: data.shipment.warehouseShipment.direction.zipCode,
+        statusId: data.shipment.shipmentStatus.id,
+        status: data.shipment.shipmentStatus.status,
       });
     }
   }, [status]);

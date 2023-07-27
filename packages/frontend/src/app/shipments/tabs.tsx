@@ -33,6 +33,19 @@ export const WarehouseTab: React.FC<TabWarehouseProps> = ({
 }) => {
   return (
     <Tabs
+      color={
+        warehouseShipment.statusId === 1
+          ? "primary"
+          : warehouseShipment.statusId === 2
+          ? "primary"
+          : warehouseShipment.statusId === 3
+          ? "success"
+          : warehouseShipment.statusId === 4
+          ? "warning"
+          : warehouseShipment.statusId === 5
+          ? "danger"
+          : undefined
+      }
       tabs={[
         {
           id: "almacen--id",
@@ -85,6 +98,19 @@ export const PackagesTabs: React.FC<PackagesTabsProps> = ({
     <>
       {packagesShipment.map((i, index) => (
         <Tabs
+          color={
+            i.statusId === 1
+              ? "primary"
+              : i.statusId === 2
+              ? "primary"
+              : i.statusId === 3
+              ? "success"
+              : i.statusId === 4
+              ? "warning"
+              : i.statusId === 5
+              ? "danger"
+              : undefined
+          }
           key={index}
           tabs={[
             {

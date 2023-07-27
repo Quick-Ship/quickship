@@ -1,7 +1,7 @@
 "use client";
 
 import { API_URL } from "@/common";
-import { Header, LoadingPage, Popover, Table } from "@/components";
+import { Header, LoadingPage, Popover, TableBody } from "@/components";
 import {
   AssignCourierShipment,
   ShipmentsQuery,
@@ -92,17 +92,36 @@ const AssignCourier: React.FC<AssignCourierProps> = ({
 
 export default function Shipments() {
   const queryCache: any = useQueryClient();
+  const initialIndex = 0;
+  const initialPageZize = 10;
+  const pageSizeOptions = [
+    initialPageZize,
+    initialPageZize * 2,
+    initialPageZize * 4,
+  ];
+  const [pageIndex, setPageIndex] = useState<number>(initialIndex);
+  const [pageSize, setPageSize] = useState<number>(initialPageZize);
+  const [actionsPaging, setActionsPaging] = useState<any>({
+    limit: pageSize,
+    offset: pageIndex * pageSize,
+  });
+  const [totalCount, setTotalCount] = useState(0);
   const [shipments, setShipments] = useState<any[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
   const [id, setId] = useState<number>(0);
   const { globalToasts, pushToast } = useToastsContext();
+
+  const queryVars = {
+    filter: {},
+    pagnig: actionsPaging,
+    sorting: {},
+  };
 
   const { data, status, isFetching } = useGeneratedGQLQuery<
     unknown | any,
     unknown,
     unknown,
     unknown
-  >(`${API_URL}/graphql`, "getShipments", ShipmentsQuery);
+  >(`${API_URL}/graphql`, "getShipments", ShipmentsQuery, queryVars);
 
   const { mutate, status: assignCourierShipmentStatus } = useMutation({
     mutationKey: ["assignCourierShipment"],
@@ -215,7 +234,18 @@ export default function Shipments() {
           <Header title={`Ordenes (${totalCount})`}>{""}</Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={shipments} columns={columns} itemId={"id"} />
+            <TableBody
+              items={shipments}
+              columns={columns}
+              itemId={"id"}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalItemCount={totalCount}
+              pageSizeOptions={pageSizeOptions}
+              noItemsMessage={"No se encontraron envios"}
+            />
           </EuiPanel>
         </EuiPanel>
       )}

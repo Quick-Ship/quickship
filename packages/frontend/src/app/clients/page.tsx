@@ -6,7 +6,7 @@ import {
   Header,
   LoadingPage,
   Modal,
-  Table,
+  TableBody,
 } from "@/components";
 import { ClientsQuery, CreateOneClientQuery, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
@@ -29,11 +29,29 @@ import { useGeneratedGQLQuery } from "@/hooks";
 
 export default function Clients() {
   const queryCache: any = useQueryClient();
+  const initialIndex = 0;
+  const initialPageZize = 10;
+  const pageSizeOptions = [
+    initialPageZize,
+    initialPageZize * 2,
+    initialPageZize * 4,
+  ];
+  const [pageIndex, setPageIndex] = useState<number>(initialIndex);
+  const [pageSize, setPageSize] = useState<number>(initialPageZize);
+  const [actionsPaging, setActionsPaging] = useState<any>({
+    limit: pageSize,
+    offset: pageIndex * pageSize,
+  });
+  const [totalCount, setTotalCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [clients, setClients] = useState<ClientsInterface[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-
   const { globalToasts, pushToast } = useToastsContext();
+
+  const queryVars = {
+    filter: {},
+    paging: actionsPaging,
+    sorting: {},
+  };
 
   const {
     data,
@@ -42,7 +60,8 @@ export default function Clients() {
   } = useGeneratedGQLQuery<unknown | any, unknown | any, unknown, unknown>(
     `${API_URL}/graphql`,
     "getClients",
-    ClientsQuery
+    ClientsQuery,
+    queryVars
   );
 
   const { mutate, status: createOneQueryStatus } = useMutation({
@@ -151,7 +170,18 @@ export default function Clients() {
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={clients} columns={columns} itemId={"id"} />
+            <TableBody
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              columns={columns}
+              items={clients}
+              totalItemCount={totalCount}
+              pageSizeOptions={pageSizeOptions}
+              noItemsMessage={"No se encontraron clientes"}
+              itemId={"id"}
+            />
           </EuiPanel>
         </EuiPanel>
       )}

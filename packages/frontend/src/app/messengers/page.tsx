@@ -1,7 +1,13 @@
 "use client";
 
 import { API_URL, MessengerInterface } from "@/common";
-import { GeneralForm, Header, LoadingPage, Modal, Table } from "@/components";
+import {
+  GeneralForm,
+  Header,
+  LoadingPage,
+  Modal,
+  TableBody,
+} from "@/components";
 import {
   CreateMessengerQuery,
   GetMessengersQuery,
@@ -25,11 +31,30 @@ import { useForm } from "react-hook-form";
 
 export default function Messengers() {
   const queryCache: any = useQueryClient();
+  const initialIndex = 0;
+  const initialPageZize = 10;
+  const pageSizeOptions = [
+    initialPageZize,
+    initialPageZize * 2,
+    initialPageZize * 4,
+  ];
+  const [pageIndex, setPageIndex] = useState<number>(initialIndex);
+  const [pageSize, setPageSize] = useState<number>(initialPageZize);
+  const [actionsPaging, setActionsPaging] = useState<any>({
+    limit: pageSize,
+    offset: pageIndex * pageSize,
+  });
+  const [totalCount, setTotalCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [messengers, setMessengers] = useState<MessengerInterface[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
 
   const { globalToasts, pushToast } = useToastsContext();
+
+  const queryVars = {
+    filter: {},
+    paging: actionsPaging,
+    sorting: {},
+  };
 
   const {
     data,
@@ -38,13 +63,11 @@ export default function Messengers() {
   } = useGeneratedGQLQuery<unknown | any, unknown, unknown, unknown>(
     `${API_URL}/graphql`,
     "getMessengers",
-    GetMessengersQuery
+    GetMessengersQuery,
+    queryVars
   );
 
-  const {
-    mutate,
-    status: createOneMessengerStatus,
-  } = useMutation({
+  const { mutate, status: createOneMessengerStatus } = useMutation({
     mutationKey: ["createOneMessenger"],
     mutationFn: (messenger: any) => {
       return graphQLClient.request(CreateMessengerQuery, messenger);
@@ -150,7 +173,18 @@ export default function Messengers() {
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
-            <Table items={messengers} columns={columns} itemId={"id"} />
+            <TableBody
+              items={messengers}
+              columns={columns}
+              itemId={"id"}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalItemCount={totalCount}
+              pageSizeOptions={pageSizeOptions}
+              noItemsMessage={"No se encontraron mensajeros"}
+            />
           </EuiPanel>
         </EuiPanel>
       )}

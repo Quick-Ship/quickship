@@ -12,4 +12,6 @@ export interface WarehouseShipmentInterface {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  statusId?: number;
+  status?: string
 }

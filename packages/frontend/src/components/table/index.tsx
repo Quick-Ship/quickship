@@ -1,44 +1,31 @@
+import React, { Fragment } from "react";
+import "@elastic/eui/dist/eui_theme_light.css";
 import { EuiBasicTable, EuiBasicTableColumn } from "@elastic/eui";
-// type User = {
-//   id: number;
-//   firstName: string | null | undefined;
-//   lastName: string;
-//   github: string;
-//   dateOfBirth: Date;
-//   online: boolean;
-//   location: {
-//     city: string;
-//     country: string;
-//   };
-// };
 
-export interface TableProps<T> {
-  items: Array<any>;
+export interface TableBodyProps<T> {
+  pageIndex: number;
+  setPageIndex: (index: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
   columns: Array<EuiBasicTableColumn<T>>;
-  pageIndex?: number;
-  setPageIndex?: (index: number) => void;
-  pageSize?: number;
-  setPageSize?: (size: number) => void;
-  totalItemCount?: number;
+  items: Array<any>;
+  totalItemCount: number;
   itemIdToExpandedRowMap?: any;
-  pageSizeOptions?: Array<number>;
-  noItemsMessage?: string;
+  pageSizeOptions: Array<number>;
+  noItemsMessage: string;
   isSelectable?: boolean;
   selection?: any;
   tableRef?: any;
-  downloadButton?: any;
   itemId: string;
-  pagination?: any;
-  onChange?: ({ page, sort }: any) => void;
 }
 
-export const Table: React.FC<TableProps<any>> = ({
-  columns,
-  items,
+export const TableBody: React.FC<TableBodyProps<any>> = ({
   pageIndex,
   setPageIndex,
   pageSize,
   setPageSize,
+  columns,
+  items,
   totalItemCount,
   itemIdToExpandedRowMap,
   pageSizeOptions,
@@ -46,26 +33,39 @@ export const Table: React.FC<TableProps<any>> = ({
   isSelectable,
   selection,
   tableRef,
-  downloadButton,
   itemId,
-  pagination,
-  onChange
 }) => {
+  const onTableChange = ({ page = {} }: any) => {
+    const { index: pageIndex, size: pageSize } = page;
+
+    setPageIndex(pageIndex);
+    setPageSize(pageSize);
+  };
+
+  const pagination = {
+    pageIndex: pageIndex,
+    pageSize: pageSize,
+    totalItemCount: totalItemCount,
+    pageSizeOptions: pageSizeOptions,
+    hidePerPageOptions: false,
+  };
+
   return (
-    <EuiBasicTable
-      tableCaption="Demo of EuiBasicTable with expanding rows"
-      items={items}
-      itemId={itemId}
-      isExpandable={true}
-      hasActions={true}
-      columns={columns}
-      ref={tableRef}
-      pagination={pagination}
-      onChange={onChange}
-      itemIdToExpandedRowMap={itemIdToExpandedRowMap}
-      noItemsMessage={noItemsMessage}
-      isSelectable={isSelectable}
-      selection={selection}
-    />
+    <Fragment>
+      <EuiBasicTable
+        ref={tableRef}
+        items={items}
+        pagination={pagination}
+        onChange={onTableChange}
+        itemId={itemId}
+        columns={columns}
+        itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+        isExpandable={true}
+        hasActions={true}
+        noItemsMessage={noItemsMessage}
+        isSelectable={isSelectable}
+        selection={selection}
+      />
+    </Fragment>
   );
 };

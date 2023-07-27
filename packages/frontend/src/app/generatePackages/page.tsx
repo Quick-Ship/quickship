@@ -1,6 +1,6 @@
 "use client";
 
-import { Header, Table } from "@/components";
+import { Header, TableBody } from "@/components";
 import {
   EuiBasicTableColumn,
   EuiButton,
@@ -348,11 +348,18 @@ export default function GeneratePackages() {
         <EuiHorizontalRule />
         <EuiPanel>
           {files && (
-            <Table
+            <TableBody
               items={files}
               itemIdToExpandedRowMap={itemIdToExpandedRowMap}
               columns={columns}
               itemId={"id"}
+              pageIndex={0}
+              setPageIndex={() => {}}
+              pageSize={0}
+              setPageSize={() => {}}
+              totalItemCount={0}
+              pageSizeOptions={[]}
+              noItemsMessage={"Sube tu archivo para ver información"}
             />
           )}
         </EuiPanel>
