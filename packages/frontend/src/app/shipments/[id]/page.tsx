@@ -27,7 +27,7 @@ import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext"
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 
 export default function Shipments() {
-  const queryCache = useQueryClient();
+  const queryCache: any = useQueryClient();
   const [packagesShipment, setPackagesShipment] = useState<
     PackagesShipmentInterface[]
   >([]);
@@ -117,8 +117,6 @@ export default function Shipments() {
     }
   }, [status]);
 
-  // console.log(data);
-
   const onChange = (e: any) => {
     const { name, value } = e.target;
     setIdValue({ ...idValue, [name]: value });
@@ -133,11 +131,10 @@ export default function Shipments() {
       {
         onSuccess: () => {
           if (isFetching === false) {
-            queryCache.removeQueries(["getShipment"], { stale: true });
+            queryCache.removeQueries("getShipment", { stale: true });
           }
         },
         onError: (error: any) => {
-          console.log(error.response.errors[0].message);
           const newToast: Toast[] = [];
           newToast.push({
             id: "1",
@@ -211,7 +208,7 @@ export default function Shipments() {
             </EuiFlexItem>
             <EuiFlexItem>
               <EuiPanel>
-                <strong>No</strong>
+                <strong>Map</strong>
               </EuiPanel>
             </EuiFlexItem>
           </EuiFlexGroup>

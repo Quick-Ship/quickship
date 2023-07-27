@@ -28,7 +28,7 @@ import { API_URL, ClientsInterface } from "@/common";
 import { useGeneratedGQLQuery } from "@/hooks";
 
 export default function Clients() {
-  const queryCache = useQueryClient();
+  const queryCache: any = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [clients, setClients] = useState<ClientsInterface[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -84,7 +84,7 @@ export default function Clients() {
         },
         onSuccess: () => {
           if (isFetching === false) {
-            queryCache.removeQueries(["getClients"], { stale: false });
+            queryCache.removeQueries("getClients", { stale: false });
           }
           setShowModal(false);
           const newToast: Toast[] = [];

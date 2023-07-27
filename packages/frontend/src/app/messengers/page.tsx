@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Messengers() {
-  const queryCache = useQueryClient();
+  const queryCache: any = useQueryClient();
   const [showModal, setShowModal] = useState(false);
   const [messengers, setMessengers] = useState<MessengerInterface[]>([]);
   const [totalCount, setTotalCount] = useState<number>(0);
@@ -83,7 +83,7 @@ export default function Messengers() {
         },
         onSuccess: () => {
           if (isFetching === false) {
-            queryCache.removeQueries(["getMessengers"], { stale: false });
+            queryCache.removeQueries("getMessengers", { stale: false });
           }
           setShowModal(false);
           const newToast: Toast[] = [];

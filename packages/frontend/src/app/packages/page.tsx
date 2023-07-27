@@ -50,7 +50,7 @@ export default function Packages() {
   const [dataPackages, setDataPackages] = useState<Array<PackagesInterface>>(
     []
   );
-  const queryCache = useQueryClient();
+  const queryCache: any = useQueryClient();
   const {
     register,
     handleSubmit,
@@ -143,7 +143,7 @@ export default function Packages() {
                 pushToast(newToast);
                 setShowModal(!showModal);
                 if (isFetching === false) {
-                  queryCache.removeQueries(["getPackages"], { stale: false });
+                  queryCache.removeQueries("getPackages", { stale: false });
                 }
               },
               onError: () => {
