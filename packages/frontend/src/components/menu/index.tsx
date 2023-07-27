@@ -4,6 +4,12 @@ import {
   EuiListGroupItem,
 } from "@elastic/eui";
 
+/**
+ * history packages
+ * warehouse
+ * create delivery
+ */
+
 export const Menu = () => {
   return (
     <EuiListGroup>
@@ -23,6 +29,13 @@ export const Menu = () => {
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
+        iconType="kubernetesNode"
+        label="Almacenes clientes"
+        onClick={() => "/warehouseClients"}
+        href="/warehouseClients"
+      />
+      <EuiHorizontalRule />
+      <EuiListGroupItem
         iconType="importAction"
         iconProps={{ color: "default" }}
         onClick={() => "/generatePackages"}
@@ -31,10 +44,24 @@ export const Menu = () => {
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
+        iconType="documentEdit"
+        label="Crear Envio"
+        onClick={() => "/createShipment"}
+        href="/createShipment"
+      />
+      <EuiHorizontalRule />
+      <EuiListGroupItem
         iconType="package"
-        label="Packages"
+        label="Paquetes"
         onClick={() => "/packages"}
         href="/packages"
+      />
+      <EuiHorizontalRule />
+      <EuiListGroupItem
+        iconType="kubernetesPod"
+        label="historial de paquetes"
+        onClick={() => "/packagesHistory"}
+        href="/packagesHistory"
       />
       <EuiHorizontalRule />
       <EuiListGroupItem
