@@ -6,7 +6,7 @@ import {
   ValidatorConstraintInterface,
   registerDecorator,
 } from 'class-validator';
-import { PackageStatusCancelEnum } from '../package-status-cancelatio.enum.dto';
+import { PackageStatusCancelEnum } from '../enums/package-status-cancelatio.enum';
 
 @ValidatorConstraint({ name: 'status', async: true })
 @Injectable()
