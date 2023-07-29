@@ -119,7 +119,7 @@ export const InputWarehouseClient: React.FC<InputWarehouseClientProps> = ({
               </EuiFormRow>
             </EuiFlexItem>
             <EuiFlexItem>
-              <EuiHorizontalRule margin="l" />
+              <EuiHorizontalRule margin="l" style={{marginTop: '28px'}} />
               <EuiFormRow>
                 <EuiFieldText
                   name="externalNumber"

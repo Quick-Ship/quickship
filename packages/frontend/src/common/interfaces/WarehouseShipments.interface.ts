@@ -13,10 +13,9 @@ export interface WarehouseShipmentsInterface {
   zipCode?: string;
   latitude?: number;
   longitude?: number;
-  idClient?: number;
-  fullNameClient?: string;
-  phoneClient?: string;
-  emailClient?: string;
+  fullNameContact?: string;
+  phoneContact?: string;
+  emailContact?: string;
   createdAt?: string;
   updatedAt?: string;
 }

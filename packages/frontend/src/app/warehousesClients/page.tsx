@@ -1,9 +1,6 @@
 "use client";
 
-import { API_URL, WarehouseShipmentsInterface } from "@/common";
-import { Header, Modal, TableBody } from "@/components";
-import { GetWarehouseShipments } from "@/graphql";
-import { useGeneratedGQLQuery } from "@/hooks";
+import { Header, LoadingPage, Modal, TableBody } from "@/components";
 import {
   EuiBasicTableColumn,
   EuiButton,
@@ -12,17 +9,26 @@ import {
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
   EuiText,
 } from "@elastic/eui";
 import { ReactNode, useEffect, useState } from "react";
+import {
+  CreateWarehouseShipment,
+  GetWarehouseShipments,
+  graphQLClient,
+} from "@/graphql";
+import { useGeneratedGQLQuery } from "@/hooks";
+import { API_URL, WarehouseShipmentsInterface } from "@/common";
 import { InputWarehouseClient } from "./inputWarehouseClient";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
+import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 
-export default function WarehousesClients() {
+export default function GeneratePackages() {
+  const queryCache: any = useQueryClient();
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -37,94 +43,127 @@ export default function WarehousesClients() {
     offset: pageIndex * pageSize,
   });
   const [totalCount, setTotalCount] = useState(0);
-  const [warehouhseClients, setWarehouseClients] = useState<
-    WarehouseShipmentsInterface[]
-  >([]);
-  const [showModal, setShowModal] = useState(false);
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<
     Record<string, ReactNode>
   >({});
+  const [items, setItems] = useState<Array<WarehouseShipmentsInterface>>([]);
+  const [showModal, setShowModal] = useState(false);
 
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    setValue,
-  } = useForm();
+  const { globalToasts, pushToast } = useToastsContext();
 
   const queryVars = {
     filter: {},
     paging: actionsPaging,
     sorting: [],
   };
-  const { data, status, isFetching } = useGeneratedGQLQuery<
-    unknown | any,
-    unknown,
-    unknown,
-    unknown
-  >(
+
+  const {
+    setValue,
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm();
+
+  const {
+    data: dataWarehouse,
+    status: statusWahouse,
+    isFetching,
+  } = useGeneratedGQLQuery<unknown | any, unknown, unknown, unknown>(
     `${API_URL}/graphql`,
     "getWarehouseShipments",
     GetWarehouseShipments,
     queryVars
   );
 
+  const { mutate, status: createOneWarehouseStatus } = useMutation({
+    mutationKey: ["createOneWarehouse"],
+    mutationFn: (warehouse: any) => {
+      return graphQLClient.request(CreateWarehouseShipment, warehouse);
+    },
+  });
+
   const onSubmit = (data: any) => {
+    console.log(data);
     const input = {
-      input: {
-        instructions: "",
-        clientId: 0,
-        direction: {
-          street: "",
-          neigthboorhood: "",
-          municipality: "",
-          state: "",
-          zipCode: "",
-          externalNumber: "",
-          internalNumber: "",
-          latitude: 0,
-          longitude: 0,
-        },
-        contact: {
-          firstName: "",
-          lastName: "",
-          phone: "",
-          email: "",
-        },
+      instructions: data.instructions,
+      clientId: Number(data.clientId),
+      direction: {
+        street: data.street,
+        neigthboorhood: data.neigthboorhood,
+        municipality: data.municipality,
+        state: data.state,
+        zipCode: data.zipCode,
+        externalNumber: data.externalNumber,
+        internalNumber: data.internalNumber,
+        latitude: Number(data.latitude),
+        longitude: Number(data.longitude),
+      },
+      contact: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        email: data.email,
       },
     };
-    console.log(data);
+    mutate(
+      { input },
+      {
+        onSuccess: () => {
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "1",
+            title: "Almacén",
+            text: <p>Creado correctamente</p>,
+            color: "danger",
+          });
+          pushToast(newToast);
+          setShowModal(!showModal);
+          if (isFetching === false) {
+            queryCache.removeQueries("getWarehouseShipments", { stale: false });
+          }
+        },
+        onError: () => {
+          const newToast: Toast[] = [];
+          newToast.push({
+            id: "2",
+            title: "Almacén",
+            text: <p>No se pudo guardar correctamente, intenta de nuevo</p>,
+            color: "danger",
+          });
+          pushToast(newToast);
+        },
+      }
+    );
   };
 
   useEffect(() => {
-    if (status === "success") {
-      setWarehouseClients(
-        data.warehouseShipments.nodes.map((wc: any) => ({
-          id: wc.id,
-          instructions: wc.instructions,
-          fullNAme: `${wc.contact.firstName} ${wc.contact.lastName}`,
-          phone: wc.contact.phone,
-          email: wc.contact.email,
-          street: wc.direction.street,
-          neigthboorhood: wc.direction.neigthboorhood,
-          municipality: wc.direction.municipality,
-          state: wc.direction.state,
-          externalNumber: wc.direction.externalNumber,
-          internalNumber: wc.direction.internalNumber,
-          zipCode: wc.direction.zipCode,
-          latitude: wc.direction.latitude,
-          longitude: wc.direction.longitude,
-          idClient: wc.client.id,
-          fullNameClient: `${wc.client.firstName} ${wc.client.lastName}`,
-          phoneClient: wc.client.phone,
-          emailClient: wc.client.email,
-          createdAt: wc.createdAt,
-          updatedAt: wc.updatedAt,
+    if (statusWahouse === "success") {
+      setItems(
+        dataWarehouse.warehouseShipments.nodes.map((wh: any) => ({
+          id: wh.id,
+          instructions: wh.instructions,
+          fullName: `${wh.client.firstName} ${wh.client.lastName}`,
+          phone: wh.client.phone,
+          email: wh.client.email,
+          createdAt: wh.createdAt,
+          updatedAt: wh.updatedAt,
+          street: wh.direction.street,
+          neigthboorhood: wh.direction.neigthboorhood,
+          municipality: wh.direction.municipality,
+          state: wh.direction.state,
+          externalNumber: wh.direction.externalNumber,
+          internalNumber: Number(wh.direction.internalNumber),
+          zipCode: wh.direction.zipCode,
+          latitude: wh.direction.latitude,
+          longitude: wh.direction.longitude,
+          fullNameContact: `${wh.contact.firstName} ${wh.contact.lastName}`,
+          phoneContact: wh.contact.phone,
+          emailContact: wh.contact.email,
         }))
       );
-      setTotalCount(data.warehouseShipments.totalCount);
+      setTotalCount(dataWarehouse.warehouseShipments.totalCount);
     }
-  }, [status]);
+  }, [dataWarehouse]);
 
   const toggleDetails = (item: any) => {
     const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
@@ -132,58 +171,58 @@ export default function WarehousesClients() {
     if (itemIdToExpandedRowMapValues[item.id]) {
       delete itemIdToExpandedRowMapValues[item.id];
     } else {
-      const [expand] = warehouhseClients.filter(
-        (i: any) => i === item
-      );
-
-      console.log(expand)
+      const [expand] = items.filter((i: any) => i === item);
 
       const listitemContact = [
         {
-          description: `${expand.id}`,
+          description: `${expand.fullNameContact}`,
           title: "Nombre",
         },
         {
-          description: ``,
-          title: "Apellido",
+          description: `${expand.phoneContact}`,
+          title: "Télefono",
         },
         {
-          description: ``,
-          title: "Telefono",
-        },
-        {
-          description: ``,
+          description: `${expand.emailContact}`,
           title: "Correo",
+        },
+        {
+          description: `${expand.instructions}`,
+          title: "Intrecciones",
         },
       ];
 
       const listItemDirection = [
         {
-          description: ``,
+          description: `${expand.street}`,
           title: "Calle",
         },
         {
-          description: ``,
+          description: `${expand.neigthboorhood}`,
           title: "Colonia",
         },
         {
-          description: ``,
+          description: `${expand.municipality}`,
           title: "Delegación",
         },
         {
-          description: ``,
+          description: `${expand.state}`,
           title: "Ciudad",
         },
         {
-          description: ``,
+          description: `${expand.externalNumber}`,
           title: "Numero exterior",
         },
         {
-          description: ``,
+          description: `${
+            Number.isNaN(expand.internalNumber)
+              ? "Sin nuero interior"
+              : expand.internalNumber
+          }`,
           title: "Numero interior",
         },
         {
-          description: ``,
+          description: `${expand.zipCode}`,
           title: "Codigo postal",
         },
       ];
@@ -191,23 +230,23 @@ export default function WarehousesClients() {
       itemIdToExpandedRowMapValues[item.id] = (
         <div style={{ display: "flex" }}>
           <div>
-            <EuiText style={{ marginBottom: "2px" }}>
+            <EuiText>
               <h2>Contacto</h2>
             </EuiText>
             <EuiDescriptionList
               listItems={listitemContact}
               type="responsiveColumn"
-              style={{ marginBottom: "2px" }}
+              style={{ marginBottom: "2px", marginTop: "8px" }}
             />
           </div>
           <div>
-            <EuiText style={{ marginBottom: "2px" }}>
+            <EuiText>
               <h2>Dirección</h2>
             </EuiText>
             <EuiDescriptionList
               listItems={listItemDirection}
               type="responsiveColumn"
-              style={{ marginBottom: "2px" }}
+              style={{ marginBottom: "2px", marginTop: "8px" }}
             />
           </div>
         </div>
@@ -220,38 +259,49 @@ export default function WarehousesClients() {
     {
       field: "id",
       name: "ID",
+      isExpander: true,
     },
     {
-      field: "idClient",
-      name: "id Cliente",
+      field: "fullName",
+      name: "Nombre cliente",
+      isExpander: true,
     },
     {
-      field: "fullNameClient",
-      name: "Cliente",
+      field: "phone",
+      name: "Télefono",
+      isExpander: true,
+    },
+
+    {
+      field: "email",
+      name: "Correo",
+      isExpander: true,
     },
     {
       field: "createdAt",
       name: "Fecha de creación",
+      isExpander: true,
     },
     {
       field: "updatedAt",
       name: "Fecha de actualización",
+      isExpander: true,
     },
     {
       align: "right",
       width: "80px",
       isExpander: true,
       name: "Actions",
-      render: (user: any) => {
+      render: (wh: any) => {
         const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
         return (
           <EuiButtonIcon
-            onClick={() => toggleDetails(user)}
+            onClick={() => toggleDetails(wh)}
             aria-label={
-              itemIdToExpandedRowMapValues[user.id] ? "Collapse" : "Expand"
+              itemIdToExpandedRowMapValues[wh.id] ? "Collapse" : "Expand"
             }
             iconType={
-              itemIdToExpandedRowMapValues[user.id] ? "arrowDown" : "arrowRight"
+              itemIdToExpandedRowMapValues[wh.id] ? "arrowDown" : "arrowRight"
             }
           />
         );
@@ -259,59 +309,40 @@ export default function WarehousesClients() {
     },
   ];
 
-  if (status === "loading") {
-    return (
-      <EuiPanel style={{ margin: "2vh" }}>
-        <EuiPageHeader>
-          <EuiSkeletonText
-            lines={1}
-            size={"relative"}
-            isLoading={status === "loading"}
-          ></EuiSkeletonText>
-        </EuiPageHeader>
-        <EuiSkeletonText
-          lines={6}
-          size={"m"}
-          isLoading={status === "loading"}
-        ></EuiSkeletonText>
-      </EuiPanel>
-    );
-  }
-
   return (
     <EuiPageHeaderContent>
-      <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Almacenes clientes (${totalCount})`}>
-          <EuiButton
-            // disabled={selectItems.length <= 0}
-            fill
-            onClick={() => setShowModal(!showModal)}
-          >
-            Crear almacén
-          </EuiButton>
-        </Header>
-        <EuiHorizontalRule />
-        <EuiPanel>
-          <TableBody
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            columns={columns}
-            items={warehouhseClients}
-            totalItemCount={totalCount}
-            pageSizeOptions={pageSizeOptions}
-            // itemIdToExpandedRowMap={0}
-            noItemsMessage={"No se encontraron Almacenes"}
-            itemId={"id"}
-          />
+      {statusWahouse === "loading" ? (
+        <LoadingPage isLoading={statusWahouse === "loading"} />
+      ) : (
+        <EuiPanel style={{ margin: "2vh" }}>
+          <Header title={`Almacenes Clientes (${totalCount})`}>
+            <EuiButton onClick={() => setShowModal(!showModal)} fill>
+              Agregar Almacén
+            </EuiButton>
+          </Header>
+          <EuiHorizontalRule />
+          <EuiPanel>
+            <TableBody
+              items={items}
+              itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+              columns={columns}
+              itemId={"id"}
+              pageIndex={pageIndex}
+              setPageIndex={setPageIndex}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              totalItemCount={totalCount}
+              pageSizeOptions={pageSizeOptions}
+              noItemsMessage={"Sube tu archivo para ver información"}
+            />
+          </EuiPanel>
         </EuiPanel>
-      </EuiPanel>
+      )}
       {showModal && (
         <Modal
           onCloseModal={() => setShowModal(!showModal)}
           titleModal={"Crear Almacén"}
-          minWdith={1000}
+          minWdith={950}
         >
           <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
             <InputWarehouseClient
@@ -323,11 +354,18 @@ export default function WarehousesClients() {
               <EuiButton onClick={() => setShowModal(!showModal)}>
                 Cancelar
               </EuiButton>
-              <EuiButton type="submit">Guardar</EuiButton>
+              <EuiButton
+                type="submit"
+                fill
+                isLoading={createOneWarehouseStatus === "loading"}
+              >
+                Crear
+              </EuiButton>
             </EuiModalFooter>
           </EuiForm>
         </Modal>
       )}
+      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

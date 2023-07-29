@@ -708,7 +708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/datemath@npm:^5.0.3":
+"@elastic/datemath@npm:5.0.3":
   version: 5.0.3
   resolution: "@elastic/datemath@npm:5.0.3"
   dependencies:
@@ -719,9 +719,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/eui@npm:^82.0.0":
-  version: 82.2.1
-  resolution: "@elastic/eui@npm:82.2.1"
+"@elastic/eui@npm:82.0.0":
+  version: 82.0.0
+  resolution: "@elastic/eui@npm:82.0.0"
   dependencies:
     "@types/chroma-js": ^2.0.0
     "@types/lodash": ^4.14.194
@@ -774,7 +774,7 @@ __metadata:
     react: ^16.12 || ^17.0
     react-dom: ^16.12 || ^17.0
     typescript: ~4.5.3
-  checksum: 4b99ea2827295b16d721ec896313ec7ec1da64e4edfbfa56e6a3ca88c2a0783dc87f70637f4b7a19a68a73c51e9f4ef5fbbd20a42eee6c5327f67f67409ebbe3
+  checksum: 1614830c704e00618d7719fd4e3d78c9f4f62a7af8aff89f29b04d5263d0f38819a1768f56c73a1370c08c82e456bfd7c6804a30b8e6d91446d220c8fbbb7463
   languageName: node
   linkType: hard
 
@@ -810,16 +810,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/css@npm:^11.11.0":
-  version: 11.11.2
-  resolution: "@emotion/css@npm:11.11.2"
+"@emotion/css@npm:11.11.0":
+  version: 11.11.0
+  resolution: "@emotion/css@npm:11.11.0"
   dependencies:
     "@emotion/babel-plugin": ^11.11.0
     "@emotion/cache": ^11.11.0
     "@emotion/serialize": ^1.1.2
     "@emotion/sheet": ^1.2.2
     "@emotion/utils": ^1.2.1
-  checksum: 1edea109dfc31005243334bc351ba127220ea5c4986225e0f1b8f7aa71fb2f83fb8f51d8f5b8afb8432d4c6397c23f5061038449f2876888eecc6eac1dd2f0da
+  checksum: 34e1f9a85a056b77a46462bd760ef614c0b6015b8ae1aaac5efbdc92067a7849e3bf4329430d46c72d7c3426ccc79d2f1052aa6ab73b5a2791954393bd779437
   languageName: node
   linkType: hard
 
@@ -837,7 +837,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/react@npm:^11.11.1":
+"@emotion/react@npm:11.11.1":
   version: 11.11.1
   resolution: "@emotion/react@npm:11.11.1"
   dependencies:
@@ -3681,18 +3681,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tanstack/query-core@npm:4.29.19":
-  version: 4.29.19
-  resolution: "@tanstack/query-core@npm:4.29.19"
-  checksum: 91a79dbebebc139d118542a5fe83fb54a6f6448bbe1563db1a0bed0c6d44e1d023613efde3c4ac747c72d067110013ac56f90611bf8affc390eda1ac3f99066e
+"@tanstack/query-core@npm:4.29.14":
+  version: 4.29.14
+  resolution: "@tanstack/query-core@npm:4.29.14"
+  checksum: 3f74b2a02a7ac3b5d5f01507dc5ed15af539257005fc299ae4e4ef578feb347ab737ed5beb542c809c8f2838ae4d8626f6bf5d7d134173e0b8504c0900d0d9f6
   languageName: node
   linkType: hard
 
-"@tanstack/react-query@npm:^4.29.14":
-  version: 4.29.19
-  resolution: "@tanstack/react-query@npm:4.29.19"
+"@tanstack/react-query@npm:4.29.14":
+  version: 4.29.14
+  resolution: "@tanstack/react-query@npm:4.29.14"
   dependencies:
-    "@tanstack/query-core": 4.29.19
+    "@tanstack/query-core": 4.29.14
     use-sync-external-store: ^1.2.0
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -3703,7 +3703,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 2780ac35b4d1dabcd3e708b95891376e7e609109270d40442b33f4747c508c23e46bcadc692f997f81d38f62b5ab31f8e42bc9a785dfa4afe0c390adb6f37e52
+  checksum: 2444cd11dbbb9e6811e845505bd55d0f4b63f39f6067f5b3a65b18ed66d945128d84988df3b7aaae7adc5636fd0909af86bbc184b6101d395136f8bd14509593
   languageName: node
   linkType: hard
 
@@ -4129,7 +4129,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/papaparse@npm:^5.3.7":
+"@types/papaparse@npm:5.3.7":
   version: 5.3.7
   resolution: "@types/papaparse@npm:5.3.7"
   dependencies:
@@ -5473,7 +5473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.0.0, axios@npm:^1.4.0":
+"axios@npm:1.4.0, axios@npm:^1.0.0":
   version: 1.4.0
   resolution: "axios@npm:1.4.0"
   dependencies:
@@ -8501,30 +8501,30 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "frontend@workspace:packages/frontend"
   dependencies:
-    "@elastic/datemath": ^5.0.3
-    "@elastic/eui": ^82.0.0
-    "@emotion/css": ^11.11.0
-    "@emotion/react": ^11.11.1
-    "@tanstack/react-query": ^4.29.14
+    "@elastic/datemath": 5.0.3
+    "@elastic/eui": 82.0.0
+    "@emotion/css": 11.11.0
+    "@emotion/react": 11.11.1
+    "@tanstack/react-query": 4.29.14
     "@types/node": 20.3.1
-    "@types/papaparse": ^5.3.7
+    "@types/papaparse": 5.3.7
     "@types/react": 18.2.12
     "@types/react-dom": 18.2.5
-    axios: ^1.4.0
+    axios: 1.4.0
     eslint: 8.42.0
     eslint-config-next: 13.4.5
-    graphql-request: ^6.1.0
-    lodash: ^4.17.21
-    moment: ^2.29.4
+    graphql-request: 6.1.0
+    lodash: 4.17.21
+    moment: 2.29.4
     next: 13.4.5
-    papaparse: ^5.4.1
-    prop-types: ^15.8.1
+    papaparse: 5.4.1
+    prop-types: 15.8.1
     react: 18.2.0
     react-dom: 18.2.0
-    react-hook-form: ^7.44.3
-    ts-toolbelt: ^9.6.0
+    react-hook-form: 7.44.3
+    ts-toolbelt: 9.6.0
     typescript: 5.1.3
-    zustand: ^4.3.9
+    zustand: 4.3.9
   languageName: unknown
   linkType: soft
 
@@ -9136,7 +9136,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-request@npm:^6.1.0":
+"graphql-request@npm:6.1.0":
   version: 6.1.0
   resolution: "graphql-request@npm:6.1.0"
   dependencies:
@@ -12097,7 +12097,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.29.4":
+"moment@npm:2.29.4":
   version: 2.29.4
   resolution: "moment@npm:2.29.4"
   checksum: 0ec3f9c2bcba38dc2451b1daed5daded747f17610b92427bebe1d08d48d8b7bdd8d9197500b072d14e326dd0ccf3e326b9e3d07c5895d3d49e39b6803b76e80e
@@ -13157,7 +13157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"papaparse@npm:^5.4.1":
+"papaparse@npm:5.4.1":
   version: 5.4.1
   resolution: "papaparse@npm:5.4.1"
   checksum: fc9e52f7158dca3517c229e3309065b1ab5da6c7194572fba4f31ff138bc43e3c91182cc40365cc828f97fe10d0aca416068fd731661058bea0f69ddb84a411a
@@ -13882,7 +13882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:15.8.1, prop-types@npm:^15.5.8, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -14245,12 +14245,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:^7.44.3":
-  version: 7.45.1
-  resolution: "react-hook-form@npm:7.45.1"
+"react-hook-form@npm:7.44.3":
+  version: 7.44.3
+  resolution: "react-hook-form@npm:7.44.3"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: 3abe1dcf449a3d438b4e5403d93d1502f6dab05afd5c5215f0fc88a32f3d06e7f4b77bee75479359c22a418af6ea0f52711478c73773cb5fd0f43da50669aa17
+  checksum: 8dc97e705d28d842c60fd79b0f07b8b045c458c234e3bf422baab87a844d0ebecbdf3e349538eaaa5c12366cd85169f60a52ed84dd31cdd99729899e424548bf
   languageName: node
   linkType: hard
 
@@ -16299,7 +16299,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-toolbelt@npm:^9.6.0":
+"ts-toolbelt@npm:9.6.0":
   version: 9.6.0
   resolution: "ts-toolbelt@npm:9.6.0"
   checksum: 9f35fd95d895a5d32ea9fd2e532a695b0bae6cbff6832b77292efa188a0ed1ed6e54f63f74a8920390f3d909a7a3adb20a144686372a8e78b420246a9bd3d58a
@@ -17733,7 +17733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^4.3.9":
+"zustand@npm:4.3.9":
   version: 4.3.9
   resolution: "zustand@npm:4.3.9"
   dependencies:
