@@ -69,7 +69,7 @@ export default function Packages() {
       }),
     },
     paging: actionsPaging,
-    sort: {},
+    sorting: [],
   };
 
   const onSelectionChange = (selectedItems: PackagesInterface[]) => {

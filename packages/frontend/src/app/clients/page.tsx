@@ -189,7 +189,7 @@ export default function Clients() {
         <>
           <Modal
             onCloseModal={() => setShowModal(!showModal)}
-            titleModal={"Crear CLiente"}
+            titleModal={"Crear Cliente"}
           >
             <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
               <GeneralForm

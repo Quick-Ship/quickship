@@ -1,15 +1,18 @@
 import { gql } from "graphql-request";
 
-export const GetWarehouseClients = gql`
+export const GetWarehouseShipments = gql`
   query WarehouseShipments(
     $paging: OffsetPaging
     $filter: WarehouseShipmentFilter
     $sorting: [WarehouseShipmentSort!]
   ) {
     warehouseShipments(filter: $filter, paging: $paging, sorting: $sorting) {
+      totalCount
       nodes {
         id
         instructions
+        createdAt
+        updatedAt
         contact {
           firstName
           lastName

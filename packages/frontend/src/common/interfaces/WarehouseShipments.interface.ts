@@ -1,0 +1,22 @@
+export interface WarehouseShipmentsInterface {
+  id?: number;
+  instructions?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  street?: string;
+  neigthboorhood?: string;
+  municipality?: string;
+  state?: string;
+  externalNumber?: number;
+  internalNumber?: number;
+  zipCode?: string;
+  latitude?: number;
+  longitude?: number;
+  idClient?: number;
+  fullNameClient?: string;
+  phoneClient?: string;
+  emailClient?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

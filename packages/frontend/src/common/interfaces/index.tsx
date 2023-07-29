@@ -4,3 +4,4 @@ export * from "./Packages.interface";
 export * from "./PackagesShipment.interface";
 export * from "./WarehouseShipment.interface";
 export * from "./MessengerShipment.interface";
+export * from "./WarehouseShipments.interface";
