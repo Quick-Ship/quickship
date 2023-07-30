@@ -1,7 +1,13 @@
 "use client";
 
 import { API_URL, PackagesInterface } from "@/common";
-import { GenerateShipmentInput, Header, Modal, TableBody } from "@/components";
+import {
+  GenerateShipmentInput,
+  Header,
+  LoadingPage,
+  Modal,
+  TableBody,
+} from "@/components";
 import {
   AddPackagesToShipments,
   GenerateShipment,
@@ -234,22 +240,7 @@ export default function Packages() {
   ];
 
   if (status === "loading") {
-    return (
-      <EuiPanel style={{ margin: "2vh" }}>
-        <EuiPageHeader>
-          <EuiSkeletonText
-            lines={1}
-            size={"relative"}
-            isLoading={status === "loading"}
-          ></EuiSkeletonText>
-        </EuiPageHeader>
-        <EuiSkeletonText
-          lines={6}
-          size={"m"}
-          isLoading={status === "loading"}
-        ></EuiSkeletonText>
-      </EuiPanel>
-    );
+    return <LoadingPage isLoading={status === "loading"} />;
   }
 
   return (

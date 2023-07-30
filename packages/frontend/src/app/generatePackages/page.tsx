@@ -23,32 +23,7 @@ import { CreatePackages, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useRouter } from "next/navigation";
-
-interface DataFile {
-  guide: string;
-  weigth: number;
-  width: number;
-  length: number;
-  heigth: number;
-  idClient: number;
-  contact: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  };
-  direction: {
-    street: string;
-    neigthboorhood: string;
-    municipality: string;
-    state: string;
-    externalNumber: string;
-    internalNumber: string;
-    zipCode: string;
-    latitude: number;
-    longitude: number;
-  };
-}
+import { GeneratePackagesCSVInterface } from "@/common";
 
 export default function GeneratePackages() {
   const router = useRouter();
@@ -56,7 +31,7 @@ export default function GeneratePackages() {
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<
     Record<string, ReactNode>
   >({});
-  const [items, setItems] = useState<Array<DataFile>>([]);
+  const [items, setItems] = useState<Array<GeneratePackagesCSVInterface>>([]);
   const [idClient, setIdClient] = useState("");
 
   const { mutate, isLoading, error, data, status } = useMutation({
