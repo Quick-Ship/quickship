@@ -1,15 +1,12 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Reflector } from '@nestjs/core';
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { GqlExecutionContext } from '@nestjs/graphql';
 
 @Injectable()
-export class GqlAuthGuard implements CanActivate {
-  constructor(private reflector: Reflector) { }
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+export class GqlAuthGuard extends AuthGuard('bearer') {
+  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+  getRequest(context: ExecutionContext) {
     const context_ = GqlExecutionContext.create(context);
-    const request = context_.getContext().req;
-    const token = request?.headers['authorization'];
-    const user = token ? true : false;
-    return user;
+    return context_.getContext().req;
   }
 }

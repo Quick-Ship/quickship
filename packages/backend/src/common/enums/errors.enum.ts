@@ -11,5 +11,4 @@ export enum Errors {
   TOKEN_EXPIRED = 'The token has expired.',
   TOKEN_IVALID = 'The token is invalid.',
   TOKEN_NOT_INFO = 'The token has not info.',
-  EMAIL_NOT_VERIFIED = 'Email not verified.',
 }
