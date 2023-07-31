@@ -1243,6 +1243,75 @@ type EvidenceMaxAggregate {
   deletedAt: DateTime
 }
 
+type User {
+  id: Float!
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+type RegisterUserResponse {
+  url: String!
+}
+
+type UserDeleteResponse {
+  id: Float
+  firstName: String
+  lastName: String
+  phone: String
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [User!]!
+}
+
+type UserAggregateGroupBy {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserCountAggregate {
+  email: Int
+  createdAt: Int
+  updatedAt: Int
+  deletedAt: Int
+}
+
+type UserMinAggregate {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserMaxAggregate {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserAggregateResponse {
+  groupBy: UserAggregateGroupBy
+  count: UserCountAggregate
+  min: UserMinAggregate
+  max: UserMaxAggregate
+}
+
 type Query {
   sayHello: String!
   client(
@@ -1417,6 +1486,24 @@ type Query {
     """Specify to sort results."""
     sorting: [EvidenceSort!] = []
   ): EvidenceConnection!
+  user(
+    """The id of the record to find."""
+    id: ID!
+  ): User
+  users(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 100}
+
+    """Specify to filter the records returned."""
+    filter: UserFilter = {}
+
+    """Specify to sort results."""
+    sorting: [UserSort!] = [{field: createdAt, direction: DESC}]
+  ): UserConnection!
+  userAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserAggregateFilter
+  ): [UserAggregateResponse!]!
 }
 
 input ClientFilter {
@@ -1679,6 +1766,37 @@ enum PackageStatusSortFields {
   deletedAt
 }
 
+input UserFilter {
+  and: [UserFilter!]
+  or: [UserFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input UserSort {
+  field: UserSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum UserSortFields {
+  email
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input UserAggregateFilter {
+  and: [UserAggregateFilter!]
+  or: [UserAggregateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
 type Mutation {
   setPackagesOnClient(input: SetPackagesOnClientInput!): Client!
   removePackagesFromClient(input: RemovePackagesFromClientInput!): Client!
@@ -1812,6 +1930,11 @@ type Mutation {
   updateManyEvidences(input: UpdateManyEvidencesInput!): UpdateManyResponse!
   deleteOneEvidence(input: DeleteOneEvidenceInput!): EvidenceDeleteResponse!
   deleteManyEvidences(input: DeleteManyEvidencesInput!): DeleteManyResponse!
+  updateOneUser(input: UpdateOneUserInput!): User!
+  updateManyUsers(input: UpdateManyUsersInput!): UpdateManyResponse!
+  deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+  deleteManyUsers(input: DeleteManyUsersInput!): DeleteManyResponse!
+  registerUser(input: InputRegisterUser!): RegisterUserResponse!
 }
 
 input SetPackagesOnClientInput {
@@ -3101,4 +3224,66 @@ input EvidenceDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input UpdateOneUserInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateUser!
+}
+
+input UpdateUser {
+  id: Float
+  firstName: String
+  lastName: String
+  phone: String
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input UpdateManyUsersInput {
+  """Filter used to find fields to update"""
+  filter: UserUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateUser!
+}
+
+input UserUpdateFilter {
+  and: [UserUpdateFilter!]
+  or: [UserUpdateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input DeleteOneUserInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteManyUsersInput {
+  """Filter to find records to delete"""
+  filter: UserDeleteFilter!
+}
+
+input UserDeleteFilter {
+  and: [UserDeleteFilter!]
+  or: [UserDeleteFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input InputRegisterUser {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
 }
