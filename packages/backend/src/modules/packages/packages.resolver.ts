@@ -9,6 +9,8 @@ import { UseGuards, ValidationPipe } from '@nestjs/common';
 import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
 import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
+import { CurrentUser } from 'src/common/auth/current-user.decorator';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
 @Resolver(() => PackageDTO)
 export class PackagesResolver extends CRUDResolver(PackageDTO) {
@@ -21,8 +23,9 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
   public async createDelivery(
     @Args('input', new ValidationPipe())
     input: InputCreatePackageDTO,
+    @CurrentUser() user: IPayloadUser,
   ): Promise<PackageDTO> {
-    return this.packagesService.createPackages(input);
+    return this.packagesService.createPackages(input, user);
   }
 
   @Mutation(() => ChangePackageStatusResponseDTO)

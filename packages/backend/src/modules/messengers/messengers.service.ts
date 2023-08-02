@@ -36,7 +36,10 @@ export class MessengersService extends TypeOrmQueryService<MessengerEntity> {
         data: input,
       });
 
-      const courier = await queryRunner.manager.save(MessengerEntity, input);
+      const courier = await queryRunner.manager.save(MessengerEntity, {
+        ...input,
+        courierActivityId: 2,
+      });
 
       const url = await this.firebaseService.registerFirebase({
         email: input.email,
