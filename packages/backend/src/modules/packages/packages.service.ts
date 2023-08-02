@@ -22,6 +22,7 @@ import { ChangePackageStatusResponseDTO } from './dto/change-package-status-resp
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-description.enum';
 import { PackageStatusEnum } from 'src/common/enums/package-status.enum';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {
@@ -33,7 +34,10 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
     super(repo);
   }
 
-  public async createPackages(input: InputCreatePackageDTO) {
+  public async createPackages(
+    input: InputCreatePackageDTO,
+    user: IPayloadUser,
+  ) {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -41,7 +45,7 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
     try {
       this.logger.debug({
         event: 'packageService.createPackages.input',
-        data: input,
+        data: { input, user },
       });
       const contact = await queryRunner.manager.save(ContactEntity, {
         ...input.contact,
@@ -50,7 +54,7 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
         ...input.direction,
       });
       const packages = await queryRunner.manager.save(PackageEntity, {
-        clientId: input.idClient,
+        clientId: user.tenant === 'USER' ? input.idClient : user.id,
         contactId: contact.id,
         directionId: direction.id,
         statusId: PackageStatusEnum.SC,
