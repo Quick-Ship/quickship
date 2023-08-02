@@ -28,6 +28,7 @@ import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-de
 import { ShipmentStatusEnum } from 'src/common/enums/shipment-status-enum';
 import { PackageStatusCancelTypes } from 'src/common/enums/package-status-cancelatio.enum';
 import { Errors } from 'src/common/enums/errors.enum';
+import { MessengerEntity } from '../messengers/entities/messenger.entity';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -171,6 +172,21 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
       });
 
       this.validateShipmentStatus(shipment, ShipmentStatusEnum.PENDING);
+
+      const [messenger] = await queryRunner.manager.find(MessengerEntity, {
+        where: {
+          messengerId: input.courierId,
+          courierActivityId: 1,
+        },
+      });
+
+      if (!messenger) {
+        this.logger.warn({
+          event: 'shipmentService.assignCourierShipment.activityCourierInvalid',
+          warning: Errors.COURIER_ACTIVITY_INVALID,
+        });
+        throw new GraphQLError(Errors.COURIER_ACTIVITY_INVALID);
+      }
 
       const [currentShipment] = await queryRunner.manager.find(ShipmentEntity, {
         where: {
