@@ -5,9 +5,10 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { PackagesService } from './packages.service';
 import { PackageDTO } from './dto/packages.dto';
 import { InputCreatePackageDTO } from './dto/create-package.input';
-import { ValidationPipe } from '@nestjs/common';
+import { UseGuards, ValidationPipe } from '@nestjs/common';
 import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
 import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Resolver(() => PackageDTO)
 export class PackagesResolver extends CRUDResolver(PackageDTO) {
@@ -16,6 +17,7 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
   }
 
   @Mutation(() => PackageDTO)
+  @UseGuards(GqlAuthGuard)
   public async createDelivery(
     @Args('input', new ValidationPipe())
     input: InputCreatePackageDTO,
@@ -24,6 +26,7 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
   }
 
   @Mutation(() => ChangePackageStatusResponseDTO)
+  @UseGuards(GqlAuthGuard)
   public async changePackageStatus(
     @Args('input', new ValidationPipe())
     input: InputChangePackageStatusDTO,

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
@@ -9,6 +9,7 @@ import { InvoiceEntity } from './entities/invoice.entity';
 import { InputCreateInvoiceDTO } from './dto/create-invoice.input';
 import { InputUpdateInvoiceDTO } from './dto/update-invoice.input';
 import { InvoiceDTO } from './dto/invoice.dto';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -23,6 +24,11 @@ import { InvoiceDTO } from './dto/invoice.dto';
           ServiceClass: InvoicesService,
           CreateDTOClass: InputCreateInvoiceDTO,
           UpdateDTOClass: InputUpdateInvoiceDTO,
+          read: {
+            decorators: [UseGuards(GqlAuthGuard)],
+          },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
+          create: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),
