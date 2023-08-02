@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 import { ContactService } from './contact.service';
@@ -7,6 +7,7 @@ import { ContactEntity } from './entities/contact.entity';
 import { ContactDTO } from './dto/contact.dto';
 import { InputCreateContactDTO } from './dto/create-contact.input';
 import { InputUpdateContactDTO } from './dto/update-contact.input';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -21,6 +22,11 @@ import { InputUpdateContactDTO } from './dto/update-contact.input';
           ServiceClass: ContactService,
           CreateDTOClass: InputCreateContactDTO,
           UpdateDTOClass: InputUpdateContactDTO,
+          read: {
+            decorators: [UseGuards(GqlAuthGuard)],
+          },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
+          create: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),

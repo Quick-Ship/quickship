@@ -56,15 +56,15 @@ export class AuthStrategy extends PassportStrategy(Strategy, 'bearer') {
             event: 'authStrategy.error',
             error: error.message,
           });
-          const errorMessage: string = error.message || error;
-          if (errorMessage.startsWith('The token has expired')) {
-            return done(
-              new UnauthorizedException({
-                statusCode: 401,
-                message: Errors.TOKEN_EXPIRED,
-              }),
-            );
-          }
+          // const errorMessage: string = error.message || error;
+          // if (errorMessage.startsWith('The token has expired')) {
+          //   return done(
+          //     new UnauthorizedException({
+          //       statusCode: 401,
+          //       message: Errors.TOKEN_EXPIRED,
+          //     }),
+          //   );
+          // }
 
           return done(
             new UnauthorizedException({

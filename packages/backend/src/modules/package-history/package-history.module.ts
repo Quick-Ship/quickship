@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
@@ -9,6 +9,7 @@ import { PackagesHistoryService } from './package-history.service';
 import { PackageHistoryDTO } from './dtos/package-history.dto';
 import { InputCreatePackageHistoryDTO } from './dtos/create-package-history.dto';
 import { InputUpdatePackageHistoryDTO } from './dtos/upate-package-history.dto';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -23,6 +24,11 @@ import { InputUpdatePackageHistoryDTO } from './dtos/upate-package-history.dto';
           ServiceClass: PackagesHistoryService,
           CreateDTOClass: InputCreatePackageHistoryDTO,
           UpdateDTOClass: InputUpdatePackageHistoryDTO,
+          read: {
+            decorators: [UseGuards(GqlAuthGuard)],
+          },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
+          create: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),

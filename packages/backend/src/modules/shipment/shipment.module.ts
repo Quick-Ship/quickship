@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
@@ -12,6 +12,7 @@ import { InputUpdateShipmentDTO } from './dto/update-shipment.input';
 import { DirectionModule } from '../directions/directions.module';
 import { PackagesModule } from '../packages/packages.module';
 import { ContactModule } from '../contact/contact.module';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -31,6 +32,11 @@ import { ContactModule } from '../contact/contact.module';
           ServiceClass: ShipmentService,
           CreateDTOClass: InputCreateShipmentDTO,
           UpdateDTOClass: InputUpdateShipmentDTO,
+          read: {
+            decorators: [UseGuards(GqlAuthGuard)],
+          },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
+          create: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),
