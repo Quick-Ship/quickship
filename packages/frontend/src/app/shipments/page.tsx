@@ -1,7 +1,7 @@
 "use client";
 
 import { API_URL } from "@/common";
-import { Header, LoadingPage, Popover, TableBody } from "@/components";
+import { Button, Header, LoadingPage, Popover, TableBody } from "@/components";
 import {
   AssignCourierShipment,
   ShipmentsQuery,
@@ -11,7 +11,6 @@ import { useGeneratedGQLQuery } from "@/hooks";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiFieldText,
   EuiFormRow,
   EuiHorizontalRule,
@@ -77,14 +76,14 @@ const AssignCourier: React.FC<AssignCourierProps> = ({
         <EuiFormRow label="Ingresa id mensajero">
           <EuiFieldText name="id" value={idValue.id} onChange={onChange} />
         </EuiFormRow>
-        <EuiButton
-          style={{ marginLeft: "1em" }}
+        <Button
+          // style={{ marginLeft: "1em" }}
           isLoading={assignCourierShipmentStatus === "loading"}
           onClick={onSubmit}
           isDisabled={idValue.id === ""}
         >
           Asignar
-        </EuiButton>
+        </Button>
       </div>
     </Popover>
   );

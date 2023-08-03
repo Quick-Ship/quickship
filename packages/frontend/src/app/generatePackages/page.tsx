@@ -1,9 +1,8 @@
 "use client";
 
-import { Header, TableBody } from "@/components";
+import { Button, Header, TableBody } from "@/components";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiDescriptionList,
   EuiFieldText,
@@ -302,14 +301,9 @@ export default function GeneratePackages() {
               />
             )}
           </div>
-          <EuiButton
-            onClick={submitManyPackages}
-            isLoading={status === "loading"}
-            // href={"/packages"}
-            fill
-          >
+          <Button onClick={submitManyPackages} isLoading={status === "loading"} fill>
             Agregar guias
-          </EuiButton>
+          </Button>
         </Header>
         <EuiHorizontalRule />
         <EuiFormRow>

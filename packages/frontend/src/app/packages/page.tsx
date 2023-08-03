@@ -2,6 +2,7 @@
 
 import { API_URL, PackagesInterface } from "@/common";
 import {
+  Button,
   GenerateShipmentInput,
   Header,
   LoadingPage,
@@ -17,16 +18,13 @@ import { useGeneratedGQLQuery, useGeneratedMutation } from "@/hooks";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiFieldSearch,
   EuiForm,
   EuiFormRow,
   EuiHorizontalRule,
   EuiModalFooter,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
   EuiSpacer,
   EuiTableSelectionType,
 } from "@elastic/eui";
@@ -247,13 +245,13 @@ export default function Packages() {
     <EuiPageHeaderContent>
       <EuiPanel style={{ margin: "2vh" }}>
         <Header title={`Paquetes (${totalCount})`}>
-          <EuiButton
-            disabled={selectItems.length <= 0}
-            fill
+          <Button
+            isDisabled={selectItems.length <= 0}
             onClick={() => setShowModal(!showModal)}
+            fill
           >
             Crear orden
-          </EuiButton>
+          </Button>
         </Header>
         <EuiHorizontalRule />
         <EuiPanel>
@@ -298,16 +296,16 @@ export default function Packages() {
               />
               <EuiSpacer />
               <EuiModalFooter>
-                <EuiButton onClick={() => setShowModal(!showModal)}>
+                <Button onClick={() => setShowModal(!showModal)}>
                   cancelar
-                </EuiButton>
-                <EuiButton
+                </Button>
+                <Button
                   type="submit"
                   fill
                   isLoading={statusGenerateShipment === "loading"}
                 >
                   guardar
-                </EuiButton>
+                </Button>
               </EuiModalFooter>
             </EuiForm>
           </Modal>

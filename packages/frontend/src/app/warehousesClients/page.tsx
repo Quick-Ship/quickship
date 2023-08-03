@@ -1,9 +1,8 @@
 "use client";
 
-import { Header, LoadingPage, Modal, TableBody } from "@/components";
+import { Button, Header, LoadingPage, Modal, TableBody } from "@/components";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiDescriptionList,
   EuiForm,
@@ -316,9 +315,10 @@ export default function GeneratePackages() {
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
           <Header title={`Almacenes Clientes (${totalCount})`}>
-            <EuiButton onClick={() => setShowModal(!showModal)} fill>
+            <Button onClick={() => setShowModal(!showModal)} fill>
               Agregar Almacén
-            </EuiButton>
+            </Button>
+            {/* <EuiButton type='submit' >submit</EuiButton> */}
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
@@ -351,16 +351,17 @@ export default function GeneratePackages() {
               errors={errors}
             />
             <EuiModalFooter>
-              <EuiButton onClick={() => setShowModal(!showModal)}>
+              <Button onClick={() => setShowModal(!showModal)} size="m">
                 Cancelar
-              </EuiButton>
-              <EuiButton
+              </Button>
+              <Button
                 type="submit"
                 fill
+                size="m"
                 isLoading={createOneWarehouseStatus === "loading"}
               >
                 Crear
-              </EuiButton>
+              </Button>
             </EuiModalFooter>
           </EuiForm>
         </Modal>

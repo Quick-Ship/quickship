@@ -6,11 +6,10 @@ import {
   PackagesShipmentInterface,
   WarehouseShipmentInterface,
 } from "@/common";
-import { Header, LoadingPage, badges } from "@/components";
+import { Button, Header, LoadingPage, badges } from "@/components";
 import { AssignCourierShipment, GetShipment, graphQLClient } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
 import {
-  EuiButton,
   EuiFieldText,
   EuiFlexGroup,
   EuiFlexItem,
@@ -195,14 +194,14 @@ export default function Shipments() {
                       onChange={onChange}
                     />
                   </EuiFormRow>
-                  <EuiButton
-                    style={{ marginLeft: "1em" }}
+                  <Button
+                    // style={{ marginLeft: "1em" }}
                     isLoading={assignCourierShipmentStatus === "loading"}
                     onClick={onSubmit}
                     isDisabled={idValue.id === ""}
                   >
                     Asignar
-                  </EuiButton>
+                  </Button>
                 </MessengerTabs>
                 <WarehouseTab warehouseShipment={warehouseShipment} />
                 <PackagesTabs packagesShipment={packagesShipment} />

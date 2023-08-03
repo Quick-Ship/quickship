@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   ErrorPage,
   GeneralForm,
   Header,
@@ -13,7 +14,6 @@ import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext"
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
@@ -164,9 +164,9 @@ export default function Clients() {
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
           <Header title={`Clientes (${totalCount})`}>
-            <EuiButton onClick={() => setShowModal(!showModal)}>
+            <Button onClick={() => setShowModal(!showModal)} fill>
               Crear cliente
-            </EuiButton>
+            </Button>
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
@@ -199,16 +199,17 @@ export default function Clients() {
               />
               <EuiSpacer />
               <EuiModalFooter>
-                <EuiButton onClick={() => setShowModal(!showModal)}>
+                <Button onClick={() => setShowModal(!showModal)} size="m">
                   cancelar
-                </EuiButton>
-                <EuiButton
+                </Button>
+                <Button
                   type="submit"
                   fill
+                  size="m"
                   isLoading={createOneQueryStatus === "loading"}
                 >
                   guardar
-                </EuiButton>
+                </Button>
               </EuiModalFooter>
             </EuiForm>
           </Modal>

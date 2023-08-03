@@ -2,6 +2,7 @@
 
 import { API_URL, MessengerInterface } from "@/common";
 import {
+  Button,
   GeneralForm,
   Header,
   LoadingPage,
@@ -17,7 +18,6 @@ import { useGeneratedGQLQuery } from "@/hooks";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
@@ -167,9 +167,9 @@ export default function Messengers() {
       ) : (
         <EuiPanel style={{ margin: "2vh" }}>
           <Header title={`Mensajeros (${totalCount})`}>
-            <EuiButton onClick={() => setShowModal(!showModal)}>
+            <Button onClick={() => setShowModal(!showModal)} fill>
               Crear mensajero
-            </EuiButton>
+            </Button>
           </Header>
           <EuiHorizontalRule />
           <EuiPanel>
@@ -200,16 +200,14 @@ export default function Messengers() {
               errors={errors}
             />
             <EuiModalFooter>
-              <EuiButton onClick={() => setShowModal(!showModal)}>
-                Cancelar
-              </EuiButton>
-              <EuiButton
+              <Button onClick={() => setShowModal(!showModal)}>Cancelar</Button>
+              <Button
                 type="submit"
                 fill
                 isLoading={createOneMessengerStatus === "loading"}
               >
                 Guardar
-              </EuiButton>
+              </Button>
             </EuiModalFooter>
           </EuiForm>
         </Modal>

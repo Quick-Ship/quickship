@@ -1,7 +1,7 @@
 "use client";
 
 import { API_URL } from "@/common";
-import { Header, LoadingPage, SimpleList } from "@/components";
+import { Button, Header, LoadingPage, SimpleList } from "@/components";
 import { GetPackageHistory } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
 import {
@@ -10,7 +10,6 @@ import {
   EuiPanel,
   EuiSpacer,
   EuiFieldSearch,
-  EuiButton,
   EuiSteps,
   EuiFlexGroup,
   EuiFlexItem,
@@ -92,9 +91,9 @@ export default function PackagesHistory() {
             />
           </EuiFlexItem>
           <EuiFlexItem>
-            <EuiButton onClick={buttonClick} isLoading={status === "loading"}>
+            <Button onClick={buttonClick} isLoading={status === "loading"} fill>
               Buscar
-            </EuiButton>
+            </Button>
           </EuiFlexItem>
           <EuiFlexItem style={{ alignItems: "center", alignSelf: "center" }}>
             <SimpleList

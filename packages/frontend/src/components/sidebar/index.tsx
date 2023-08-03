@@ -1,10 +1,5 @@
 import {
   EuiCollapsibleNav,
-  EuiButton,
-  EuiTitle,
-  EuiSpacer,
-  EuiText,
-  EuiCode,
 } from "@elastic/eui";
 import { Menu } from "../menu";
 

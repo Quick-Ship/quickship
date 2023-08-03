@@ -11,3 +11,4 @@ export * from "./inputs";
 export * from "./tabs";
 export * from "./List";
 export * from "./popover";
+export * from "./Button";
