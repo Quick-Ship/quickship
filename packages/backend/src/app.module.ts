@@ -55,6 +55,7 @@ import { CourierActivityModule } from './modules/courier-activity/courier-activi
       autoSchemaFile: join(process.cwd(), 'schema.gql'),
       playground: process.env.NODE_ENV === 'staging',
       introspection: process.env.NODE_ENV === 'staging',
+      persistedQueries: false, // <--- para deshabilitar los ataques de denegación de servicios.
       formatError: (error: GraphQLError) => {
         const formattedError: GraphQLFormattedError = {
           message: isArray(error.extensions?.response?.['message'])
