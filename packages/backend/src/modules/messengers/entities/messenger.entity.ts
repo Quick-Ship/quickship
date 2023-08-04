@@ -3,6 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -15,6 +17,7 @@ import {
 /*Local Imports */
 import { ENCRYPTION_IV, ENCRYPTION_KEY } from 'src/config/encripted.config';
 import { ShipmentEntity } from 'src/modules/shipment/entities/shipment.entity';
+import { CourierActivityEntity } from 'src/modules/courier-activity/entities/courier-activity.entity';
 
 @Entity({ name: 'messengers' })
 export class MessengerEntity {
@@ -56,6 +59,19 @@ export class MessengerEntity {
     onDelete: 'CASCADE',
   })
   shipment: ShipmentEntity;
+
+  @Column({
+    type: 'int',
+    name: 'courier_activity_id',
+    nullable: true,
+  })
+  courierActivityId: number;
+
+  @ManyToOne(() => CourierActivityEntity, (ca) => ca.messenger, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'courier_activity_id' })
+  courierActivity?: CourierActivityEntity;
 
   @CreateDateColumn({
     type: 'timestamp',

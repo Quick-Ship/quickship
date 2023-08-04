@@ -26,6 +26,7 @@ import { WarehouseShipmentModule } from './modules/warehouse-shipment/warehouse-
 import { EvidenceModule } from './modules/evidences/evidence.module';
 import { AuthModule } from './common/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
+import { CourierActivityModule } from './modules/courier-activity/courier-activity.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { UserModule } from './modules/users/user.module';
     EvidenceModule,
     AuthModule,
     UserModule,
+    CourierActivityModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

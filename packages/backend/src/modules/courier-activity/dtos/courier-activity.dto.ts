@@ -1,43 +1,37 @@
-import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { SortDirection } from '@nestjs-query/core';
 import {
+  CursorConnection,
   FilterableField,
   KeySet,
   PagingStrategies,
   QueryOptions,
-  Relation,
 } from '@nestjs-query/query-graphql';
-import { CourierActivityDTO } from 'src/modules/courier-activity/dtos/courier-activity.dto';
-import { SortDirection } from '@nestjs-query/core';
+import { Field, GraphQLISODateTime, ObjectType } from '@nestjs/graphql';
+import { MessengerDTO } from 'src/modules/messengers/dto/messenger.dto';
 
-@ObjectType('Messenger')
+@ObjectType('CourierActivity')
 @KeySet(['id'])
 @QueryOptions({
-  defaultResultSize: 100,
+  defaultResultSize: 200,
   maxResultsSize: 500,
+  enableTotalCount: true,
   pagingStrategy: PagingStrategies.OFFSET,
-  enableTotalCount: true
 })
-@Relation('courierActivity', () => CourierActivityDTO, {
+@CursorConnection('messenger', () => MessengerDTO, {
   defaultResultSize: 200,
   maxResultsSize: 500,
   defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
   pagingStrategy: PagingStrategies.OFFSET,
 })
-export class MessengerDTO {
+export class CourierActivityDTO {
   @Field()
   id!: number;
 
-  @Field()
-  firstName!: string;
-
-  @Field()
-  lastName!: string;
-
   @FilterableField()
-  phone!: string;
+  name!: string;
 
-  @FilterableField()
-  email!: string;
+  @Field()
+  description!: string;
 
   @FilterableField(() => GraphQLISODateTime)
   createdAt!: Date;
