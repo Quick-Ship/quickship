@@ -18,11 +18,21 @@ import {
   getStatusDescriptionByIdStatus,
   validateEvidenceByPackageStatus,
 } from 'src/common/utils';
-import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
+import {
+  ChangePackageStatusResponseDTO,
+  ChangeStatusReponse,
+} from './dto/change-package-status-response.dto';
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-description.enum';
 import { PackageStatusEnum } from 'src/common/enums/package-status.enum';
 import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+import { ShipmentEntity } from '../shipment/entities/shipment.entity';
+import { ShipmentStatusEnum } from 'src/common/enums/shipment-status-enum';
+import {
+  PackageStatusCancelEnum,
+  PackageStatusCancelTypes,
+} from 'src/common/enums/package-status-cancelatio.enum';
+import { InputCreatePackagesDTO } from './dto/create-packages.dto';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {
@@ -34,10 +44,7 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
     super(repo);
   }
 
-  public async createPackages(
-    input: InputCreatePackageDTO,
-    user: IPayloadUser,
-  ) {
+  public async createPackage(input: InputCreatePackageDTO, user: IPayloadUser) {
     const connection = getConnection();
     const queryRunner = connection.createQueryRunner();
     await queryRunner.connect();
@@ -86,6 +93,7 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
       await queryRunner.release();
     }
   }
+
   public async changePackageStatus(
     input: InputChangePackageStatusDTO,
   ): Promise<ChangePackageStatusResponseDTO> {
@@ -99,13 +107,13 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
         data: input,
       });
 
-      const packages: PackageEntity[] = await queryRunner.manager.query(
-        `select id, guide from packages where guide in (${input.update.map(
-          (g) => `'${g.guide}'`,
+      const packages = await queryRunner.manager.query(
+        `select id, guide, shipment_id as shipmentId, status_id as statusId from packages where guide in (${input.update.map(
+          (g) => `'${g.guide}' and status_id not in (${PackageStatusEnum.DE})`,
         )})`,
       );
 
-      const response = await Promise.all(
+      const response: ChangeStatusReponse[] = await Promise.all(
         packages.map(async (pack) => {
           const packFind = input.update.find((p) => p.guide === pack.guide);
 
@@ -125,6 +133,69 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
               packageId: pack.id,
             });
           }
+
+          const packagePending = await queryRunner.manager.find(PackageEntity, {
+            where: { shipmentId: pack.shipmentid },
+          });
+
+          const { arrivalFacility, cancel, delivered, totalPackShipment } =
+            packagePending.reduce(
+              (value, acc) => {
+                if (PackageStatusCancelTypes.includes(acc.statusId)) {
+                  value.cancel += 1;
+                }
+                if (acc.statusId === PackageStatusEnum.DE) {
+                  value.delivered += 1;
+                }
+                if (acc.statusId === PackageStatusEnum.AR) {
+                  value.arrivalFacility += 1;
+                }
+
+                value.totalPackShipment += 1;
+
+                return value;
+              },
+              {
+                cancel: 0,
+                delivered: 0,
+                arrivalFacility: 0,
+                totalPackShipment: 0,
+              },
+            );
+
+          this.logger.debug({
+            event: 'packageService.changePackageStatus.compare.closeShipment',
+            data: {
+              arrivalFacility,
+              cancel,
+              delivered,
+              totalPackShipment,
+            },
+          });
+
+          if (cancel === 0) {
+            //entra a validar el cierre del shipment
+            const totalIncomplete = totalPackShipment - arrivalFacility;
+            if (totalIncomplete !== totalPackShipment) {
+              await queryRunner.manager.update(
+                ShipmentEntity,
+                pack.shipmentid,
+                {
+                  shipmentStatusId: ShipmentStatusEnum.IN_COMPLETE,
+                },
+              );
+            }
+            if (delivered === totalPackShipment) {
+              await queryRunner.manager.update(
+                ShipmentEntity,
+                pack.shipmentid,
+                {
+                  shipmentStatusId: ShipmentStatusEnum.COMPLETED,
+                },
+              );
+            }
+          }
+
           return {
             guide: pack.guide,
             statusId: packFind.statusId,
@@ -145,6 +216,65 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
         event: 'packageService.changePackageStatus.error',
         error: error,
       });
+      if (queryRunner.isTransactionActive)
+        await queryRunner.rollbackTransaction();
+      throw new GraphQLError(error?.message || error);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+  public async createPackages(
+    input: InputCreatePackagesDTO,
+    user: IPayloadUser,
+  ) {
+    const connection = getConnection();
+    const queryRunner = connection.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    try {
+      this.logger.debug({
+        event: 'packageService.createPackages.input',
+        data: { input, user },
+      });
+      const response = await Promise.all(
+        input.packages.map(async (many) => {
+          const contact = await queryRunner.manager.save(ContactEntity, {
+            ...many.contact,
+          });
+          const direction = await queryRunner.manager.save(DirectionEntity, {
+            ...many.direction,
+          });
+          const packages = await queryRunner.manager.save(PackageEntity, {
+            clientId: user.tenant === 'USER' ? many.idClient : user.id,
+            contactId: contact.id,
+            directionId: direction.id,
+            statusId: PackageStatusEnum.SC,
+            guide: many.guide,
+            heigth: many.heigth,
+            length: many.length,
+            weigth: many.weigth,
+            width: many.width,
+          });
+          await queryRunner.manager.save(PackageHistoryEntity, {
+            status: 'SC',
+            idPackage: packages.id,
+            description: PackageStatusDescriptionEnum.SC,
+          });
+
+          return packages;
+        }),
+      );
+
+      await queryRunner.commitTransaction();
+
+      this.logger.debug({
+        event: 'packageService.createPackages.response',
+        data: response,
+      });
+
+      return response;
+    } catch (error) {
       if (queryRunner.isTransactionActive)
         await queryRunner.rollbackTransaction();
       throw new GraphQLError(error?.message || error);

@@ -27,7 +27,7 @@ import { WarehouseShipmentDTO } from 'src/modules/warehouse-shipment/dto/warehou
   defaultResultSize: 200,
   maxResultsSize: 500,
   nullable: true,
-  defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
+  defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
   pagingStrategy: PagingStrategies.OFFSET,
 })
 @Relation('warehouseShipment', () => WarehouseShipmentDTO, {

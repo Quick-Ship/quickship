@@ -212,7 +212,7 @@ type Shipment {
     filter: PackageFilter = {}
 
     """Specify to sort results."""
-    sorting: [PackageSort!] = [{field: createdAt, direction: DESC}]
+    sorting: [PackageSort!] = [{field: createdAt, direction: ASC}]
   ): ShipmentPackagesConnection
 }
 
@@ -1987,6 +1987,7 @@ type Mutation {
   deleteManyPackages(input: DeleteManyPackagesInput!): DeleteManyResponse!
   createDelivery(input: InputCreatePackage!): Package!
   changePackageStatus(input: InputChangePackageStatus!): ChangePackageStatusResponseDTO!
+  createDeliveries(input: InputCreatePackages!): [Package!]!
   setWarehouseShipmentOnShipment(input: SetWarehouseShipmentOnShipmentInput!): Shipment!
   setShipmentStatusOnShipment(input: SetShipmentStatusOnShipmentInput!): Shipment!
   setMessengerOnShipment(input: SetMessengerOnShipmentInput!): Shipment!
@@ -2802,6 +2803,10 @@ input InputCreateEvidence {
   personReceived: String!
   comments: String
   url: String!
+}
+
+input InputCreatePackages {
+  packages: [InputCreatePackage!]!
 }
 
 input SetWarehouseShipmentOnShipmentInput {
