@@ -2,7 +2,7 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 @ObjectType('ChangeStatusReponse')
-class ChangeStatusReponse {
+export class ChangeStatusReponse {
   @Field()
   @IsString()
   @IsNotEmpty()

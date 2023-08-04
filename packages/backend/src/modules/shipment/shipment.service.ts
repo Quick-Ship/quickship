@@ -29,6 +29,7 @@ import { ShipmentStatusEnum } from 'src/common/enums/shipment-status-enum';
 import { PackageStatusCancelTypes } from 'src/common/enums/package-status-cancelatio.enum';
 import { Errors } from 'src/common/enums/errors.enum';
 import { MessengerEntity } from '../messengers/entities/messenger.entity';
+import { PackageStatusCloselTypes } from 'src/common/enums/package-status-close.enum';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -175,7 +176,7 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       const [messenger] = await queryRunner.manager.find(MessengerEntity, {
         where: {
-          messengerId: input.courierId,
+          id: input.courierId,
           courierActivityId: 1,
         },
       });
@@ -249,6 +250,14 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       this.validateShipmentStatus(shipment, ShipmentStatusEnum.IN_PROCESS);
 
+      if (!shipment.messengerId) {
+        this.logger.warn({
+          event: 'shipmentService.openPackage.invalidOpenPackage',
+          warning: Errors.INVALID_PROCESS_PACKAGE,
+        });
+        throw new GraphQLError(Errors.SHIPMENT_NOT_COURIER);
+      }
+
       const [packages] = await queryRunner.manager.find(PackageEntity, {
         where: { id: input.packageId },
       });
@@ -260,10 +269,6 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
 
       this.validatePackage(packages, shipment.id);
 
-      console.log(
-        !PackageStatusCancelTypes.includes(packages.statusId),
-        packages.statusId !== PackageStatusEnum.WC,
-      );
       if (
         !PackageStatusCancelTypes.includes(packages.statusId) &&
         packages.statusId !== PackageStatusEnum.WC
@@ -434,16 +439,32 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
         description: getStatusDescriptionByIdStatus(PackageStatusEnum.DE),
       });
 
-      const includeCancelation = pack.some((pack) =>
-        PackageStatusCancelTypes.includes(pack.statusId),
+      const packClose: PackageEntity[] = await queryRunner.manager.find(
+        PackageEntity,
+        {
+          where: {
+            shipmentId: shipmentId,
+          },
+        },
       );
+
+      const includeCancelation = packClose.some((pack) =>
+        PackageStatusCloselTypes.includes(pack.statusId),
+      );
+
+      this.logger.debug({
+        event: 'shipmentService.closePackage.closeShipment',
+        data: {
+          lengthPack: packClose.length,
+          includeCancelation,
+        },
+      });
 
       if (!includeCancelation) {
         await queryRunner.manager.update(ShipmentEntity, shipment.id, {
           shipmentStatusId: ShipmentStatusEnum.COMPLETED,
         });
       }
-
       await queryRunner.commitTransaction();
       return shipment;
     } catch (error) {
