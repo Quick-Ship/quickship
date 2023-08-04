@@ -25,14 +25,13 @@ import {
 import { EvidenceEntity } from '../evidences/entities/evidence.entity';
 import { PackageStatusDescriptionEnum } from 'src/common/enums/package-status-description.enum';
 import { PackageStatusEnum } from 'src/common/enums/package-status.enum';
-import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 import { ShipmentEntity } from '../shipment/entities/shipment.entity';
 import { ShipmentStatusEnum } from 'src/common/enums/shipment-status-enum';
 import {
-  PackageStatusCancelEnum,
   PackageStatusCancelTypes,
 } from 'src/common/enums/package-status-cancelatio.enum';
 import { InputCreatePackagesDTO } from './dto/create-packages.dto';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
 @QueryService(PackageEntity)
 export class PackagesService extends TypeOrmQueryService<PackageEntity> {
@@ -109,8 +108,8 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
 
       const packages = await queryRunner.manager.query(
         `select id, guide, shipment_id as shipmentId, status_id as statusId from packages where guide in (${input.update.map(
-          (g) => `'${g.guide}' and status_id not in (${PackageStatusEnum.DE})`,
-        )})`,
+          (p) => `'${p.guide}')`,
+        )} and status_id != ${PackageStatusEnum.DE}`,
       );
 
       const response: ChangeStatusReponse[] = await Promise.all(
@@ -212,6 +211,7 @@ export class PackagesService extends TypeOrmQueryService<PackageEntity> {
 
       return { data: response };
     } catch (error) {
+      console.log(error);
       this.logger.error({
         event: 'packageService.changePackageStatus.error',
         error: error,

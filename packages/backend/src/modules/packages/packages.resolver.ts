@@ -10,8 +10,8 @@ import { InputChangePackageStatusDTO } from './dto/change-package-status.dto';
 import { ChangePackageStatusResponseDTO } from './dto/change-package-status-response.dto';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 import { CurrentUser } from 'src/common/auth/current-user.decorator';
-import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 import { InputCreatePackagesDTO } from './dto/create-packages.dto';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
 
 @Resolver(() => PackageDTO)
 export class PackagesResolver extends CRUDResolver(PackageDTO) {
