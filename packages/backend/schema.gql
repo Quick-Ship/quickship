@@ -490,6 +490,14 @@ type Client {
   packages: Package!
 }
 
+type Viewer {
+  email: String!
+  userId: Float!
+  tenant: String!
+  firstName: String
+  lastName: String
+}
+
 type DeleteManyResponse {
   """The number of records deleted."""
   deletedCount: Int!
@@ -1428,6 +1436,7 @@ type Query {
     """Specify to sort results."""
     sorting: [ClientSort!] = []
   ): ClientConnection!
+  viewerClient: Viewer!
   clientAggregate(
     """Filter to find records to aggregate on"""
     filter: ClientAggregateFilter
@@ -1488,6 +1497,7 @@ type Query {
     """Specify to sort results."""
     sorting: [MessengerSort!] = []
   ): MessengerConnection!
+  viewerCourier: Viewer!
   packageHistory(
     """The id of the record to find."""
     id: ID!
@@ -1600,6 +1610,7 @@ type Query {
     """Specify to sort results."""
     sorting: [UserSort!] = [{field: createdAt, direction: DESC}]
   ): UserConnection!
+  viewerUser: Viewer!
   userAggregate(
     """Filter to find records to aggregate on"""
     filter: UserAggregateFilter
