@@ -1,11 +1,11 @@
-/* General button style */
+/** sass-lint:disable no-vendor-prefixes */
 .btn {
-  font-family: "Inter", BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  font-family: BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   font-size: inherit;
   color: inherit;
   background: none;
   cursor: pointer;
-  padding: 12px 12px;
+  padding: 12px;
   display: inline-block;
   font-weight: 500;
   outline: none;
