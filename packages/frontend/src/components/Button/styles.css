@@ -1,5 +1,5 @@
 /* autoprefixer grid: autoplace */
-/** sass-lint:disable no-vendor-prefixes */
+/** lint:disable no-vendor-prefixes */
 .btn {
   font-family: BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   font-size: inherit;
@@ -104,9 +104,9 @@
 }
 
 .btn-1:disabled {
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
+  border: 1px solid #999;
+  background-color: #ccc;
+  color: #666;
   pointer-events: none;
   padding: 10px 20px;
 }
