@@ -10,9 +10,7 @@ export default registerAs('config', () => {
     // migrationsRun: true,
     // synchronize: true,
     //entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-
-    logging: process.env.NODE_ENV === 'production',
-
+    logging: process.env.NODE_ENV !== 'production',
     ssl: {
       rejectUnauthorized: false,
     },

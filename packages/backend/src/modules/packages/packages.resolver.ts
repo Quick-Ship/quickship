@@ -11,6 +11,7 @@ import { ChangePackageStatusResponseDTO } from './dto/change-package-status-resp
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 import { CurrentUser } from 'src/common/auth/current-user.decorator';
 import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+import { InputCreatePackagesDTO } from './dto/create-packages.dto';
 
 @Resolver(() => PackageDTO)
 export class PackagesResolver extends CRUDResolver(PackageDTO) {
@@ -25,7 +26,7 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
     input: InputCreatePackageDTO,
     @CurrentUser() user: IPayloadUser,
   ): Promise<PackageDTO> {
-    return this.packagesService.createPackages(input, user);
+    return this.packagesService.createPackage(input, user);
   }
 
   @Mutation(() => ChangePackageStatusResponseDTO)
@@ -35,5 +36,15 @@ export class PackagesResolver extends CRUDResolver(PackageDTO) {
     input: InputChangePackageStatusDTO,
   ): Promise<ChangePackageStatusResponseDTO> {
     return this.packagesService.changePackageStatus(input);
+  }
+
+  @Mutation(() => [PackageDTO])
+  @UseGuards(GqlAuthGuard)
+  public async createDeliveries(
+    @Args('input', new ValidationPipe())
+    input: InputCreatePackagesDTO,
+    @CurrentUser() user: IPayloadUser,
+  ): Promise<PackageDTO[]> {
+    return this.packagesService.createPackages(input, user);
   }
 }
