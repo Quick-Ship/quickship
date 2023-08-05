@@ -1416,6 +1416,9 @@ type CourierActivityMessengersConnection {
 
   """Array of nodes."""
   nodes: [Messenger!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type Query {
