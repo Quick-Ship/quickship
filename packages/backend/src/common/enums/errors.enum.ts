@@ -13,4 +13,5 @@ export enum Errors {
   TOKEN_NOT_INFO = 'The token has not info.',
   COURIER_ACTIVITY_INVALID = 'La actividade el mensajo es invalida.',
   SHIPMENT_NOT_COURIER = 'El shipment no tiene un mensajero asignado.',
+  USER_NOT_EXIST = 'El usuario no existe.',
 }
