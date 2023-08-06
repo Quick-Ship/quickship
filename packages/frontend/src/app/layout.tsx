@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import { Sidebar } from "@/components/sidebar";
 import { useState } from "react";
 import { Providers } from "@/common";
+import { AuthProvider } from "@/hooks/login";
 
 export default function RootLayout({
   children,
@@ -14,21 +15,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const [navIsOpen, setNavIsOpen] = useState(false);
-
   return (
-    <EuiProvider colorMode="light">
-      <Providers>
-        <html lang="en">
-          <body>
-            <Navbar onClick={() => setNavIsOpen(!navIsOpen)} />
-            <Sidebar
-              navIsOpen={navIsOpen}
-              setNavIsOpen={() => setNavIsOpen(!navIsOpen)}
-            />
-            {children}
-          </body>
-        </html>
-      </Providers>
-    </EuiProvider>
+    <AuthProvider>
+      <EuiProvider colorMode="light">
+        <Providers>
+          <html lang="en">
+            <body>
+                  <Navbar onClick={() => setNavIsOpen(!navIsOpen)} />
+                  <Sidebar
+                    navIsOpen={navIsOpen}
+                    setNavIsOpen={() => setNavIsOpen(!navIsOpen)}
+                  />
+              {children}
+            </body>
+          </html>
+        </Providers>
+      </EuiProvider>
+    </AuthProvider>
   );
 }

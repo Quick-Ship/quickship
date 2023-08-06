@@ -10,9 +10,9 @@ export const Menu = () => {
       <EuiListGroupItem
         iconType="home"
         label="Home"
-        onClick={() => "/"}
+        onClick={() => "/home"}
         isActive
-        href="/"
+        href="/home"
       />
       <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem

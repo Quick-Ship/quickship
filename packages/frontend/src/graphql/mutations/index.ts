@@ -5,3 +5,4 @@ export * from "./generateShipment";
 export * from "./addPackagesToShipment";
 export * from "./assignCourierShipment";
 export * from "./createWahouseShipment";
+export * from "./registerUser";
