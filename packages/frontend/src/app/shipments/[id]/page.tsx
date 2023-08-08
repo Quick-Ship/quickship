@@ -20,12 +20,15 @@ import {
 } from "@elastic/eui";
 import React, { useEffect, useState } from "react";
 import { MessengerTabs, PackagesTabs, WarehouseTab } from "../tabs";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
+import { UseAuthContext } from "@/hooks/login";
 
 export default function Shipments() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const queryCache: any = useQueryClient();
   const [packagesShipment, setPackagesShipment] = useState<
     PackagesShipmentInterface[]
@@ -150,72 +153,82 @@ export default function Shipments() {
     setIdValue({ id: "" });
   };
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {status === "loading" && isFetching ? (
-        <LoadingPage isLoading={status === "loading"} />
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header
-            title={`Ruta [ ${data.shipment.id} ]`}
-            titleBadge={data.shipment.shipmentStatus.status}
-            colorBadge={
-              data.shipment.shipmentStatus.id === 1
-                ? badges.default
-                : data.shipment.shipmentStatus.id === 2
-                ? badges.primary
-                : data.shipment.shipmentStatus.id === 3
-                ? badges.success
-                : data.shipment.shipmentStatus.id === 4
-                ? badges.warning
-                : data.shipment.shipmentStatus.id === 5
-                ? badges.danger
-                : ""
-            }
-          >
-            {""}
-          </Header>
-          <EuiHorizontalRule />
-          <EuiFlexGroup>
-            <EuiFlexItem>
-              <div
-                style={{
-                  height: "600px",
-                  overflowY: "scroll",
-                  paddingRight: "10px",
-                  paddingLeft: "10px",
-                }}
+      {user !== null && (
+        <>
+          {status === "loading" && isFetching ? (
+            <LoadingPage isLoading={status === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header
+                title={`Ruta [ ${data.shipment.id} ]`}
+                titleBadge={data.shipment.shipmentStatus.status}
+                colorBadge={
+                  data.shipment.shipmentStatus.id === 1
+                    ? badges.default
+                    : data.shipment.shipmentStatus.id === 2
+                    ? badges.primary
+                    : data.shipment.shipmentStatus.id === 3
+                    ? badges.success
+                    : data.shipment.shipmentStatus.id === 4
+                    ? badges.warning
+                    : data.shipment.shipmentStatus.id === 5
+                    ? badges.danger
+                    : ""
+                }
               >
-                <MessengerTabs messenger={messengerShipment}>
-                  <EuiFormRow label="Ingresa id mensajero">
-                    <EuiFieldText
-                      name="id"
-                      value={idValue.id}
-                      onChange={onChange}
-                    />
-                  </EuiFormRow>
-                  <Button
-                    // style={{ marginLeft: "1em" }}
-                    isLoading={assignCourierShipmentStatus === "loading"}
-                    onClick={onSubmit}
-                    isDisabled={idValue.id === ""}
+                {""}
+              </Header>
+              <EuiHorizontalRule />
+              <EuiFlexGroup>
+                <EuiFlexItem>
+                  <div
+                    style={{
+                      height: "600px",
+                      overflowY: "scroll",
+                      paddingRight: "10px",
+                      paddingLeft: "10px",
+                    }}
                   >
-                    Asignar
-                  </Button>
-                </MessengerTabs>
-                <WarehouseTab warehouseShipment={warehouseShipment} />
-                <PackagesTabs packagesShipment={packagesShipment} />
-              </div>
-            </EuiFlexItem>
-            <EuiFlexItem>
-              <EuiPanel>
-                <strong>Map</strong>
-              </EuiPanel>
-            </EuiFlexItem>
-          </EuiFlexGroup>
-        </EuiPanel>
+                    <MessengerTabs messenger={messengerShipment}>
+                      <EuiFormRow label="Ingresa id mensajero">
+                        <EuiFieldText
+                          name="id"
+                          value={idValue.id}
+                          onChange={onChange}
+                        />
+                      </EuiFormRow>
+                      <Button
+                        // style={{ marginLeft: "1em" }}
+                        isLoading={assignCourierShipmentStatus === "loading"}
+                        onClick={onSubmit}
+                        isDisabled={idValue.id === ""}
+                      >
+                        Asignar
+                      </Button>
+                    </MessengerTabs>
+                    <WarehouseTab warehouseShipment={warehouseShipment} />
+                    <PackagesTabs packagesShipment={packagesShipment} />
+                  </div>
+                </EuiFlexItem>
+                <EuiFlexItem>
+                  <EuiPanel>
+                    <strong>Map</strong>
+                  </EuiPanel>
+                </EuiFlexItem>
+              </EuiFlexGroup>
+            </EuiPanel>
+          )}
+          {globalToasts}
+        </>
       )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

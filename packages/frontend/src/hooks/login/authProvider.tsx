@@ -1,3 +1,5 @@
+"use client";
+
 import { createContext, useEffect, useState } from "react";
 import { auth } from "../../config";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
@@ -8,6 +10,7 @@ export type AuthContextType = {
   loginEmailAndPassword: (email: string, password: string) => void;
   signOut: () => void;
   loading: any;
+  error: any;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -21,11 +24,16 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<any>();
   const [loading] = useAuthState(auth);
+  const [error, setError] = useState<any>();
 
   const loginEmailAndPassword = async (email: string, password: string) => {
-    const result = await signInWithEmailAndPassword(auth, email, password);
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
 
-    setUser(result);
+      setUser(result);
+    } catch (error: any) {
+      setError(error);
+    }
   };
 
   useEffect(() => {
@@ -42,7 +50,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
   return (
     <AuthContext.Provider
-      value={{ user, loginEmailAndPassword, signOut, loading }}
+      value={{ user, loginEmailAndPassword, signOut, loading, error }}
     >
       {children}
     </AuthContext.Provider>

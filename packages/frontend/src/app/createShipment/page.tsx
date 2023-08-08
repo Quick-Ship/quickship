@@ -1,13 +1,11 @@
 "use client";
 
-import { Button, Header } from "@/components";
+import { Button, Header, LoadingPage } from "@/components";
 import {
   EuiForm,
   EuiHorizontalRule,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
 } from "@elastic/eui";
 import { InputCreateShipment } from "./inputCreateShipment";
 import { useForm } from "react-hook-form";
@@ -20,8 +18,12 @@ import {
   graphQLClient,
 } from "@/graphql";
 import { nanoid } from "nanoid";
+import { useRouter } from "next/navigation";
+import { UseAuthContext } from "@/hooks/login";
 
 export default function CreateShipment() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const {
     register,
     setValue,
@@ -141,49 +143,41 @@ export default function CreateShipment() {
     );
   };
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted)
-    return (
-      <>
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              // isLoading={isLoading}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            // isLoading={isLoading}
-          ></EuiSkeletonText>
-        </EuiPanel>
-      </>
-    );
+  if (!mounted) return <LoadingPage isLoading={true} />;
 
   return (
     <EuiPageHeaderContent>
-      <EuiPanel style={{ margin: "2vh", height: "700px" }}>
-        <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-          <Header title={`Crear envio`}>
-            <Button type="submit" size="m" fill>
-              Crear
-            </Button>
-          </Header>
-          <EuiHorizontalRule />
+      {user !== null && (
+        <>
+          <EuiPanel style={{ margin: "2vh", height: "700px" }}>
+            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+              <Header title={`Crear envio`}>
+                <Button type="submit" size="m" fill>
+                  Crear
+                </Button>
+              </Header>
+              <EuiHorizontalRule />
 
-          <InputCreateShipment
-            register={register}
-            setValue={setValue}
-            errors={errors}
-          />
-        </EuiForm>
-      </EuiPanel>
+              <InputCreateShipment
+                register={register}
+                setValue={setValue}
+                errors={errors}
+              />
+            </EuiForm>
+          </EuiPanel>
+        </>
+      )}
     </EuiPageHeaderContent>
   );
 }

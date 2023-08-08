@@ -29,10 +29,16 @@ export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
         user = JSON.parse(window.localStorage.getItem("user") as string);
       }
 
+      if (
+        JSON.parse(window.localStorage.getItem("user") as string) === undefined
+      ) {
+        user = "basictoken";
+      }
+
       const client_ = new GraphQLClient(graphqlUrl, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${user.stsTokenManager.accessToken}`,
+          Authorization: `Bearer ${user?.stsTokenManager?.accessToken}`,
         },
       });
 

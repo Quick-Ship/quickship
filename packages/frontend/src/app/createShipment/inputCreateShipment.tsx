@@ -87,7 +87,7 @@ export const InputCreateShipment: React.FC<InputCreateShipmentProps> = ({
     },
   ];
 
-  const [valueselect, setValueselect] = useState("");
+  const [valueselect, setValueselect] = useState<any>("");
 
   const onChangeSelect = (value: any) => {
     setValueselect(value);

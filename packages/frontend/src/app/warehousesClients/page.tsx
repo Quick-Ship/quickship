@@ -25,8 +25,12 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
+import { useRouter } from "next/navigation";
+import { UseAuthContext } from "@/hooks/login";
 
 export default function GeneratePackages() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const queryCache: any = useQueryClient();
   const initialIndex = 0;
   const initialPageZize = 10;
@@ -308,65 +312,75 @@ export default function GeneratePackages() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {statusWahouse === "loading" ? (
-        <LoadingPage isLoading={statusWahouse === "loading"} />
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Almacenes Clientes (${totalCount})`}>
-            <Button onClick={() => setShowModal(!showModal)} fill>
-              Agregar Almacén
-            </Button>
-            {/* <EuiButton type='submit' >submit</EuiButton> */}
-          </Header>
-          <EuiHorizontalRule />
-          <EuiPanel>
-            <TableBody
-              items={items}
-              itemIdToExpandedRowMap={itemIdToExpandedRowMap}
-              columns={columns}
-              itemId={"id"}
-              pageIndex={pageIndex}
-              setPageIndex={setPageIndex}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalItemCount={totalCount}
-              pageSizeOptions={pageSizeOptions}
-              noItemsMessage={"Sube tu archivo para ver información"}
-            />
-          </EuiPanel>
-        </EuiPanel>
+      {user !== null && (
+        <>
+          {statusWahouse === "loading" ? (
+            <LoadingPage isLoading={statusWahouse === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header title={`Almacenes Clientes (${totalCount})`}>
+                <Button onClick={() => setShowModal(!showModal)} fill>
+                  Agregar Almacén
+                </Button>
+                {/* <EuiButton type='submit' >submit</EuiButton> */}
+              </Header>
+              <EuiHorizontalRule />
+              <EuiPanel>
+                <TableBody
+                  items={items}
+                  itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+                  columns={columns}
+                  itemId={"id"}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  totalItemCount={totalCount}
+                  pageSizeOptions={pageSizeOptions}
+                  noItemsMessage={"Sube tu archivo para ver información"}
+                />
+              </EuiPanel>
+            </EuiPanel>
+          )}
+          {showModal && (
+            <Modal
+              onCloseModal={() => setShowModal(!showModal)}
+              titleModal={"Crear Almacén"}
+              minWdith={950}
+            >
+              <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                <InputWarehouseClient
+                  register={register}
+                  setValue={setValue}
+                  errors={errors}
+                />
+                <EuiModalFooter>
+                  <Button onClick={() => setShowModal(!showModal)} size="m">
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    fill
+                    size="m"
+                    isLoading={createOneWarehouseStatus === "loading"}
+                  >
+                    Crear
+                  </Button>
+                </EuiModalFooter>
+              </EuiForm>
+            </Modal>
+          )}
+          {globalToasts}
+        </>
       )}
-      {showModal && (
-        <Modal
-          onCloseModal={() => setShowModal(!showModal)}
-          titleModal={"Crear Almacén"}
-          minWdith={950}
-        >
-          <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-            <InputWarehouseClient
-              register={register}
-              setValue={setValue}
-              errors={errors}
-            />
-            <EuiModalFooter>
-              <Button onClick={() => setShowModal(!showModal)} size="m">
-                Cancelar
-              </Button>
-              <Button
-                type="submit"
-                fill
-                size="m"
-                isLoading={createOneWarehouseStatus === "loading"}
-              >
-                Crear
-              </Button>
-            </EuiModalFooter>
-          </EuiForm>
-        </Modal>
-      )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

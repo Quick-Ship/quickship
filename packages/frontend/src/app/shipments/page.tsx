@@ -8,6 +8,7 @@ import {
   graphQLClient,
 } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
+import { UseAuthContext } from "@/hooks/login";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
@@ -20,6 +21,7 @@ import {
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface AssignCourierProps {
@@ -90,6 +92,8 @@ const AssignCourier: React.FC<AssignCourierProps> = ({
 };
 
 export default function Shipments() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const queryCache: any = useQueryClient();
   const initialIndex = 0;
   const initialPageZize = 10;
@@ -224,31 +228,41 @@ export default function Shipments() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {status === "loading" ? (
-        <LoadingPage isLoading={status === "loading"} />
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Ordenes (${totalCount})`}>{""}</Header>
-          <EuiHorizontalRule />
-          <EuiPanel>
-            <TableBody
-              items={shipments}
-              columns={columns}
-              itemId={"id"}
-              pageIndex={pageIndex}
-              setPageIndex={setPageIndex}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalItemCount={totalCount}
-              pageSizeOptions={pageSizeOptions}
-              noItemsMessage={"No se encontraron envios"}
-            />
-          </EuiPanel>
-        </EuiPanel>
+      {user !== null && (
+        <>
+          {status === "loading" ? (
+            <LoadingPage isLoading={status === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header title={`Ordenes (${totalCount})`}>{""}</Header>
+              <EuiHorizontalRule />
+              <EuiPanel>
+                <TableBody
+                  items={shipments}
+                  columns={columns}
+                  itemId={"id"}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  totalItemCount={totalCount}
+                  pageSizeOptions={pageSizeOptions}
+                  noItemsMessage={"No se encontraron envios"}
+                />
+              </EuiPanel>
+            </EuiPanel>
+          )}
+          {globalToasts}
+        </>
       )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

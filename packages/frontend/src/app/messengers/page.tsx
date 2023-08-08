@@ -15,6 +15,7 @@ import {
   graphQLClient,
 } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
+import { UseAuthContext } from "@/hooks/login";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
@@ -26,11 +27,14 @@ import {
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Messengers() {
   const queryCache: any = useQueryClient();
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -160,59 +164,71 @@ export default function Messengers() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {getMessengerQuerystatus === "loading" ? (
-        <LoadingPage isLoading={getMessengerQuerystatus === "loading"} />
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Mensajeros (${totalCount})`}>
-            <Button onClick={() => setShowModal(!showModal)} fill>
-              Crear mensajero
-            </Button>
-          </Header>
-          <EuiHorizontalRule />
-          <EuiPanel>
-            <TableBody
-              items={messengers}
-              columns={columns}
-              itemId={"id"}
-              pageIndex={pageIndex}
-              setPageIndex={setPageIndex}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              totalItemCount={totalCount}
-              pageSizeOptions={pageSizeOptions}
-              noItemsMessage={"No se encontraron mensajeros"}
-            />
-          </EuiPanel>
-        </EuiPanel>
+      {user !== null && (
+        <>
+          {getMessengerQuerystatus === "loading" ? (
+            <LoadingPage isLoading={getMessengerQuerystatus === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header title={`Mensajeros (${totalCount})`}>
+                <Button onClick={() => setShowModal(!showModal)} fill>
+                  Crear mensajero
+                </Button>
+              </Header>
+              <EuiHorizontalRule />
+              <EuiPanel>
+                <TableBody
+                  items={messengers}
+                  columns={columns}
+                  itemId={"id"}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  totalItemCount={totalCount}
+                  pageSizeOptions={pageSizeOptions}
+                  noItemsMessage={"No se encontraron mensajeros"}
+                />
+              </EuiPanel>
+            </EuiPanel>
+          )}
+          {showModal && (
+            <Modal
+              onCloseModal={() => setShowModal(!showModal)}
+              titleModal={"Crear mensajero"}
+            >
+              <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                <GeneralForm
+                  register={register}
+                  setValue={setValue}
+                  errors={errors}
+                />
+                <EuiModalFooter>
+                  <Button onClick={() => setShowModal(!showModal)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    fill
+                    isLoading={createOneMessengerStatus === "loading"}
+                  >
+                    Guardar
+                  </Button>
+                </EuiModalFooter>
+              </EuiForm>
+            </Modal>
+          )}
+          {globalToasts}
+        </>
       )}
-      {showModal && (
-        <Modal
-          onCloseModal={() => setShowModal(!showModal)}
-          titleModal={"Crear mensajero"}
-        >
-          <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-            <GeneralForm
-              register={register}
-              setValue={setValue}
-              errors={errors}
-            />
-            <EuiModalFooter>
-              <Button onClick={() => setShowModal(!showModal)}>Cancelar</Button>
-              <Button
-                type="submit"
-                fill
-                isLoading={createOneMessengerStatus === "loading"}
-              >
-                Guardar
-              </Button>
-            </EuiModalFooter>
-          </EuiForm>
-        </Modal>
-      )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

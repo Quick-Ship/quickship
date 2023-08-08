@@ -21,7 +21,7 @@ import { useState } from "react";
 export default function Home() {
   const router = useRouter();
   const [login, setLogin] = useState({ email: "", password: "" });
-  const { loginEmailAndPassword, loading } = UseAuthContext();
+  const { loginEmailAndPassword, loading, error } = UseAuthContext();
 
   const handelChange = (e: any) => {
     const { name, value } = e.target;
@@ -30,8 +30,13 @@ export default function Home() {
   };
 
   const onClick = () => {
-    loginEmailAndPassword(login.email, login.password);
-    router.push("/home");
+    if (!error) {
+      loginEmailAndPassword(login.email, login.password);
+      router.push("/home");
+    }
+    if (error) {
+      alert("El correo o contraseña no se encontrarón, revisa tu información");
+    }
   };
 
   return (
@@ -49,7 +54,11 @@ export default function Home() {
                 <EuiFieldText fullWidth onChange={handelChange} name="email" />
               </EuiFormRow>
               <EuiFormRow id="2">
-                <EuiFieldText onChange={handelChange} name="password" type="password" />
+                <EuiFieldText
+                  onChange={handelChange}
+                  name="password"
+                  type="password"
+                />
               </EuiFormRow>
               <div style={{ display: "inline-grid", width: "150px" }}>
                 <EuiSpacer />

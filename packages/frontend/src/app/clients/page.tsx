@@ -27,9 +27,13 @@ import { useForm } from "react-hook-form";
 import { API_URL, ClientsInterface } from "@/common";
 import { useGeneratedGQLQuery } from "@/hooks";
 import { UseAuthContext } from "@/hooks/login";
+import { useRouter } from "next/navigation";
 
 export default function Clients() {
   const queryCache: any = useQueryClient();
+  const router = useRouter();
+  const { user } = UseAuthContext();
+
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -123,7 +127,7 @@ export default function Clients() {
   useEffect(() => {
     if (getQueryClientsStatus === "success") {
       setClients(
-        data.clients.nodes.map((cl: any) => ({
+        data?.clients?.nodes?.map((cl: any) => ({
           id: cl.id,
           firstName: cl.firstName,
           lastName: cl.lastName,
@@ -158,68 +162,78 @@ export default function Clients() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {getQueryClientsStatus === "loading" ? (
-        <LoadingPage isLoading={getQueryClientsStatus === "loading"} />
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Clientes (${totalCount})`}>
-            <Button onClick={() => setShowModal(!showModal)} fill>
-              Crear cliente
-            </Button>
-          </Header>
-          <EuiHorizontalRule />
-          <EuiPanel>
-            <TableBody
-              pageIndex={pageIndex}
-              setPageIndex={setPageIndex}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              columns={columns}
-              items={clients}
-              totalItemCount={totalCount}
-              pageSizeOptions={pageSizeOptions}
-              noItemsMessage={"No se encontraron clientes"}
-              itemId={"id"}
-            />
-          </EuiPanel>
-        </EuiPanel>
-      )}
-      {showModal && (
+      {user !== null && (
         <>
-          <Modal
-            onCloseModal={() => setShowModal(!showModal)}
-            titleModal={"Crear Cliente"}
-          >
-            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-              <GeneralForm
-                register={register}
-                setValue={setValue}
-                errors={errors}
-              />
-              <EuiSpacer />
-              <EuiModalFooter>
-                <Button onClick={() => setShowModal(!showModal)} size="m">
-                  cancelar
+          {getQueryClientsStatus === "loading" ? (
+            <LoadingPage isLoading={getQueryClientsStatus === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header title={`Clientes (${totalCount})`}>
+                <Button onClick={() => setShowModal(!showModal)} fill>
+                  Crear cliente
                 </Button>
-                <Button
-                  type="submit"
-                  fill
-                  size="m"
-                  isLoading={createOneQueryStatus === "loading"}
-                >
-                  guardar
-                </Button>
-              </EuiModalFooter>
-            </EuiForm>
-          </Modal>
+              </Header>
+              <EuiHorizontalRule />
+              <EuiPanel>
+                <TableBody
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  columns={columns}
+                  items={clients}
+                  totalItemCount={totalCount}
+                  pageSizeOptions={pageSizeOptions}
+                  noItemsMessage={"No se encontraron clientes"}
+                  itemId={"id"}
+                />
+              </EuiPanel>
+            </EuiPanel>
+          )}
+          {showModal && (
+            <>
+              <Modal
+                onCloseModal={() => setShowModal(!showModal)}
+                titleModal={"Crear Cliente"}
+              >
+                <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                  <GeneralForm
+                    register={register}
+                    setValue={setValue}
+                    errors={errors}
+                  />
+                  <EuiSpacer />
+                  <EuiModalFooter>
+                    <Button onClick={() => setShowModal(!showModal)} size="m">
+                      cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      fill
+                      size="m"
+                      isLoading={createOneQueryStatus === "loading"}
+                    >
+                      guardar
+                    </Button>
+                  </EuiModalFooter>
+                </EuiForm>
+              </Modal>
+            </>
+          )}
+          {getQueryClientsStatus === "error" && (
+            <ErrorPage message="Error al cargar clientes" />
+          )}
+          {globalToasts}
         </>
       )}
-      {getQueryClientsStatus === "error" && (
-        <ErrorPage message="Error al cargar clientes" />
-      )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

@@ -1,3 +1,4 @@
+import { AuthProvider } from "@/hooks/login";
 
 export default function HomeLayout({
     children,
@@ -5,9 +6,9 @@ export default function HomeLayout({
     children: React.ReactNode;
   }) {
     return (
-      <>
+      <AuthProvider>
         <main >{children}</main>
-      </>
+      </AuthProvider>
     );
   }
   

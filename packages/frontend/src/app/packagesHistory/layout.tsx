@@ -1,6 +1,7 @@
 "use client";
 
 import { Providers } from "@/common";
+import { AuthProvider } from "@/hooks/login";
 
 export default function PackagesHistoryLayout({
   children,
@@ -8,8 +9,10 @@ export default function PackagesHistoryLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Providers>
-      <main>{children}</main>
-    </Providers>
+    <AuthProvider>
+      <Providers>
+        <main>{children}</main>
+      </Providers>
+    </AuthProvider>
   );
 }

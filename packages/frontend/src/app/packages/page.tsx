@@ -15,6 +15,7 @@ import {
   GetPackages,
 } from "@/graphql";
 import { useGeneratedGQLQuery, useGeneratedMutation } from "@/hooks";
+import { UseAuthContext } from "@/hooks/login";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
@@ -30,10 +31,13 @@ import {
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Packages() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -237,81 +241,91 @@ export default function Packages() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   if (status === "loading") {
     return <LoadingPage isLoading={status === "loading"} />;
   }
 
   return (
     <EuiPageHeaderContent>
-      <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Paquetes (${totalCount})`}>
-          <Button
-            isDisabled={selectItems.length <= 0}
-            onClick={() => setShowModal(!showModal)}
-            fill
-          >
-            Crear orden
-          </Button>
-        </Header>
-        <EuiHorizontalRule />
-        <EuiPanel>
-          <EuiFormRow label="Id de cliente">
-            <EuiFieldSearch
-              style={{ minWidth: 160 }}
-              onChange={(e) => {
-                setClientId(e.target.value);
-              }}
-              placeholder="id"
-              value={clientId}
-            />
-          </EuiFormRow>
-          <EuiSpacer />
-          <TableBody
-            pageIndex={pageIndex}
-            setPageIndex={setPageIndex}
-            pageSize={pageSize}
-            setPageSize={setPageSize}
-            columns={columns}
-            items={dataPackages}
-            totalItemCount={totalCount}
-            pageSizeOptions={pageSizeOptions}
-            noItemsMessage={"No se encontraron paquetes"}
-            itemId={"id"}
-            selection={selection}
-            isSelectable={true}
-          />
-        </EuiPanel>
-      </EuiPanel>
-      {showModal && (
+      {user !== null && (
         <>
-          <Modal
-            onCloseModal={() => setShowModal(!showModal)}
-            titleModal={"Crear Orden"}
-          >
-            <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-              <GenerateShipmentInput
-                register={register}
-                setValue={setValue}
-                errors={errors}
-              />
+          <EuiPanel style={{ margin: "2vh" }}>
+            <Header title={`Paquetes (${totalCount})`}>
+              <Button
+                isDisabled={selectItems.length <= 0}
+                onClick={() => setShowModal(!showModal)}
+                fill
+              >
+                Crear orden
+              </Button>
+            </Header>
+            <EuiHorizontalRule />
+            <EuiPanel>
+              <EuiFormRow label="Id de cliente">
+                <EuiFieldSearch
+                  style={{ minWidth: 160 }}
+                  onChange={(e) => {
+                    setClientId(e.target.value);
+                  }}
+                  placeholder="id"
+                  value={clientId}
+                />
+              </EuiFormRow>
               <EuiSpacer />
-              <EuiModalFooter>
-                <Button onClick={() => setShowModal(!showModal)}>
-                  cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  fill
-                  isLoading={statusGenerateShipment === "loading"}
-                >
-                  guardar
-                </Button>
-              </EuiModalFooter>
-            </EuiForm>
-          </Modal>
+              <TableBody
+                pageIndex={pageIndex}
+                setPageIndex={setPageIndex}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                columns={columns}
+                items={dataPackages}
+                totalItemCount={totalCount}
+                pageSizeOptions={pageSizeOptions}
+                noItemsMessage={"No se encontraron paquetes"}
+                itemId={"id"}
+                selection={selection}
+                isSelectable={true}
+              />
+            </EuiPanel>
+          </EuiPanel>
+          {showModal && (
+            <>
+              <Modal
+                onCloseModal={() => setShowModal(!showModal)}
+                titleModal={"Crear Orden"}
+              >
+                <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                  <GenerateShipmentInput
+                    register={register}
+                    setValue={setValue}
+                    errors={errors}
+                  />
+                  <EuiSpacer />
+                  <EuiModalFooter>
+                    <Button onClick={() => setShowModal(!showModal)}>
+                      cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      fill
+                      isLoading={statusGenerateShipment === "loading"}
+                    >
+                      guardar
+                    </Button>
+                  </EuiModalFooter>
+                </EuiForm>
+              </Modal>
+            </>
+          )}
+          {globalToasts}
         </>
       )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

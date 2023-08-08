@@ -4,6 +4,7 @@ import { API_URL } from "@/common";
 import { Button, Header, LoadingPage, SimpleList } from "@/components";
 import { GetPackageHistory } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
+import { UseAuthContext } from "@/hooks/login";
 import {
   EuiHorizontalRule,
   EuiPageHeaderContent,
@@ -15,9 +16,12 @@ import {
   EuiFlexItem,
   EuiCard,
 } from "@elastic/eui";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PackagesHistory() {
+  const router = useRouter();
+  const { user } = UseAuthContext();
   const [value, setValue] = useState("");
   const [inputFilter, setInputFilter] = useState("");
   const [history, setHistory] = useState<any[]>([]);
@@ -76,58 +80,74 @@ export default function PackagesHistory() {
     setValidateData(steps.length > 0 ? "si hay cosas" : "no hay cosas");
   };
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Historial de paquete`}>{""}</Header>
-        <EuiHorizontalRule />
-        <EuiFlexGroup>
-          <EuiFlexItem>
-            <EuiFieldSearch
-              onChange={onChange}
-              placeholder={"Buscar por id del paquete"}
-              onSearch={searchValueOnClick}
-              isLoading={status === "loading"}
-            />
-          </EuiFlexItem>
-          <EuiFlexItem>
-            <Button onClick={buttonClick} isLoading={status === "loading"} fill>
-              Buscar
-            </Button>
-          </EuiFlexItem>
-          <EuiFlexItem style={{ alignItems: "center", alignSelf: "center" }}>
-            <SimpleList
-              title={"Id paquete: "}
-              description={history[0]?.idPackage}
-            />
-          </EuiFlexItem>
-        </EuiFlexGroup>
-        <EuiSpacer />
-        {status === "loading" ? (
-          <LoadingPage isLoading={status === "loading"} />
-        ) : (
-          <>
-            <EuiPanel>
-              {inputFilter !== "" ? (
-                <EuiSteps titleSize="xs" steps={steps} />
-              ) : (
-                <EuiCard
-                  title="Ingresa una guia para ver su historial"
-                  description=""
+      {user !== null && (
+        <>
+          <EuiPanel style={{ margin: "2vh" }}>
+            <Header title={`Historial de paquete`}>{""}</Header>
+            <EuiHorizontalRule />
+            <EuiFlexGroup>
+              <EuiFlexItem>
+                <EuiFieldSearch
+                  onChange={onChange}
+                  placeholder={"Buscar por id del paquete"}
+                  onSearch={searchValueOnClick}
+                  isLoading={status === "loading"}
                 />
-              )}
-              {validateData === "no hay cosas" && (
-                <>
-                  <EuiCard
-                    title="No se encontraron movimientos"
-                    description=""
-                  />
-                </>
-              )}
-            </EuiPanel>
-          </>
-        )}
-      </EuiPanel>
+              </EuiFlexItem>
+              <EuiFlexItem>
+                <Button
+                  onClick={buttonClick}
+                  isLoading={status === "loading"}
+                  fill
+                >
+                  Buscar
+                </Button>
+              </EuiFlexItem>
+              <EuiFlexItem
+                style={{ alignItems: "center", alignSelf: "center" }}
+              >
+                <SimpleList
+                  title={"Id paquete: "}
+                  description={history[0]?.idPackage}
+                />
+              </EuiFlexItem>
+            </EuiFlexGroup>
+            <EuiSpacer />
+            {status === "loading" ? (
+              <LoadingPage isLoading={status === "loading"} />
+            ) : (
+              <>
+                <EuiPanel>
+                  {inputFilter !== "" ? (
+                    <EuiSteps titleSize="xs" steps={steps} />
+                  ) : (
+                    <EuiCard
+                      title="Ingresa una guia para ver su historial"
+                      description=""
+                    />
+                  )}
+                  {validateData === "no hay cosas" && (
+                    <>
+                      <EuiCard
+                        title="No se encontraron movimientos"
+                        description=""
+                      />
+                    </>
+                  )}
+                </EuiPanel>
+              </>
+            )}
+          </EuiPanel>
+        </>
+      )}
     </EuiPageHeaderContent>
   );
 }
