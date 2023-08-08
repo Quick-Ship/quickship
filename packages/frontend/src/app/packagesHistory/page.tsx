@@ -16,6 +16,7 @@ import {
   EuiFlexItem,
   EuiCard,
 } from "@elastic/eui";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -44,7 +45,10 @@ export default function PackagesHistory() {
     if (status === "success") {
       setHistory(
         data.packageHistories.nodes.map((ph: any) => ({
-          createdAt: ph.createdAt,
+          createdAt: moment
+          .utc(ph.createdAt)
+          .local()
+          .format("DD-MM-YYYY HH:mm"),
           description: ph.description,
           idPackage: ph.idPackage,
         }))

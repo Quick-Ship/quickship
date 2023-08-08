@@ -1333,6 +1333,9 @@ type UserConnection {
 
   """Array of nodes."""
   nodes: [User!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type UserAggregateGroupBy {

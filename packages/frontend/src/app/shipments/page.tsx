@@ -21,6 +21,7 @@ import {
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -142,7 +143,10 @@ export default function Shipments() {
         data.shipments.nodes.map((sh: any) => ({
           id: sh.id,
           packages: sh.packages.totalCount,
-          updatedAt: sh.updatedAt,
+          updatedAt: moment
+            .utc(sh.updatedAt)
+            .local()
+            .format("DD-MM-YYYY HH:mm"),
           status: sh.shipmentStatus.status,
           messenger: sh.messenger !== null ? sh.messenger.id : "Sin asignar",
         }))

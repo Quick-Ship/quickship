@@ -71,6 +71,13 @@ export const Menu = () => {
         label="Mensajeros"
         href="/messengers"
       />
+      <EuiHorizontalRule margin="xs" />
+      <EuiListGroupItem
+        onClick={() => "/users"}
+        iconType="timeline"
+        label="Usuarios"
+        href="/users"
+      />
     </EuiListGroup>
   );
 };

@@ -27,6 +27,7 @@ import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { useRouter } from "next/navigation";
 import { UseAuthContext } from "@/hooks/login";
+import moment from "moment";
 
 export default function GeneratePackages() {
   const router = useRouter();
@@ -148,8 +149,14 @@ export default function GeneratePackages() {
           fullName: `${wh.client.firstName} ${wh.client.lastName}`,
           phone: wh.client.phone,
           email: wh.client.email,
-          createdAt: wh.createdAt,
-          updatedAt: wh.updatedAt,
+          createdAt: moment
+          .utc(wh.createdAt)
+          .local()
+          .format("DD-MM-YYYY HH:mm"),
+          updatedAt: moment
+          .utc(wh.updatedAt)
+          .local()
+          .format("DD-MM-YYYY HH:mm"),
           street: wh.direction.street,
           neigthboorhood: wh.direction.neigthboorhood,
           municipality: wh.direction.municipality,

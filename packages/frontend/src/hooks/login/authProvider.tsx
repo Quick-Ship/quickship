@@ -2,7 +2,11 @@
 
 import { createContext, useEffect, useState } from "react";
 import { auth } from "../../config";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  sendEmailVerification,
+} from "firebase/auth";
 import { useAuthState } from "react-firebase-hooks/auth";
 
 export type AuthContextType = {

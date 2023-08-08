@@ -31,6 +31,7 @@ import {
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useQueryClient } from "@tanstack/react-query";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -195,7 +196,10 @@ export default function Packages() {
         data?.packages?.nodes.map((pkg: any) => ({
           id: pkg.id,
           guide: pkg.guide,
-          updatedAt: pkg.updatedAt,
+          updatedAt: moment
+            .utc(pkg.updatedAt)
+            .local()
+            .format("DD-MM-YYYY HH:mm"),
           client: {
             id: pkg.client.id,
           },
