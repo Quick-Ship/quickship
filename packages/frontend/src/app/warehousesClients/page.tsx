@@ -175,6 +175,14 @@ export default function GeneratePackages() {
     }
   }, [dataWarehouse]);
 
+  useEffect(() => {
+    const newPaging = {
+      limit: pageSize,
+      offset: pageSize * pageIndex,
+    };
+    setActionsPaging(newPaging);
+  }, [pageIndex, pageSize]);
+
   const toggleDetails = (item: any) => {
     const itemIdToExpandedRowMapValues = { ...itemIdToExpandedRowMap };
 

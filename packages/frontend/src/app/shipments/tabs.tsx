@@ -3,7 +3,7 @@ import {
   PackagesShipmentInterface,
   WarehouseShipmentInterface,
 } from "@/common";
-import { Popover, SimpleList, Tabs } from "@/components";
+import { Popover, SimpleList, Tabs, colors } from "@/components";
 import {
   EuiAvatar,
   EuiDescriptionList,
@@ -13,6 +13,7 @@ import {
   EuiSpacer,
   EuiText,
 } from "@elastic/eui";
+import moment from "moment";
 import { useState } from "react";
 
 interface TabWarehouseProps {
@@ -35,24 +36,24 @@ export const WarehouseTab: React.FC<TabWarehouseProps> = ({
     <Tabs
       color={
         warehouseShipment.statusId === 1
-          ? "primary"
+          ? colors.pending
           : warehouseShipment.statusId === 2
-          ? "primary"
+          ? colors.primary
           : warehouseShipment.statusId === 3
-          ? "success"
+          ? colors.success
           : warehouseShipment.statusId === 4
-          ? "warning"
+          ? colors.warning
           : warehouseShipment.statusId === 5
-          ? "danger"
-          : undefined
+          ? colors.danger
+          : colors.pending
       }
+      index="P"
       tabs={[
         {
           id: "almacen--id",
           name: "Almacén",
           content: (
             <>
-              <EuiSpacer />
               <EuiDescriptionList
                 listItems={[
                   {
@@ -71,16 +72,17 @@ export const WarehouseTab: React.FC<TabWarehouseProps> = ({
                   },
                 ]}
               />
+              <EuiSpacer />
               <SimpleList
-                title={"Contacto:"}
+                title={"Contacto: "}
                 description={`${warehouseShipment.firstName} ${warehouseShipment.lastName}`}
               />
               <SimpleList
-                title="Télefono"
+                title="Télefono: "
                 description={`${warehouseShipment.phone}`}
               />
               <SimpleList
-                title="Correo"
+                title="Correo: "
                 description={`${warehouseShipment.email}`}
               />
             </>
@@ -99,26 +101,33 @@ export const PackagesTabs: React.FC<PackagesTabsProps> = ({
       {packagesShipment.map((i, index) => (
         <Tabs
           color={
-            i.statusId === 1
-              ? "primary"
-              : i.statusId === 2
-              ? "primary"
-              : i.statusId === 3
-              ? "success"
+            i.statusId === 2
+              ? colors.pending
               : i.statusId === 4
-              ? "warning"
+              ? colors.primary
               : i.statusId === 5
-              ? "danger"
-              : undefined
+              ? colors.success
+              : i.statusId === 6 ||
+                i.statusId === 7 ||
+                i.statusId === 8 ||
+                i.statusId === 9 ||
+                i.statusId === 10 ||
+                i.statusId === 11 ||
+                i.statusId === 12 ||
+                i.statusId === 13 ||
+                i.statusId === 14 ||
+                i.statusId === 15
+              ? colors.danger
+              : colors.pending
           }
           key={index}
+          index={`${index + 1}`}
           tabs={[
             {
               id: "direction--id",
               name: "Informacion General",
               content: (
                 <>
-                  <EuiSpacer />
                   <EuiDescriptionList
                     listItems={[
                       {
@@ -131,13 +140,34 @@ export const PackagesTabs: React.FC<PackagesTabsProps> = ({
                       },
                     ]}
                   />
+                  <EuiSpacer />
                   <SimpleList
-                    title={"Contacto:"}
+                    title={"Contacto: "}
                     description={`${i.firstName} ${i.lastName}`}
                   />
-                  <SimpleList title="Télefono" description={`${i.phone}`} />
-                  <SimpleList title="Correo" description={`${i.email}`} />
+                  <SimpleList title="Télefono: " description={`${i.phone}`} />
+                  <SimpleList title="Correo: " description={`${i.email}`} />
                 </>
+              ),
+            },
+            {
+              id: "packagesInformation--id",
+              name: "Información del paquete",
+              content: (
+                <div
+                  style={{
+                    marginLeft: "0.5rem",
+                    paddingTop: "0.5rem",
+                    paddingBottom: "1rem",
+                  }}
+                >
+                  <SimpleList title="Id paquete: " description={`${i.id}`} />
+                  <SimpleList title="Guia: " description={`${i.guide}`} />
+                  <SimpleList
+                    title="Estatus del paquete: "
+                    description={`${i.description}`}
+                  />
+                </div>
               ),
             },
             {
@@ -155,16 +185,19 @@ export const PackagesTabs: React.FC<PackagesTabsProps> = ({
                       >
                         <div style={{ marginRight: "5rem" }}>
                           <SimpleList
-                            title="Comentarios"
+                            title="Comentarios: "
                             description={`${ev.comments}`}
                           />
                           <SimpleList
-                            title="Reribido"
+                            title="Reribido: "
                             description={`${ev.personReceived}`}
                           />
                           <SimpleList
-                            title="Fecha"
-                            description={`${ev.createdAt}`}
+                            title="Fecha: "
+                            description={`${moment
+                              .utc(ev.createdAt)
+                              .local()
+                              .format("DD-MM-YYYY HH:mm")}`}
                           />
                         </div>
                         <div>
@@ -240,13 +273,13 @@ export const MessengerTabs: React.FC<MessengerTabProps> = ({
               imageUrl="https://source.unsplash.com/64x64/?cat"
             />
             <div style={{ marginLeft: "1rem" }}>
-              <SimpleList title={"Id:"} description={`${messenger.id}`} />
+              <SimpleList title={"Id: "} description={`${messenger.id}`} />
               <SimpleList
-                title={"Mensajero:"}
+                title={"Mensajero: "}
                 description={`${messenger.firstName} ${messenger.lastName}`}
               />
               <SimpleList
-                title={"Télefono:"}
+                title={"Télefono: "}
                 description={`${messenger.phone}`}
               />
             </div>

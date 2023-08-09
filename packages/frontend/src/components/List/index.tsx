@@ -11,8 +11,9 @@ export const SimpleList: React.FC<SimpleListProps> = ({
 }) => {
   return (
     <EuiText>
-      <p>
-        <span style={{ fontWeight: "bold" }}>{title} </span> {description}
+      <p style={{ paddingBottom: "0.5rem" }}>
+        <span style={{ fontWeight: "bold" }}>{title}</span>
+        {description}
       </p>
     </EuiText>
   );

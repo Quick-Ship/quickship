@@ -74,7 +74,7 @@ export const Menu = () => {
       <EuiHorizontalRule margin="xs" />
       <EuiListGroupItem
         onClick={() => "/users"}
-        iconType="timeline"
+        iconType="user"
         label="Usuarios"
         href="/users"
       />

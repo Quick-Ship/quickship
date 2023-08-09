@@ -188,7 +188,7 @@ export default function Shipments() {
               </Header>
               <EuiHorizontalRule />
               <EuiFlexGroup>
-                <EuiFlexItem>
+                <EuiFlexItem grow={5}>
                   <div
                     style={{
                       height: "600px",
@@ -198,27 +198,31 @@ export default function Shipments() {
                     }}
                   >
                     <MessengerTabs messenger={messengerShipment}>
-                      <EuiFormRow label="Ingresa id mensajero">
-                        <EuiFieldText
-                          name="id"
-                          value={idValue.id}
-                          onChange={onChange}
-                        />
-                      </EuiFormRow>
-                      <Button
-                        // style={{ marginLeft: "1em" }}
-                        isLoading={assignCourierShipmentStatus === "loading"}
-                        onClick={onSubmit}
-                        isDisabled={idValue.id === ""}
-                      >
-                        Asignar
-                      </Button>
+                      <div style={{ display: "flex", alignItems: "flex-end" }}>
+                        <EuiFormRow
+                          label="Ingresa id mensajero"
+                          style={{ marginRight: "0.5rem" }}
+                        >
+                          <EuiFieldText
+                            name="id"
+                            value={idValue.id}
+                            onChange={onChange}
+                          />
+                        </EuiFormRow>
+                        <Button
+                          isLoading={assignCourierShipmentStatus === "loading"}
+                          onClick={onSubmit}
+                          isDisabled={idValue.id === ""}
+                        >
+                          Asignar
+                        </Button>
+                      </div>
                     </MessengerTabs>
                     <WarehouseTab warehouseShipment={warehouseShipment} />
                     <PackagesTabs packagesShipment={packagesShipment} />
                   </div>
                 </EuiFlexItem>
-                <EuiFlexItem>
+                <EuiFlexItem grow={6}>
                   <EuiPanel>
                     <strong>Map</strong>
                   </EuiPanel>

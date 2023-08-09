@@ -57,6 +57,14 @@ export default function Users() {
     }
   }, [data]);
 
+  useEffect(() => {
+    const newPaging = {
+      limit: pageSize,
+      offset: pageSize * pageIndex,
+    };
+    setActionsPaging(newPaging);
+  }, [pageIndex, pageSize]);
+
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
       field: "id",

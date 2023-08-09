@@ -75,12 +75,14 @@ const AssignCourier: React.FC<AssignCourierProps> = ({
       isPopoverOpen={isPopoverOpen}
       closePopover={() => setPopoverOpen(!isPopoverOpen)}
     >
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <EuiFormRow label="Ingresa id mensajero">
+      <div style={{ display: "flex", alignItems: "flex-end" }}>
+        <EuiFormRow
+          label="Ingresa id mensajero"
+          style={{ marginRight: "0.5rem" }}
+        >
           <EuiFieldText name="id" value={idValue.id} onChange={onChange} />
         </EuiFormRow>
         <Button
-          // style={{ marginLeft: "1em" }}
           isLoading={assignCourierShipmentStatus === "loading"}
           onClick={onSubmit}
           isDisabled={idValue.id === ""}
@@ -154,6 +156,14 @@ export default function Shipments() {
       setTotalCount(data.shipments.totalCount);
     }
   }, [status]);
+
+  useEffect(() => {
+    const newPaging = {
+      limit: pageSize,
+      offset: pageSize * pageIndex,
+    };
+    setActionsPaging(newPaging);
+  }, [pageIndex, pageSize]);
 
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
