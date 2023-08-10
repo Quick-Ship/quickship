@@ -1,58 +1,82 @@
 "use client";
 
-import { API_URL } from "@/common";
-import { GeneralForm, Header, Modal, Table } from "@/components";
+import { API_URL, MessengerInterface } from "@/common";
+import {
+  Button,
+  GeneralForm,
+  Header,
+  LoadingPage,
+  Modal,
+  TableBody,
+} from "@/components";
 import {
   CreateMessengerQuery,
   GetMessengersQuery,
   graphQLClient,
-  } from "@/graphql";
+} from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
+import { UseAuthContext } from "@/hooks/login";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiForm,
   EuiHorizontalRule,
   EuiModalFooter,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 export default function Messengers() {
+  const queryCache: any = useQueryClient();
+  const router = useRouter();
+  const { user } = UseAuthContext();
+  const initialIndex = 0;
+  const initialPageZize = 10;
+  const pageSizeOptions = [
+    initialPageZize,
+    initialPageZize * 2,
+    initialPageZize * 4,
+  ];
+  const [pageIndex, setPageIndex] = useState<number>(initialIndex);
+  const [pageSize, setPageSize] = useState<number>(initialPageZize);
+  const [actionsPaging, setActionsPaging] = useState<any>({
+    limit: pageSize,
+    offset: pageIndex * pageSize,
+  });
+  const [totalCount, setTotalCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [messengers, setMessengers] = useState<MessengerInterface[]>([]);
+
+  const { globalToasts, pushToast } = useToastsContext();
+
+  const queryVars = {
+    filter: {},
+    paging: actionsPaging,
+    sorting: {},
+  };
 
   const {
-    isLoading,
-    error,
     data,
     isFetching,
     status: getMessengerQuerystatus,
   } = useGeneratedGQLQuery<unknown | any, unknown, unknown, unknown>(
     `${API_URL}/graphql`,
     "getMessengers",
-    GetMessengersQuery
+    GetMessengersQuery,
+    queryVars
   );
 
-  const {
-    mutate,
-    status: createOneMessengerStatus,
-    error: createOneMessengerError,
-  } = useMutation({
+  const { mutate, status: createOneMessengerStatus } = useMutation({
     mutationKey: ["createOneMessenger"],
     mutationFn: (messenger: any) => {
       return graphQLClient.request(CreateMessengerQuery, messenger);
     },
   });
-
-  const queryCache: any = useQueryClient();
-  const { globalToasts, pushToast } = useToastsContext();
 
   const {
     register,
@@ -102,90 +126,117 @@ export default function Messengers() {
     );
   };
 
+  useEffect(() => {
+    if (getMessengerQuerystatus === "success") {
+      setMessengers(
+        data.messengers?.nodes.map((messenger: any) => ({
+          id: messenger.id,
+          firstName: messenger.firstName,
+          lastName: messenger.lastName,
+          phone: messenger.phone,
+          email: messenger.email,
+        }))
+      );
+      setTotalCount(data.messengers.totalCount);
+    }
+  }, [getMessengerQuerystatus]);
+
+  useEffect(() => {
+    const newPaging = {
+      limit: pageSize,
+      offset: pageSize * pageIndex,
+    };
+    setActionsPaging(newPaging);
+  }, [pageIndex, pageSize]);
+
   const columns: Array<EuiBasicTableColumn<any>> = [
     {
-      field: "node.id",
+      field: "id",
       name: "ID",
     },
     {
-      field: "node.firstName",
+      field: "firstName",
       name: "Nombre",
     },
     {
-      field: "node.lastName",
+      field: "lastName",
       name: "Apellido",
     },
     {
-      field: "node.phone",
+      field: "phone",
       name: "Telefono",
     },
     {
-      field: "node.email",
+      field: "email",
       name: "Correo",
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   return (
     <EuiPageHeaderContent>
-      {isLoading && getMessengerQuerystatus === "loading" ? (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              isLoading={isLoading && getMessengerQuerystatus === "loading"}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            isLoading={isLoading && getMessengerQuerystatus === "loading"}
-          ></EuiSkeletonText>
-        </EuiPanel>
-      ) : (
-        <EuiPanel style={{ margin: "2vh" }}>
-          <Header title={`Mensajeros (${data.messengers.edges.length})`}>
-            <EuiButton onClick={() => setShowModal(!showModal)}>
-              Crear mensajero
-            </EuiButton>
-          </Header>
-          <EuiHorizontalRule />
-          <EuiPanel>
-            <Table
-              items={data?.messengers?.edges}
-              columns={columns}
-              itemId={"id"}
-            />
-          </EuiPanel>
-        </EuiPanel>
+      {user !== null && (
+        <>
+          {getMessengerQuerystatus === "loading" ? (
+            <LoadingPage isLoading={getMessengerQuerystatus === "loading"} />
+          ) : (
+            <EuiPanel style={{ margin: "2vh" }}>
+              <Header title={`Mensajeros (${totalCount})`}>
+                <Button onClick={() => setShowModal(!showModal)} fill>
+                  Crear mensajero
+                </Button>
+              </Header>
+              <EuiHorizontalRule />
+              <EuiPanel>
+                <TableBody
+                  items={messengers}
+                  columns={columns}
+                  itemId={"id"}
+                  pageIndex={pageIndex}
+                  setPageIndex={setPageIndex}
+                  pageSize={pageSize}
+                  setPageSize={setPageSize}
+                  totalItemCount={totalCount}
+                  pageSizeOptions={pageSizeOptions}
+                  noItemsMessage={"No se encontraron mensajeros"}
+                />
+              </EuiPanel>
+            </EuiPanel>
+          )}
+          {showModal && (
+            <Modal
+              onCloseModal={() => setShowModal(!showModal)}
+              titleModal={"Crear mensajero"}
+            >
+              <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                <GeneralForm
+                  register={register}
+                  setValue={setValue}
+                  errors={errors}
+                />
+                <EuiModalFooter>
+                  <Button onClick={() => setShowModal(!showModal)}>
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    fill
+                    isLoading={createOneMessengerStatus === "loading"}
+                  >
+                    Guardar
+                  </Button>
+                </EuiModalFooter>
+              </EuiForm>
+            </Modal>
+          )}
+          {globalToasts}
+        </>
       )}
-      {showModal && (
-        <Modal
-          onCloseModal={() => setShowModal(!showModal)}
-          titleModal={"Crear mensajero"}
-        >
-          <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
-            <GeneralForm
-              register={register}
-              setValue={setValue}
-              errors={errors}
-            />
-            <EuiModalFooter>
-              <EuiButton onClick={() => setShowModal(!showModal)}>
-                Cancelar
-              </EuiButton>
-              <EuiButton
-                type="submit"
-                fill
-                isLoading={createOneMessengerStatus === "loading"}
-              >
-                Guardar
-              </EuiButton>
-            </EuiModalFooter>
-          </EuiForm>
-        </Modal>
-      )}
-      {globalToasts}
     </EuiPageHeaderContent>
   );
 }

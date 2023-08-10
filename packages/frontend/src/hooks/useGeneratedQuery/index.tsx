@@ -3,10 +3,7 @@ import {
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
-import {
-  gql,
-  GraphQLClient,
-} from "graphql-request";
+import { gql, GraphQLClient } from "graphql-request";
 
 export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
   endpoint: string,
@@ -26,10 +23,26 @@ export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
         ? endpoint
         : `${endpoint}/graphql`;
 
-      const client_ = new GraphQLClient(graphqlUrl);
+      let user: any;
+
+      if (typeof window !== "undefined") {
+        user = JSON.parse(window.localStorage.getItem("user") as string);
+      }
+
+      if (
+        JSON.parse(window.localStorage.getItem("user") as string) === undefined
+      ) {
+        user = "basictoken";
+      }
+
+      const client_ = new GraphQLClient(graphqlUrl, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.stsTokenManager?.accessToken}`,
+        },
+      });
 
       try {
-        
         const result = await client_.request<TQuery, TVariables | any>(
           gqlQuery,
           queryVariables
@@ -38,9 +51,7 @@ export const useGeneratedGQLQuery = <TData, TError, TQuery, TVariables>(
         return result;
       } catch (error: any) {
         error?.response?.errors?.forEach((error: any) => {
-          if (
-            error?.message.includes("Context creation failedr")
-          ) {
+          if (error?.message.includes("Context creation failed")) {
             window.alert("No se puede ingresar a la pagina");
           }
         });

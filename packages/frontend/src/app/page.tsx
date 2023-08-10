@@ -1,87 +1,78 @@
 "use client";
 
+import { Button } from "@/components";
+import { UseAuthContext } from "@/hooks/login";
 import {
-  EuiHeader,
-  EuiHeaderSectionItem,
-  EuiHeaderLogo,
-  EuiHeaderLinks,
-  EuiHeaderLink,
-  EuiBasicTableColumn,
-  EuiBasicTable,
+  EuiFieldText,
+  EuiFlexGroup,
+  EuiFlexItem,
+  EuiFormRow,
+  EuiHorizontalRule,
+  EuiLink,
+  EuiPageHeader,
+  EuiPageHeaderContent,
+  EuiPageSection,
+  EuiPanel,
+  EuiSpacer,
 } from "@elastic/eui";
-import { useQuery } from "@tanstack/react-query";
-import { GraphQLClient, gql } from "graphql-request";
-import Link from "next/link";
-
-// const UserQuery = gql`
-//   query getUser {
-//     clients {
-//       id
-//       firstName
-//       lastName
-//       createAt
-//     }
-//   }
-// `;
-
-// const graphQLClient = new GraphQLClient(
-//   "https://quickship.onrender.com/graphql"
-// );
-
-// const fetchUser = async () => {
-//   return await graphQLClient.request(UserQuery);
-// };
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
-  // const { isLoading, error, data, isFetching }: any = useQuery({
-  //   queryKey: ["clients"],
-  //   queryFn: fetchUser,
-  // });
+  const router = useRouter();
+  const [login, setLogin] = useState({ email: "", password: "" });
+  const { loginEmailAndPassword, loading, error } = UseAuthContext();
 
-  // if (isLoading) return <p>'Loading...'</p>;
+  const handelChange = (e: any) => {
+    const { name, value } = e.target;
 
-  // console.log(data?.clients);
+    setLogin({ ...login, [name]: value });
+  };
 
-  // const columns: Array<EuiBasicTableColumn<any>> = [
-  //   {
-  //     field: "firstName",
-  //     name: "First Name",
-  //   },
-  //   {
-  //     field: "lastName",
-  //     name: "Last Name",
-  //   },
-  // ];
+  const onClick = () => {
+    if (!error) {
+      loginEmailAndPassword(login.email, login.password);
+      router.push("/home");
+    }
+    if (error) {
+      alert("El correo o contraseña no se encontrarón, revisa tu información");
+    }
+  };
+
   return (
-    <div>
-      <p>home</p>
-      <Link href="/about">Link to Home about</Link>
-    </div>
+    <EuiPageHeaderContent>
+      <EuiPanel style={{ margin: "2vh" }} paddingSize="l">
+        <EuiPageSection>
+          <EuiPageHeader pageTitle="Iniciar sesion" />
+        </EuiPageSection>
+        <EuiHorizontalRule />
+        <EuiPanel paddingSize="l">
+          <EuiFlexGroup>
+            <EuiFlexItem></EuiFlexItem>
+            <EuiFlexItem grow={1} style={{ justifyContent: "center" }}>
+              <EuiFormRow id="1">
+                <EuiFieldText fullWidth onChange={handelChange} name="email" />
+              </EuiFormRow>
+              <EuiFormRow id="2">
+                <EuiFieldText
+                  onChange={handelChange}
+                  name="password"
+                  type="password"
+                />
+              </EuiFormRow>
+              <div style={{ display: "inline-grid", width: "150px" }}>
+                <EuiSpacer />
+                <Button onClick={onClick} isLoading={loading}>
+                  Login
+                </Button>
+                <EuiSpacer />
+                <EuiLink href="/register">Registrarse</EuiLink>
+              </div>
+            </EuiFlexItem>
+            <EuiFlexItem></EuiFlexItem>
+          </EuiFlexGroup>
+        </EuiPanel>
+      </EuiPanel>
+    </EuiPageHeaderContent>
   );
 }
-
-
-/**
- *     <EuiHeader>
-      <EuiHeaderSectionItem border="right">
-        <EuiHeaderLogo>Elastic</EuiHeaderLogo>
-      </EuiHeaderSectionItem>
-
-      <EuiHeaderSectionItem>
-        <EuiHeaderLinks aria-label="App navigation links example">
-          <EuiHeaderLink isActive>Docs</EuiHeaderLink>
-
-          <EuiHeaderLink>Code</EuiHeaderLink>
-
-          {/* <EuiBasicTable
-            tableCaption="Demo of EuiBasicTable"
-            items={data?.clients}
-            rowHeader="firstName"
-            columns={columns}
-          // /> */
-
-//           <EuiHeaderLink iconType="help">Help</EuiHeaderLink>
-//         </EuiHeaderLinks>
-//       </EuiHeaderSectionItem>
-//     </EuiHeader>
-//  */

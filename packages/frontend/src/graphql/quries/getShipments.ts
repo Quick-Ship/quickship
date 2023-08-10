@@ -9,23 +9,15 @@ export const ShipmentsQuery = gql`
           id
           status
         }
-        # warehouseShipment {
-        #   id
-        #   client {
-        #     id
-        #   }
-        # }
         packages {
-          nodes {
-            id
-            guide
-          }
+          totalCount
         }
         messenger {
           id
         }
         updatedAt
       }
+      totalCount
     }
   }
 `;

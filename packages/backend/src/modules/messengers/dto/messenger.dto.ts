@@ -15,6 +15,7 @@ import { SortDirection } from '@nestjs-query/core';
   defaultResultSize: 100,
   maxResultsSize: 500,
   pagingStrategy: PagingStrategies.OFFSET,
+  enableTotalCount: true
 })
 @Relation('courierActivity', () => CourierActivityDTO, {
   defaultResultSize: 200,

@@ -2,6 +2,7 @@
 
 import { Providers } from "@/common";
 import { ToastsProvider } from "@/hooks";
+import { AuthProvider } from "@/hooks/login";
 
 export default function PackagesLayout({
   children,
@@ -9,10 +10,12 @@ export default function PackagesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Providers>
-      <ToastsProvider>
-        <main>{children}</main>
-      </ToastsProvider>
-    </Providers>
+    <AuthProvider>
+      <Providers>
+        <ToastsProvider>
+          <main>{children}</main>
+        </ToastsProvider>
+      </Providers>
+    </AuthProvider>
   );
 }

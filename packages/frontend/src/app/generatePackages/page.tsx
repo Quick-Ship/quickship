@@ -1,9 +1,8 @@
 "use client";
 
-import { Header, Table } from "@/components";
+import { Button, Header, LoadingPage, TableBody } from "@/components";
 import {
   EuiBasicTableColumn,
-  EuiButton,
   EuiButtonIcon,
   EuiDescriptionList,
   EuiFieldText,
@@ -23,40 +22,17 @@ import { CreatePackages, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useRouter } from "next/navigation";
-
-interface DataFile {
-  guide: string;
-  weigth: number;
-  width: number;
-  length: number;
-  heigth: number;
-  idClient: number;
-  contact: {
-    firstName: string;
-    lastName: string;
-    phone: string;
-    email: string;
-  };
-  direction: {
-    street: string;
-    neigthboorhood: string;
-    municipality: string;
-    state: string;
-    externalNumber: string;
-    internalNumber: string;
-    zipCode: string;
-    latitude: number;
-    longitude: number;
-  };
-}
+import { GeneratePackagesCSVInterface } from "@/common";
+import { UseAuthContext } from "@/hooks/login";
 
 export default function GeneratePackages() {
   const router = useRouter();
+  const { user } = UseAuthContext();
   const [files, setFiles] = useState<any>([]);
   const [itemIdToExpandedRowMap, setItemIdToExpandedRowMap] = useState<
     Record<string, ReactNode>
   >({});
-  const [items, setItems] = useState<Array<DataFile>>([]);
+  const [items, setItems] = useState<Array<GeneratePackagesCSVInterface>>([]);
   const [idClient, setIdClient] = useState("");
 
   const { mutate, isLoading, error, data, status } = useMutation({
@@ -286,78 +262,76 @@ export default function GeneratePackages() {
     },
   ];
 
+  useEffect(() => {
+    if (user === null) {
+      router.push("/");
+    }
+  }, [user]);
+
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted)
-    return (
-      <>
-        <EuiPanel style={{ margin: "2vh" }}>
-          <EuiPageHeader>
-            <EuiSkeletonText
-              lines={1}
-              size={"relative"}
-              // isLoading={isLoading}
-            ></EuiSkeletonText>
-          </EuiPageHeader>
-          <EuiSkeletonText
-            lines={6}
-            size={"m"}
-            // isLoading={isLoading}
-          ></EuiSkeletonText>
-        </EuiPanel>
-      </>
-    );
+  if (!mounted) return <LoadingPage isLoading={true} />;
 
   return (
     <EuiPageHeaderContent>
-      <EuiPanel style={{ margin: "2vh" }}>
-        <Header title={`Subir paquetes`}>
-          <div style={{ display: "flex", marginRight: "3rem" }}>
-            {idClient !== "" && (
-              <EuiFilePicker
-                id={"filePickerId"}
-                multiple
-                initialPromptText="Select or drag and drop file"
-                onChange={onChange}
-                display={"default"}
-                aria-label="Use aria labels when no actual label is in use"
+      {user !== null && (
+        <>
+          <EuiPanel style={{ margin: "2vh" }}>
+            <Header title={`Subir paquetes`}>
+              <div style={{ display: "flex", marginRight: "3rem" }}>
+                {idClient !== "" && (
+                  <EuiFilePicker
+                    id={"filePickerId"}
+                    multiple
+                    initialPromptText="Select or drag and drop file"
+                    onChange={onChange}
+                    display={"default"}
+                    aria-label="Use aria labels when no actual label is in use"
+                  />
+                )}
+              </div>
+              <Button
+                onClick={submitManyPackages}
+                isLoading={status === "loading"}
+                fill
+              >
+                Agregar guias
+              </Button>
+            </Header>
+            <EuiHorizontalRule />
+            <EuiFormRow>
+              <EuiFieldText
+                name="idClient"
+                placeholder="Ingresa el id del cliente para generar guias"
+                value={idClient}
+                onChange={onChaeIdClient}
               />
-            )}
-          </div>
-          <EuiButton
-            onClick={submitManyPackages}
-            isLoading={status === "loading"}
-            // href={"/packages"}
-            fill
-          >
-            Agregar guias
-          </EuiButton>
-        </Header>
-        <EuiHorizontalRule />
-        <EuiFormRow>
-          <EuiFieldText
-            name="idClient"
-            placeholder="Ingresa el id del cliente para generar guias"
-            value={idClient}
-            onChange={onChaeIdClient}
-          />
-        </EuiFormRow>
-        <EuiHorizontalRule />
-        <EuiPanel>
-          {files && (
-            <Table
-              items={files}
-              itemIdToExpandedRowMap={itemIdToExpandedRowMap}
-              columns={columns}
-              itemId={"id"}
-            />
-          )}
-        </EuiPanel>
-      </EuiPanel>
-      {globalToasts}
+            </EuiFormRow>
+            <EuiHorizontalRule />
+            <EuiPanel>
+              {files && (
+                <TableBody
+                  items={files}
+                  itemIdToExpandedRowMap={itemIdToExpandedRowMap}
+                  columns={columns}
+                  itemId={"id"}
+                  pageIndex={0}
+                  setPageIndex={() => {}}
+                  pageSize={0}
+                  setPageSize={() => {}}
+                  totalItemCount={0}
+                  pageSizeOptions={[]}
+                  noItemsMessage={"Sube tu archivo para ver información"}
+                />
+              )}
+            </EuiPanel>
+          </EuiPanel>
+          {globalToasts}
+        </>
+      )}
     </EuiPageHeaderContent>
   );
 }

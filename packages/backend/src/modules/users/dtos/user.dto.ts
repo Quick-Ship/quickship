@@ -16,6 +16,7 @@ import { SortDirection } from '@nestjs-query/core';
   maxResultsSize: 500,
   pagingStrategy: PagingStrategies.OFFSET,
   defaultSort: [{ direction: SortDirection.DESC, field: 'createdAt' }],
+  enableTotalCount: true
 })
 export class UserDTO {
   @Field()
