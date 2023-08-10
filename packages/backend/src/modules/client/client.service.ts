@@ -11,6 +11,10 @@ import { InputCreateClientDTO } from './dto/create-client.input';
 import { validTransaction } from 'src/common/utils';
 import { FirebaseService } from 'src/common/firebase/firebase.service';
 import { RegisterClientResponseDTO } from './dto/register-client-dto';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+import { ViewerDTO } from '../users/dtos/viewer.dto';
+import { UnauthorizedException } from '@nestjs/common';
+import { Errors } from 'src/common/enums/errors.enum';
 
 @QueryService(ClientEntity)
 export class ClientService extends TypeOrmQueryService<ClientEntity> {
@@ -53,6 +57,46 @@ export class ClientService extends TypeOrmQueryService<ClientEntity> {
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  public async viewer(input: IPayloadUser): Promise<ViewerDTO> {
+    try {
+      this.logger.debug({
+        event: 'clientService.viewer.input',
+        data: input,
+      });
+      if (input.tenant !== 'CLIENT') {
+        throw new UnauthorizedException();
+      }
+      const user = await this.repo.findOne(input.id);
+
+      if (!user) {
+        this.logger.warn({
+          event: 'clientService.viewer.userNotExist',
+          warn: Errors.USER_NOT_EXIST,
+        });
+        throw new GraphQLError(Errors.USER_NOT_EXIST);
+      }
+
+      const response: ViewerDTO = {
+        userId: user.id,
+        email: user.email,
+        tenant: input.tenant,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+      this.logger.debug({
+        event: 'clientService.viewer.response',
+        data: response,
+      });
+      return response;
+    } catch (error) {
+      this.logger.error({
+        event: 'clientService.viewer.error',
+        error: error,
+      });
+      throw new GraphQLError(error);
     }
   }
 }

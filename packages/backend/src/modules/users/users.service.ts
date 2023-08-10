@@ -12,6 +12,10 @@ import { FirebaseService } from 'src/common/firebase/firebase.service';
 import { UserEntity } from './entities/user.entity';
 import { RegisterUserResponseDTO } from './dtos/register-user.response.dto';
 import { RegisterUserDTO } from './dtos/register-user-dto';
+import { ViewerDTO } from './dtos/viewer.dto';
+import { Errors } from 'src/common/enums/errors.enum';
+import { IPayloadUser } from 'src/common/auth/interfaces/auth.interface';
+import { UnauthorizedException } from '@nestjs/common';
 
 @QueryService(UserEntity)
 export class UserService extends TypeOrmQueryService<UserEntity> {
@@ -54,6 +58,42 @@ export class UserService extends TypeOrmQueryService<UserEntity> {
       throw new GraphQLError(error?.message || error);
     } finally {
       await queryRunner.release();
+    }
+  }
+
+  public async viewer(input: IPayloadUser): Promise<ViewerDTO> {
+    try {
+      this.logger.warn({
+        event: 'userService.viewer.input',
+        data: input,
+      });
+      if (input.tenant !== 'USER') {
+        throw new UnauthorizedException();
+      }
+      const user = await this.repo.findOne(input.id);
+
+      if (!user) {
+        this.logger.warn({
+          event: 'userService.viewer.userNotExist',
+          warn: Errors.USER_NOT_EXIST,
+        });
+        throw new GraphQLError(Errors.USER_NOT_EXIST);
+      }
+
+      const response: ViewerDTO = {
+        userId: user.id,
+        email: user.email,
+        tenant: 'USER',
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
+      this.logger.warn({
+        event: 'userService.viewer.response',
+        data: response,
+      });
+      return response;
+    } catch (error) {
+      throw new GraphQLError(error);
     }
   }
 }
