@@ -8,4 +8,4 @@ export const TITULO_COLUMN_FOOTER = 'text-2xl mb-2';
 
 export const SUBTITULO_COLUMN_FOOTER = 'text-xl mb-2';
 
-export const CONTENT_COPY = 'bg-[#F2D21C] w-full p-2 text-center text-[#2C2C38]';
+export const CONTENT_COPY = 'bg-[#F2D21C] w-full p-2 text-center text-[#2C2C38] font-bold italic';
