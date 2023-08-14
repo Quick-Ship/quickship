@@ -41,6 +41,7 @@ export const Nabvar = () => {
             className="bg-inherit "
             width={35}
             height={24}
+            onClick={() => {}}
             priority
           />
         </div>

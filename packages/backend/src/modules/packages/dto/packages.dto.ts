@@ -5,6 +5,7 @@ import {
   FilterableRelation,
   KeySet,
   PagingStrategies,
+  QueryOptions,
 } from '@nestjs-query/query-graphql';
 import { ContactDTO } from 'src/modules/contact/dto/contact.dto';
 import { DirectionDTO } from 'src/modules/directions/dto/directions.dto';
@@ -16,7 +17,13 @@ import { EvidenceDTO } from 'src/modules/evidences/dto/evidence.dto';
 
 @ObjectType('Package')
 @KeySet(['id'])
+@QueryOptions({
+  pagingStrategy: PagingStrategies.OFFSET,
+  enableTotalCount: true,
+  maxResultsSize: 1000,
+})
 @FilterableRelation('shipment', () => ShipmentDTO, {
+  nullable: true,
   defaultResultSize: 200,
   maxResultsSize: 500,
   defaultSort: [{ field: 'createdAt', direction: SortDirection.DESC }],
@@ -71,6 +78,9 @@ export class PackageDTO {
 
   @Field()
   length!: number;
+
+  @FilterableField()
+  clientId: number;
 
   @FilterableField(() => GraphQLISODateTime)
   createdAt!: Date;

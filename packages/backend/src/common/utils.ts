@@ -1,6 +1,13 @@
 import { QueryRunner } from 'typeorm';
-import { PackageStatusDescriptionEnum } from './package-status-description.enum';
-import { PackageStatusEnum } from './package-status.enum';
+import { PackageStatusDescriptionEnum } from './enums/package-status-description.enum';
+import { PackageStatusEnum } from './enums/package-status.enum';
+import { InputChangeStatus } from 'src/modules/packages/dto/change-package-status.dto';
+import {
+  PackageStatusEvidenceEnum,
+  PackageStatusEvidencesTypes,
+} from './enums/package-status.evidences.enum';
+import { GraphQLError } from 'graphql';
+import { Errors } from './enums/errors.enum';
 
 export const validTransaction = async (queryRunner: QueryRunner) => {
   if (queryRunner.isTransactionActive) {
@@ -54,6 +61,9 @@ export const getStatusByIdStatus = (status: number): string => {
     case PackageStatusEnum.WC:
       description = 'WC';
       break;
+    case PackageStatusEnum.AR:
+      description = 'AR';
+      break;
   }
   return description;
 };
@@ -105,6 +115,20 @@ export const getStatusDescriptionByIdStatus = (
     case PackageStatusEnum.WC:
       description = PackageStatusDescriptionEnum.WC;
       break;
+    case PackageStatusEnum.AR:
+      description = PackageStatusDescriptionEnum.AR;
+      break;
   }
   return description;
+};
+
+export const validateEvidenceByPackageStatus = (
+  status: number,
+  input: InputChangeStatus,
+): void => {
+  if (PackageStatusEvidencesTypes.includes(status) && !input?.evidence) {
+    throw new GraphQLError(
+      Errors.INVALID_PACKAGE_STATUS_BY_EVIDENCE.replace(':guide', input.guide),
+    );
+  }
 };

@@ -2,41 +2,33 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Messenger {
+type RegisterClientResponse {
+  url: String!
+}
+
+type CourierActivity {
   id: Float!
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
+  name: String!
+  description: String!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
+  messengers(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 200}
+
+    """Specify to filter the records returned."""
+    filter: MessengerFilter = {}
+
+    """Specify to sort results."""
+    sorting: [MessengerSort!] = [{field: createdAt, direction: DESC}]
+  ): CourierActivityMessengersConnection!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type ShipmentStatus {
-  id: Float!
-  name: String!
-  status: String!
-  description: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  deletedAt: DateTime
-  shipments(
-    """Limit or page results."""
-    paging: OffsetPaging = {limit: 200}
-
-    """Specify to filter the records returned."""
-    filter: ShipmentFilter = {}
-
-    """Specify to sort results."""
-    sorting: [ShipmentSort!] = [{field: createdAt, direction: DESC}]
-  ): ShipmentStatusShipmentsConnection!
-}
 
 input OffsetPaging {
   """Limit the number of records returned"""
@@ -46,39 +38,11 @@ input OffsetPaging {
   offset: Int
 }
 
-input ShipmentFilter {
-  and: [ShipmentFilter!]
-  or: [ShipmentFilter!]
-  createdAt: DateFieldComparison
-  updatedAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-  packages: ShipmentFilterPackageFilter
-}
-
-input DateFieldComparison {
-  is: Boolean
-  isNot: Boolean
-  eq: DateTime
-  neq: DateTime
-  gt: DateTime
-  gte: DateTime
-  lt: DateTime
-  lte: DateTime
-  in: [DateTime!]
-  notIn: [DateTime!]
-  between: DateFieldComparisonBetween
-  notBetween: DateFieldComparisonBetween
-}
-
-input DateFieldComparisonBetween {
-  lower: DateTime!
-  upper: DateTime!
-}
-
-input ShipmentFilterPackageFilter {
-  and: [ShipmentFilterPackageFilter!]
-  or: [ShipmentFilterPackageFilter!]
-  guide: StringFieldComparison
+input MessengerFilter {
+  and: [MessengerFilter!]
+  or: [MessengerFilter!]
+  phone: StringFieldComparison
+  email: StringFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -101,13 +65,35 @@ input StringFieldComparison {
   notIn: [String!]
 }
 
-input ShipmentSort {
-  field: ShipmentSortFields!
+input DateFieldComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: DateTime
+  neq: DateTime
+  gt: DateTime
+  gte: DateTime
+  lt: DateTime
+  lte: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  between: DateFieldComparisonBetween
+  notBetween: DateFieldComparisonBetween
+}
+
+input DateFieldComparisonBetween {
+  lower: DateTime!
+  upper: DateTime!
+}
+
+input MessengerSort {
+  field: MessengerSortFields!
   direction: SortDirection!
   nulls: SortNulls
 }
 
-enum ShipmentSortFields {
+enum MessengerSortFields {
+  phone
+  email
   createdAt
   updatedAt
   deletedAt
@@ -123,6 +109,89 @@ enum SortDirection {
 enum SortNulls {
   NULLS_FIRST
   NULLS_LAST
+}
+
+type Messenger {
+  id: Float!
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  courierActivity: CourierActivity!
+}
+
+type ShipmentStatus {
+  id: Float!
+  name: String!
+  status: String!
+  description: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+  shipments(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 200}
+
+    """Specify to filter the records returned."""
+    filter: ShipmentFilter = {}
+
+    """Specify to sort results."""
+    sorting: [ShipmentSort!] = [{field: createdAt, direction: DESC}]
+  ): ShipmentStatusShipmentsConnection!
+}
+
+input ShipmentFilter {
+  and: [ShipmentFilter!]
+  or: [ShipmentFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+  packages: ShipmentFilterPackageFilter
+}
+
+input ShipmentFilterPackageFilter {
+  and: [ShipmentFilterPackageFilter!]
+  or: [ShipmentFilterPackageFilter!]
+  guide: StringFieldComparison
+  clientId: NumberFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input NumberFieldComparison {
+  is: Boolean
+  isNot: Boolean
+  eq: Float
+  neq: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+  in: [Float!]
+  notIn: [Float!]
+  between: NumberFieldComparisonBetween
+  notBetween: NumberFieldComparisonBetween
+}
+
+input NumberFieldComparisonBetween {
+  lower: Float!
+  upper: Float!
+}
+
+input ShipmentSort {
+  field: ShipmentSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum ShipmentSortFields {
+  createdAt
+  updatedAt
+  deletedAt
 }
 
 type Shipment {
@@ -143,7 +212,7 @@ type Shipment {
     filter: PackageFilter = {}
 
     """Specify to sort results."""
-    sorting: [PackageSort!] = [{field: createdAt, direction: DESC}]
+    sorting: [PackageSort!] = [{field: createdAt, direction: ASC}]
   ): ShipmentPackagesConnection
 }
 
@@ -151,6 +220,7 @@ input PackageFilter {
   and: [PackageFilter!]
   or: [PackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -222,6 +292,7 @@ input PackageSort {
 
 enum PackageSortFields {
   guide
+  clientId
   createdAt
   updatedAt
   deletedAt
@@ -355,10 +426,11 @@ type Package {
   width: Float!
   heigth: Float!
   length: Float!
+  clientId: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
   deletedAt: DateTime
-  shipment: Shipment!
+  shipment: Shipment
   direction: Direction!
   contact: Contact!
   client: Client!
@@ -388,6 +460,7 @@ input EvidenceFilterPackageFilter {
   and: [EvidenceFilterPackageFilter!]
   or: [EvidenceFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -415,6 +488,14 @@ type Client {
   updatedAt: DateTime!
   deletedAt: DateTime
   packages: Package!
+}
+
+type Viewer {
+  email: String!
+  userId: Float!
+  tenant: String!
+  firstName: String
+  lastName: String
 }
 
 type DeleteManyResponse {
@@ -452,6 +533,9 @@ type ClientConnection {
 
   """Array of nodes."""
   nodes: [Client!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type ClientAggregateGroupBy {
@@ -480,6 +564,13 @@ type ClientMaxAggregate {
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
+}
+
+type ClientAggregateResponse {
+  groupBy: ClientAggregateGroupBy
+  count: ClientCountAggregate
+  min: ClientMinAggregate
+  max: ClientMaxAggregate
 }
 
 type ContactDeleteResponse {
@@ -739,20 +830,15 @@ type MessengerDeleteResponse {
   deletedAt: DateTime
 }
 
-type MessengerEdge {
-  """The node containing the Messenger"""
-  node: Messenger!
-
-  """Cursor for this node."""
-  cursor: ConnectionCursor!
-}
-
 type MessengerConnection {
   """Paging information"""
-  pageInfo: PageInfo!
+  pageInfo: OffsetPageInfo!
 
-  """Array of edges."""
-  edges: [MessengerEdge!]!
+  """Array of nodes."""
+  nodes: [Messenger!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type MessengerAggregateGroupBy {
@@ -855,6 +941,15 @@ type PackageHistoryMaxAggregate {
   deletedAt: DateTime
 }
 
+type ChangeStatusReponse {
+  guide: String!
+  statusId: Float!
+}
+
+type ChangePackageStatusResponseDTO {
+  data: [ChangeStatusReponse!]!
+}
+
 type PackageDeleteResponse {
   id: Float
   guide: String
@@ -862,29 +957,26 @@ type PackageDeleteResponse {
   width: Float
   heigth: Float
   length: Float
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
 }
 
-type PackageEdge {
-  """The node containing the Package"""
-  node: Package!
-
-  """Cursor for this node."""
-  cursor: ConnectionCursor!
-}
-
 type PackageConnection {
   """Paging information"""
-  pageInfo: PageInfo!
+  pageInfo: OffsetPageInfo!
 
-  """Array of edges."""
-  edges: [PackageEdge!]!
+  """Array of nodes."""
+  nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type PackageAggregateGroupBy {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -892,13 +984,23 @@ type PackageAggregateGroupBy {
 
 type PackageCountAggregate {
   guide: Int
+  clientId: Int
   createdAt: Int
   updatedAt: Int
   deletedAt: Int
 }
 
+type PackageSumAggregate {
+  clientId: Float
+}
+
+type PackageAvgAggregate {
+  clientId: Float
+}
+
 type PackageMinAggregate {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -906,6 +1008,7 @@ type PackageMinAggregate {
 
 type PackageMaxAggregate {
   guide: String
+  clientId: Float
   createdAt: DateTime
   updatedAt: DateTime
   deletedAt: DateTime
@@ -969,6 +1072,9 @@ type ShipmentPackagesConnection {
 
   """Array of nodes."""
   nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type ShipmentStatusDeleteResponse {
@@ -1094,6 +1200,9 @@ type PackageStatusPackagesConnection {
 
   """Array of nodes."""
   nodes: [Package!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
 }
 
 type WarehouseShipmentDeleteResponse {
@@ -1192,6 +1301,137 @@ type EvidenceMaxAggregate {
   deletedAt: DateTime
 }
 
+type User {
+  id: Float!
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+type RegisterUserResponse {
+  url: String!
+}
+
+type UserDeleteResponse {
+  id: Float
+  firstName: String
+  lastName: String
+  phone: String
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [User!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type UserAggregateGroupBy {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserCountAggregate {
+  email: Int
+  createdAt: Int
+  updatedAt: Int
+  deletedAt: Int
+}
+
+type UserMinAggregate {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserMaxAggregate {
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type UserAggregateResponse {
+  groupBy: UserAggregateGroupBy
+  count: UserCountAggregate
+  min: UserMinAggregate
+  max: UserMaxAggregate
+}
+
+type CourierActivityDeleteResponse {
+  id: Float
+  name: String
+  description: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type CourierActivityConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [CourierActivity!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type CourierActivityAggregateGroupBy {
+  name: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type CourierActivityCountAggregate {
+  name: Int
+  createdAt: Int
+  updatedAt: Int
+  deletedAt: Int
+}
+
+type CourierActivityMinAggregate {
+  name: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type CourierActivityMaxAggregate {
+  name: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type CourierActivityMessengersConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [Messenger!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
 type Query {
   sayHello: String!
   client(
@@ -1208,6 +1448,11 @@ type Query {
     """Specify to sort results."""
     sorting: [ClientSort!] = []
   ): ClientConnection!
+  viewerClient: Viewer!
+  clientAggregate(
+    """Filter to find records to aggregate on"""
+    filter: ClientAggregateFilter
+  ): [ClientAggregateResponse!]!
   contact(
     """The id of the record to find."""
     id: ID!
@@ -1256,7 +1501,7 @@ type Query {
   ): Messenger
   messengers(
     """Limit or page results."""
-    paging: CursorPaging = {first: 10}
+    paging: OffsetPaging = {limit: 100}
 
     """Specify to filter the records returned."""
     filter: MessengerFilter = {}
@@ -1264,6 +1509,7 @@ type Query {
     """Specify to sort results."""
     sorting: [MessengerSort!] = []
   ): MessengerConnection!
+  viewerCourier: Viewer!
   packageHistory(
     """The id of the record to find."""
     id: ID!
@@ -1284,7 +1530,7 @@ type Query {
   ): Package
   packages(
     """Limit or page results."""
-    paging: CursorPaging = {first: 10}
+    paging: OffsetPaging = {limit: 10}
 
     """Specify to filter the records returned."""
     filter: PackageFilter = {}
@@ -1362,6 +1608,39 @@ type Query {
     """Specify to sort results."""
     sorting: [EvidenceSort!] = []
   ): EvidenceConnection!
+  user(
+    """The id of the record to find."""
+    id: ID!
+  ): User
+  users(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 100}
+
+    """Specify to filter the records returned."""
+    filter: UserFilter = {}
+
+    """Specify to sort results."""
+    sorting: [UserSort!] = [{field: createdAt, direction: DESC}]
+  ): UserConnection!
+  viewerUser: Viewer!
+  userAggregate(
+    """Filter to find records to aggregate on"""
+    filter: UserAggregateFilter
+  ): [UserAggregateResponse!]!
+  courierActivity(
+    """The id of the record to find."""
+    id: ID!
+  ): CourierActivity
+  courierActivities(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 200}
+
+    """Specify to filter the records returned."""
+    filter: CourierActivityFilter = {}
+
+    """Specify to sort results."""
+    sorting: [CourierActivitySort!] = []
+  ): CourierActivityConnection!
 }
 
 input ClientFilter {
@@ -1378,6 +1657,7 @@ input ClientFilterPackageFilter {
   and: [ClientFilterPackageFilter!]
   or: [ClientFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1394,6 +1674,15 @@ enum ClientSortFields {
   createdAt
   updatedAt
   deletedAt
+}
+
+input ClientAggregateFilter {
+  and: [ClientAggregateFilter!]
+  or: [ClientAggregateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
 }
 
 input CursorPaging {
@@ -1424,6 +1713,7 @@ input ContactFilterPackageFilter {
   and: [ContactFilterPackageFilter!]
   or: [ContactFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1457,6 +1747,7 @@ input DirectionFilterPackageFilter {
   and: [DirectionFilterPackageFilter!]
   or: [DirectionFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1493,26 +1784,6 @@ input InvoiceFilter {
   deleteAt: DateFieldComparison
 }
 
-input NumberFieldComparison {
-  is: Boolean
-  isNot: Boolean
-  eq: Float
-  neq: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
-  in: [Float!]
-  notIn: [Float!]
-  between: NumberFieldComparisonBetween
-  notBetween: NumberFieldComparisonBetween
-}
-
-input NumberFieldComparisonBetween {
-  lower: Float!
-  upper: Float!
-}
-
 input InvoiceSort {
   field: InvoiceSortFields!
   direction: SortDirection!
@@ -1525,30 +1796,6 @@ enum InvoiceSortFields {
   createAt
   updateAt
   deleteAt
-}
-
-input MessengerFilter {
-  and: [MessengerFilter!]
-  or: [MessengerFilter!]
-  phone: StringFieldComparison
-  email: StringFieldComparison
-  createdAt: DateFieldComparison
-  updatedAt: DateFieldComparison
-  deletedAt: DateFieldComparison
-}
-
-input MessengerSort {
-  field: MessengerSortFields!
-  direction: SortDirection!
-  nulls: SortNulls
-}
-
-enum MessengerSortFields {
-  phone
-  email
-  createdAt
-  updatedAt
-  deletedAt
 }
 
 input PackageHistoryFilter {
@@ -1613,6 +1860,7 @@ input PackageStatusFilterPackageFilter {
   and: [PackageStatusFilterPackageFilter!]
   or: [PackageStatusFilterPackageFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -1631,15 +1879,67 @@ enum PackageStatusSortFields {
   deletedAt
 }
 
+input UserFilter {
+  and: [UserFilter!]
+  or: [UserFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input UserSort {
+  field: UserSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum UserSortFields {
+  email
+  createdAt
+  updatedAt
+  deletedAt
+}
+
+input UserAggregateFilter {
+  and: [UserAggregateFilter!]
+  or: [UserAggregateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input CourierActivityFilter {
+  and: [CourierActivityFilter!]
+  or: [CourierActivityFilter!]
+  name: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input CourierActivitySort {
+  field: CourierActivitySortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum CourierActivitySortFields {
+  name
+  createdAt
+  updatedAt
+  deletedAt
+}
+
 type Mutation {
   setPackagesOnClient(input: SetPackagesOnClientInput!): Client!
   removePackagesFromClient(input: RemovePackagesFromClientInput!): Client!
-  createOneClient(input: CreateOneClientInput!): Client!
-  createManyClients(input: CreateManyClientsInput!): [Client!]!
   updateOneClient(input: UpdateOneClientInput!): Client!
   updateManyClients(input: UpdateManyClientsInput!): UpdateManyResponse!
   deleteOneClient(input: DeleteOneClientInput!): ClientDeleteResponse!
   deleteManyClients(input: DeleteManyClientsInput!): DeleteManyResponse!
+  registerClient(input: InputCreateClient!): RegisterClientResponse!
   setPackagesOnContact(input: SetPackagesOnContactInput!): Contact!
   addWarehouseShipmentsToContact(input: AddWarehouseShipmentsToContactInput!): Contact!
   setWarehouseShipmentsOnContact(input: SetWarehouseShipmentsOnContactInput!): Contact!
@@ -1670,12 +1970,13 @@ type Mutation {
   updateManyInvoices(input: UpdateManyInvoicesInput!): UpdateManyResponse!
   deleteOneInvoice(input: DeleteOneInvoiceInput!): InvoiceDeleteResponse!
   deleteManyInvoices(input: DeleteManyInvoicesInput!): DeleteManyResponse!
-  createOneMessenger(input: CreateOneMessengerInput!): Messenger!
-  createManyMessengers(input: CreateManyMessengersInput!): [Messenger!]!
+  setCourierActivityOnMessenger(input: SetCourierActivityOnMessengerInput!): Messenger!
+  removeCourierActivityFromMessenger(input: RemoveCourierActivityFromMessengerInput!): Messenger!
   updateOneMessenger(input: UpdateOneMessengerInput!): Messenger!
   updateManyMessengers(input: UpdateManyMessengersInput!): UpdateManyResponse!
   deleteOneMessenger(input: DeleteOneMessengerInput!): MessengerDeleteResponse!
   deleteManyMessengers(input: DeleteManyMessengersInput!): DeleteManyResponse!
+  registerCourier(input: InputRegisterCourier!): RegisterClientResponse!
   createOnePackageHistory(input: CreateOnePackageHistoryInput!): PackageHistory!
   createManyPackageHistories(input: CreateManyPackageHistoriesInput!): [PackageHistory!]!
   updateOnePackageHistory(input: UpdateOnePackageHistoryInput!): PackageHistory!
@@ -1702,6 +2003,8 @@ type Mutation {
   deleteOnePackage(input: DeleteOnePackageInput!): PackageDeleteResponse!
   deleteManyPackages(input: DeleteManyPackagesInput!): DeleteManyResponse!
   createDelivery(input: InputCreatePackage!): Package!
+  changePackageStatus(input: InputChangePackageStatus!): ChangePackageStatusResponseDTO!
+  createDeliveries(input: InputCreatePackages!): [Package!]!
   setWarehouseShipmentOnShipment(input: SetWarehouseShipmentOnShipmentInput!): Shipment!
   setShipmentStatusOnShipment(input: SetShipmentStatusOnShipmentInput!): Shipment!
   setMessengerOnShipment(input: SetMessengerOnShipmentInput!): Shipment!
@@ -1765,6 +2068,20 @@ type Mutation {
   updateManyEvidences(input: UpdateManyEvidencesInput!): UpdateManyResponse!
   deleteOneEvidence(input: DeleteOneEvidenceInput!): EvidenceDeleteResponse!
   deleteManyEvidences(input: DeleteManyEvidencesInput!): DeleteManyResponse!
+  updateOneUser(input: UpdateOneUserInput!): User!
+  updateManyUsers(input: UpdateManyUsersInput!): UpdateManyResponse!
+  deleteOneUser(input: DeleteOneUserInput!): UserDeleteResponse!
+  deleteManyUsers(input: DeleteManyUsersInput!): DeleteManyResponse!
+  registerUser(input: InputRegisterUser!): RegisterUserResponse!
+  addMessengersToCourierActivity(input: AddMessengersToCourierActivityInput!): CourierActivity!
+  setMessengersOnCourierActivity(input: SetMessengersOnCourierActivityInput!): CourierActivity!
+  removeMessengersFromCourierActivity(input: RemoveMessengersFromCourierActivityInput!): CourierActivity!
+  createOneCourierActivity(input: CreateOneCourierActivityInput!): CourierActivity!
+  createManyCourierActivities(input: CreateManyCourierActivitiesInput!): [CourierActivity!]!
+  updateOneCourierActivity(input: UpdateOneCourierActivityInput!): CourierActivity!
+  updateManyCourierActivities(input: UpdateManyCourierActivitiesInput!): UpdateManyResponse!
+  deleteOneCourierActivity(input: DeleteOneCourierActivityInput!): CourierActivityDeleteResponse!
+  deleteManyCourierActivities(input: DeleteManyCourierActivitiesInput!): DeleteManyResponse!
 }
 
 input SetPackagesOnClientInput {
@@ -1781,23 +2098,6 @@ input RemovePackagesFromClientInput {
 
   """The id of relation."""
   relationId: ID!
-}
-
-input CreateOneClientInput {
-  """The record to create"""
-  client: InputCreateClient!
-}
-
-input InputCreateClient {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
-
-input CreateManyClientsInput {
-  """Array of records to create"""
-  clients: [InputCreateClient!]!
 }
 
 input UpdateOneClientInput {
@@ -1849,6 +2149,13 @@ input ClientDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputCreateClient {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
 }
 
 input SetPackagesOnContactInput {
@@ -2177,21 +2484,20 @@ input InvoiceDeleteFilter {
   deleteAt: DateFieldComparison
 }
 
-input CreateOneMessengerInput {
-  """The record to create"""
-  messenger: InputCreateMessenger!
+input SetCourierActivityOnMessengerInput {
+  """The id of the record."""
+  id: ID!
+
+  """The id of relation."""
+  relationId: ID!
 }
 
-input InputCreateMessenger {
-  firstName: String!
-  lastName: String!
-  phone: String!
-  email: String!
-}
+input RemoveCourierActivityFromMessengerInput {
+  """The id of the record."""
+  id: ID!
 
-input CreateManyMessengersInput {
-  """Array of records to create"""
-  messengers: [InputCreateMessenger!]!
+  """The id of relation."""
+  relationId: ID!
 }
 
 input UpdateOneMessengerInput {
@@ -2245,6 +2551,13 @@ input MessengerDeleteFilter {
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputRegisterCourier {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
 }
 
 input CreateOnePackageHistoryInput {
@@ -2467,6 +2780,7 @@ input PackageUpdateFilter {
   and: [PackageUpdateFilter!]
   or: [PackageUpdateFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
@@ -2486,9 +2800,30 @@ input PackageDeleteFilter {
   and: [PackageDeleteFilter!]
   or: [PackageDeleteFilter!]
   guide: StringFieldComparison
+  clientId: NumberFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison
+}
+
+input InputChangePackageStatus {
+  update: [InputChangeStatus!]!
+}
+
+input InputChangeStatus {
+  guide: String!
+  statusId: Float!
+  evidence: InputCreateEvidence
+}
+
+input InputCreateEvidence {
+  personReceived: String!
+  comments: String
+  url: String!
+}
+
+input InputCreatePackages {
+  packages: [InputCreatePackage!]!
 }
 
 input SetWarehouseShipmentOnShipmentInput {
@@ -3005,12 +3340,6 @@ input CreateOneEvidenceInput {
   evidence: InputCreateEvidence!
 }
 
-input InputCreateEvidence {
-  personReceived: String!
-  comments: String
-  url: String!
-}
-
 input CreateManyEvidencesInput {
   """Array of records to create"""
   evidences: [InputCreateEvidence!]!
@@ -3059,6 +3388,156 @@ input DeleteManyEvidencesInput {
 input EvidenceDeleteFilter {
   and: [EvidenceDeleteFilter!]
   or: [EvidenceDeleteFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input UpdateOneUserInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: UpdateUser!
+}
+
+input UpdateUser {
+  id: Float
+  firstName: String
+  lastName: String
+  phone: String
+  email: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+input UpdateManyUsersInput {
+  """Filter used to find fields to update"""
+  filter: UserUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: UpdateUser!
+}
+
+input UserUpdateFilter {
+  and: [UserUpdateFilter!]
+  or: [UserUpdateFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input DeleteOneUserInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteManyUsersInput {
+  """Filter to find records to delete"""
+  filter: UserDeleteFilter!
+}
+
+input UserDeleteFilter {
+  and: [UserDeleteFilter!]
+  or: [UserDeleteFilter!]
+  email: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input InputRegisterUser {
+  firstName: String!
+  lastName: String!
+  phone: String!
+  email: String!
+}
+
+input AddMessengersToCourierActivityInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input SetMessengersOnCourierActivityInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input RemoveMessengersFromCourierActivityInput {
+  """The id of the record."""
+  id: ID!
+
+  """The ids of the relations."""
+  relationIds: [ID!]!
+}
+
+input CreateOneCourierActivityInput {
+  """The record to create"""
+  courierActivity: InputCreateCourierActivity!
+}
+
+input InputCreateCourierActivity {
+  name: String!
+  description: String!
+}
+
+input CreateManyCourierActivitiesInput {
+  """Array of records to create"""
+  courierActivities: [InputCreateCourierActivity!]!
+}
+
+input UpdateOneCourierActivityInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: InputUpdateCourierActivity!
+}
+
+input InputUpdateCourierActivity {
+  name: String!
+  description: String!
+}
+
+input UpdateManyCourierActivitiesInput {
+  """Filter used to find fields to update"""
+  filter: CourierActivityUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: InputUpdateCourierActivity!
+}
+
+input CourierActivityUpdateFilter {
+  and: [CourierActivityUpdateFilter!]
+  or: [CourierActivityUpdateFilter!]
+  name: StringFieldComparison
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input DeleteOneCourierActivityInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteManyCourierActivitiesInput {
+  """Filter to find records to delete"""
+  filter: CourierActivityDeleteFilter!
+}
+
+input CourierActivityDeleteFilter {
+  and: [CourierActivityDeleteFilter!]
+  or: [CourierActivityDeleteFilter!]
+  name: StringFieldComparison
   createdAt: DateFieldComparison
   updatedAt: DateFieldComparison
   deletedAt: DateFieldComparison

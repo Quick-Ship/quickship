@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, UseGuards } from '@nestjs/common';
 import { NestjsQueryGraphQLModule } from '@nestjs-query/query-graphql';
 import { NestjsQueryTypeOrmModule } from '@nestjs-query/query-typeorm';
 
@@ -9,6 +9,7 @@ import { EvidenceDTO } from './dto/evidence.dto';
 import { InputCreateEvidenceDTO } from './dto/create-evidence.dto';
 import { InputUpdateEvidenceDTO } from './dto/update-evidence.dto';
 import { EvidenceResolver } from './evidence.resolver';
+import { GqlAuthGuard } from 'src/common/auth/auth.guard';
 
 @Module({
   imports: [
@@ -23,6 +24,11 @@ import { EvidenceResolver } from './evidence.resolver';
           ServiceClass: EvidenceService,
           CreateDTOClass: InputCreateEvidenceDTO,
           UpdateDTOClass: InputUpdateEvidenceDTO,
+          read: {
+            decorators: [UseGuards(GqlAuthGuard)],
+          },
+          update: { decorators: [UseGuards(GqlAuthGuard)] },
+          create: { decorators: [UseGuards(GqlAuthGuard)] },
         },
       ],
     }),

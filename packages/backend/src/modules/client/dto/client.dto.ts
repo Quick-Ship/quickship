@@ -6,6 +6,8 @@ import {
   PagingStrategies,
   QueryOptions,
 } from '@nestjs-query/query-graphql';
+
+/*Local Imports */
 import { PackageDTO } from 'src/modules/packages/dto/packages.dto';
 import { SortDirection } from '@nestjs-query/core';
 
@@ -15,12 +17,14 @@ import { SortDirection } from '@nestjs-query/core';
   defaultResultSize: 100,
   maxResultsSize: 500,
   pagingStrategy: PagingStrategies.OFFSET,
+  enableTotalCount: true,
 })
 @FilterableRelation('packages', () => PackageDTO, {
   defaultResultSize: 200,
   maxResultsSize: 500,
   defaultSort: [{ field: 'createdAt', direction: SortDirection.ASC }],
   pagingStrategy: PagingStrategies.OFFSET,
+  defaultFilter: { deletedAt: { is: null } },
 })
 export class ClientDTO {
   @Field()
