@@ -1,6 +1,5 @@
-import { Nabvar } from '@/components'
+import { Nabvar,Footer } from '@/components'
 import './globals.css'
-
 
 export default function RootLayout({
   children,
@@ -12,6 +11,7 @@ export default function RootLayout({
       <body className='relative'>
         <Nabvar></Nabvar>
         {children}
+        <Footer></Footer>
         </body>
     </html>
   )
