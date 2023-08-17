@@ -7,7 +7,7 @@ export const Footer = () => {
         <footer className="w-full bg-[#2C2C38]">
             <div className={styles.CONTAINER_FOOTER}>
                 <div className={styles.CONTAINER_COL_1}>
-                    <div className="w-full h-150">                
+                    <div className="w-full flex justify-center h-150">                
                     <Image
                         src="/logo_footer_recortado_transparente.png"
                         alt="logo footer quickship"
