@@ -9,16 +9,14 @@ import {
   EuiFilePicker,
   EuiFormRow,
   EuiHorizontalRule,
-  EuiPageHeader,
   EuiPageHeaderContent,
   EuiPanel,
-  EuiSkeletonText,
   EuiText,
 } from "@elastic/eui";
 import { useMutation } from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import Papa from "papaparse";
-import { CreatePackages, graphQLClient } from "@/graphql";
+import { CreateOnePackage, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useRouter } from "next/navigation";
@@ -38,7 +36,7 @@ export default function GeneratePackages() {
   const { mutate, isLoading, error, data, status } = useMutation({
     mutationKey: ["createManyPackages"],
     mutationFn: (createManyPackages: any) => {
-      return graphQLClient.request(CreatePackages, createManyPackages);
+      return graphQLClient.request(CreateOnePackage, createManyPackages);
     },
   });
 
