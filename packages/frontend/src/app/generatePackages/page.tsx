@@ -22,8 +22,9 @@ import { CreatePackages, graphQLClient } from "@/graphql";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
 import { useRouter } from "next/navigation";
-import { GeneratePackagesCSVInterface } from "@/common";
+import { API_URL, GeneratePackagesCSVInterface } from "@/common";
 import { UseAuthContext } from "@/hooks/login";
+import { GraphQLClient } from "graphql-request";
 
 export default function GeneratePackages() {
   const router = useRouter();
@@ -35,10 +36,19 @@ export default function GeneratePackages() {
   const [items, setItems] = useState<Array<GeneratePackagesCSVInterface>>([]);
   const [idClient, setIdClient] = useState("");
 
+  const apiUrl = `${API_URL}/graphql`;
+
+  const client = new GraphQLClient(apiUrl, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${user?.stsTokenManager?.accessToken}`,
+    },
+  });
+
   const { mutate, isLoading, error, data, status } = useMutation({
     mutationKey: ["createManyPackages"],
     mutationFn: (createManyPackages: any) => {
-      return graphQLClient.request(CreatePackages, createManyPackages);
+      return client.request(CreatePackages, createManyPackages);
     },
   });
 
