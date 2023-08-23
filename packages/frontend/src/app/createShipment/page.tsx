@@ -124,25 +124,7 @@ export default function CreateShipment() {
 
   const dataStorage = () => {
     setPackagesArray([...packagesArray, packages]);
-    setPackages({
-      street: "",
-      neigthboorhood: "",
-      municipality: "",
-      state: "",
-      zipCode: "",
-      externalNumber: "",
-      internalNumber: "",
-      latitude: "",
-      longitude: "",
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      weigth: 0,
-      width: 0,
-      heigth: 0,
-      length: 0,
-    });
+    setPackages(packagesInterface);
   };
 
   if (typeof window !== "undefined") {
