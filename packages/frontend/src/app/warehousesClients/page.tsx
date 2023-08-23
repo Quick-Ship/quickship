@@ -152,23 +152,7 @@ export default function GeneratePackages() {
           });
           pushToast(newToast);
 
-          setWarehouseData({
-            instructions: "",
-            clientId: "",
-            street: "",
-            neigthboorhood: "",
-            municipality: "",
-            state: "",
-            zipCode: "",
-            externalNumber: "",
-            internalNumber: "",
-            latitude: "",
-            longitude: "",
-            firstName: "",
-            lastName: "",
-            phone: "",
-            email: "",
-          });
+          setWarehouseData(warehouseData);
 
           setShowModal(!showModal);
           if (isFetching === false) {
