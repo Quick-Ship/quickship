@@ -1,18 +1,18 @@
-import { Nabvar,Footer } from '@/components'
-import './globals.css'
+import { Nabvar, Footer } from "@/components";
+import "./globals.css";
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+  const user = "";
   return (
     <html lang="en">
-      <body className='relative'>
-        <Nabvar></Nabvar>
+      <body className="relative">
+
         {children}
-        <Footer></Footer>
-        </body>
+      </body>
     </html>
-  )
+  );
 }

@@ -34,16 +34,7 @@ export const Nabvar = () => {
       </div>
       <div className="w-72 max-sm:w-full max-sm:relative flex justify-center max-sm:justify-start max-sm:m-2 items-center">
         <div className="max-sm:hidden flex cursor-pointer">
-          <h4 className="flex items-center text-white mr-2">Iniciar sesión</h4>
-          <Image
-            src="/circle-user-regular.svg"
-            alt="user login"
-            className="bg-inherit "
-            width={35}
-            height={24}
-            onClick={() => {}}
-            priority
-          />
+          <h4 className="flex items-center text-white mr-2">Iniciar sesión / Registrarse</h4>
         </div>
         <div className="flex w-full justify-between md:hidden">
           <div className="flex">
