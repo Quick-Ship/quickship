@@ -29,50 +29,34 @@ import { API_URL, GenerateDeliveryInterface } from "@/common";
 import { GraphQLClient } from "graphql-request";
 import { useToastsContext } from "@/hooks";
 
+const packagesInterface = {
+  street: "",
+  neigthboorhood: "",
+  municipality: "",
+  state: "",
+  zipCode: "",
+  externalNumber: "",
+  internalNumber: "",
+  latitude: "",
+  longitude: "",
+  firstName: "",
+  lastName: "",
+  phone: "",
+  email: "",
+  weigth: 0,
+  width: 0,
+  heigth: 0,
+  length: 0,
+};
+
 export default function CreateShipment() {
   const router = useRouter();
   const { user } = UseAuthContext();
   const { globalToasts, pushToast } = useToastsContext();
-  const [packages, setPackages] = useState({
-    street: "",
-    neigthboorhood: "",
-    municipality: "",
-    state: "",
-    zipCode: "",
-    externalNumber: "",
-    internalNumber: "",
-    latitude: "",
-    longitude: "",
-    firstName: "",
-    lastName: "",
-    phone: "",
-    email: "",
-    weigth: 0,
-    width: 0,
-    heigth: 0,
-    length: 0,
-  });
+  const [packages, setPackages] = useState(packagesInterface);
 
   const [packagesArray, setPackagesArray] = useState<any[]>([
-    {
-      street: "",
-      neigthboorhood: "",
-      municipality: "",
-      state: "",
-      zipCode: "",
-      externalNumber: "",
-      internalNumber: "",
-      latitude: "",
-      longitude: "",
-      firstName: "",
-      lastName: "",
-      phone: "",
-      email: "",
-      weigth: 0,
-      width: 0,
-      heigth: 0,
-      length: 0,
-    },
+    packagesInterface,
   ]);
   const [deliveryData, setDeliveryData] = useState({
     instructions: "",
@@ -114,7 +98,7 @@ export default function CreateShipment() {
 
   const { mutate: mutateGeneratePackage, status: statusGeneratePakcage } =
     useMutation({
-      mutationKey: ["createOnePackages"],
+      mutationKey: ["createManyPackages"],
       mutationFn: (packages: any) => {
         return client.request(CreateManyPackages, packages);
       },
@@ -232,7 +216,9 @@ export default function CreateShipment() {
                       newToast.push({
                         id: "1",
                         title: "Delivery",
-                        text: <p>ID del delivery {data.addPackageShipment.id}</p>,
+                        text: (
+                          <p>ID del delivery {data.addPackageShipment.id}</p>
+                        ),
                         color: "success",
                       });
                       pushToast(newToast);
