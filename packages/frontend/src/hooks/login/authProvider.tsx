@@ -11,7 +11,7 @@ export type AuthContextType = {
   loginEmailAndPassword: (email: string, password: string) => void;
   signOut: () => void;
   loading: any;
-  error: any;
+  // error: any;
   userState: boolean;
 };
 
@@ -26,20 +26,21 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   const [user, setUser] = useState<any>();
   const [loading, userState] = useAuthState(auth);
-  const [error, setError] = useState<any>();
+  // const [error, setError] = useState<any>();
   const router = useRouter();
 
   const loginEmailAndPassword = async (email: string, password: string) => {
-     await signInWithEmailAndPassword(auth, email, password)
+    await signInWithEmailAndPassword(auth, email, password)
       .then(() => {
         router.push("/");
       })
       .catch((error) => {
-        setError(error);
-        
+        if (error) {
+          alert("Correo/contreaseña invalidos");
+        }
       });
   };
-  
+
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -59,7 +60,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
         loginEmailAndPassword,
         signOut,
         loading,
-        error,
+        // error,
         userState,
       }}
     >
