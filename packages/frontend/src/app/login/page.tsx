@@ -15,9 +15,11 @@ import {
   EuiPanel,
   EuiSpacer,
 } from "@elastic/eui";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Login() {
+  const router = useRouter();
   const [login, setLogin] = useState({ email: "", password: "" });
   const { loginEmailAndPassword, loading, error } = UseAuthContext();
 
@@ -27,10 +29,9 @@ export default function Login() {
     setLogin({ ...login, [name]: value });
   };
 
-  console.log(loading);
-
   const onClick = () => {
     loginEmailAndPassword(login.email, login.password);
+    router.push("/");
   };
 
   useEffect(() => {
