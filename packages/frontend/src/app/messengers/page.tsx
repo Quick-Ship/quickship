@@ -206,7 +206,7 @@ export default function Messengers() {
     },
     {
       field: "phone",
-      name: "Telefono",
+      name: "Teléfono",
     },
     {
       field: "email",
