@@ -137,8 +137,8 @@ export default function Messengers() {
             text: (
               <>
                 <p>Creado correctamente</p>
-                <p>comparte la url con el mensajero</p>
-                <p>url: {data.registerCourier.url}</p>
+                <p>comparte la URL con el mensajero</p>
+                <p>URL: {data.registerCourier.url}</p>
               </>
             ),
             color: "success",
@@ -272,7 +272,7 @@ export default function Messengers() {
                     isLoading={createOneMessengerStatus === "loading"}
                     isDisabled={validateFields()}
                   >
-                    Guardar
+                    Crear
                   </Button>
                 </EuiModalFooter>
               </EuiForm>
