@@ -30,6 +30,7 @@ import { PackageStatusCancelTypes } from 'src/common/enums/package-status-cancel
 import { Errors } from 'src/common/enums/errors.enum';
 import { MessengerEntity } from '../messengers/entities/messenger.entity';
 import { PackageStatusCloselTypes } from 'src/common/enums/package-status-close.enum';
+import { ShipmentCourierEntity } from '../shipment-courier/entities/shipment-courier.entity';
 
 @QueryService(ShipmentEntity)
 export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
@@ -60,6 +61,10 @@ export class ShipmentService extends TypeOrmQueryService<ShipmentEntity> {
         price: 0,
         warehouseShipmentId: input.warehouseShipmentId,
         shipmentStatusId: ShipmentStatusEnum.PENDING,
+      });
+
+      await queryRunner.manager.save(ShipmentCourierEntity, {
+        shipmentId: shipment.id,
       });
 
       await queryRunner.commitTransaction();

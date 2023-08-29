@@ -27,6 +27,7 @@ import { EvidenceModule } from './modules/evidences/evidence.module';
 import { AuthModule } from './common/auth/auth.module';
 import { UserModule } from './modules/users/user.module';
 import { CourierActivityModule } from './modules/courier-activity/courier-activity.module';
+import { ShipmentCourierModule } from './modules/shipment-courier/shipment-courier.module';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { CourierActivityModule } from './modules/courier-activity/courier-activi
     AuthModule,
     UserModule,
     CourierActivityModule,
+    ShipmentCourierModule,
   ],
   controllers: [AppController],
   providers: [AppService, AppResolver],

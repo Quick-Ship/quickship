@@ -1077,6 +1077,57 @@ type ShipmentPackagesConnection {
   totalCount: Int!
 }
 
+type ShipmentCourier {
+  id: Float!
+  shipmentId: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  deletedAt: DateTime
+}
+
+type ShipmentCourierDeleteResponse {
+  id: Float
+  shipmentId: Float
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ShipmentCourierConnection {
+  """Paging information"""
+  pageInfo: OffsetPageInfo!
+
+  """Array of nodes."""
+  nodes: [ShipmentCourier!]!
+
+  """Fetch total count of records"""
+  totalCount: Int!
+}
+
+type ShipmentCourierAggregateGroupBy {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ShipmentCourierCountAggregate {
+  createdAt: Int
+  updatedAt: Int
+  deletedAt: Int
+}
+
+type ShipmentCourierMinAggregate {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
+type ShipmentCourierMaxAggregate {
+  createdAt: DateTime
+  updatedAt: DateTime
+  deletedAt: DateTime
+}
+
 type ShipmentStatusDeleteResponse {
   id: Float
   name: String
@@ -1552,6 +1603,20 @@ type Query {
     """Specify to sort results."""
     sorting: [ShipmentSort!] = []
   ): ShipmentConnection!
+  shipmentCourier(
+    """The id of the record to find."""
+    id: ID!
+  ): ShipmentCourier
+  shipmentCouriers(
+    """Limit or page results."""
+    paging: OffsetPaging = {limit: 200}
+
+    """Specify to filter the records returned."""
+    filter: ShipmentCourierFilter = {}
+
+    """Specify to sort results."""
+    sorting: [ShipmentCourierSort!] = []
+  ): ShipmentCourierConnection!
   shipmentStatus(
     """The id of the record to find."""
     id: ID!
@@ -1822,6 +1887,26 @@ enum PackageHistorySortFields {
   deletedAt
 }
 
+input ShipmentCourierFilter {
+  and: [ShipmentCourierFilter!]
+  or: [ShipmentCourierFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input ShipmentCourierSort {
+  field: ShipmentCourierSortFields!
+  direction: SortDirection!
+  nulls: SortNulls
+}
+
+enum ShipmentCourierSortFields {
+  createdAt
+  updatedAt
+  deletedAt
+}
+
 input ShipmentStatusFilter {
   and: [ShipmentStatusFilter!]
   or: [ShipmentStatusFilter!]
@@ -2026,6 +2111,12 @@ type Mutation {
   openPackage(input: InputOpenPackage!): Shipment!
   closePackage(input: InputClosePackage!): Shipment!
   cancelPackage(input: InputCancelPackage!): Shipment!
+  createOneShipmentCourier(input: CreateOneShipmentCourierInput!): ShipmentCourier!
+  createManyShipmentCouriers(input: CreateManyShipmentCouriersInput!): [ShipmentCourier!]!
+  updateOneShipmentCourier(input: UpdateOneShipmentCourierInput!): ShipmentCourier!
+  updateManyShipmentCouriers(input: UpdateManyShipmentCouriersInput!): UpdateManyResponse!
+  deleteOneShipmentCourier(input: DeleteOneShipmentCourierInput!): ShipmentCourierDeleteResponse!
+  deleteManyShipmentCouriers(input: DeleteManyShipmentCouriersInput!): DeleteManyResponse!
   addShipmentsToShipmentStatus(input: AddShipmentsToShipmentStatusInput!): ShipmentStatus!
   setShipmentsOnShipmentStatus(input: SetShipmentsOnShipmentStatusInput!): ShipmentStatus!
   removeShipmentsFromShipmentStatus(input: RemoveShipmentsFromShipmentStatusInput!): ShipmentStatus!
@@ -3000,6 +3091,66 @@ input InputCancelPackage {
   packageId: Float!
   statusCancelation: Float!
   evidence: InputEvidence!
+}
+
+input CreateOneShipmentCourierInput {
+  """The record to create"""
+  shipmentCourier: InputCreateShipmentCourier!
+}
+
+input InputCreateShipmentCourier {
+  shipmentId: Float!
+}
+
+input CreateManyShipmentCouriersInput {
+  """Array of records to create"""
+  shipmentCouriers: [InputCreateShipmentCourier!]!
+}
+
+input UpdateOneShipmentCourierInput {
+  """The id of the record to update"""
+  id: ID!
+
+  """The update to apply."""
+  update: InputUpdateShipmentCourier!
+}
+
+input InputUpdateShipmentCourier {
+  shipmentId: Float
+}
+
+input UpdateManyShipmentCouriersInput {
+  """Filter used to find fields to update"""
+  filter: ShipmentCourierUpdateFilter!
+
+  """The update to apply to all records found using the filter"""
+  update: InputUpdateShipmentCourier!
+}
+
+input ShipmentCourierUpdateFilter {
+  and: [ShipmentCourierUpdateFilter!]
+  or: [ShipmentCourierUpdateFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
+}
+
+input DeleteOneShipmentCourierInput {
+  """The id of the record to delete."""
+  id: ID!
+}
+
+input DeleteManyShipmentCouriersInput {
+  """Filter to find records to delete"""
+  filter: ShipmentCourierDeleteFilter!
+}
+
+input ShipmentCourierDeleteFilter {
+  and: [ShipmentCourierDeleteFilter!]
+  or: [ShipmentCourierDeleteFilter!]
+  createdAt: DateFieldComparison
+  updatedAt: DateFieldComparison
+  deletedAt: DateFieldComparison
 }
 
 input AddShipmentsToShipmentStatusInput {

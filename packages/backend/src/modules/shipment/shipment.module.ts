@@ -13,6 +13,7 @@ import { DirectionModule } from '../directions/directions.module';
 import { PackagesModule } from '../packages/packages.module';
 import { ContactModule } from '../contact/contact.module';
 import { GqlAuthGuard } from 'src/common/auth/auth.guard';
+import { ShipmentCourierModule } from '../shipment-courier/shipment-courier.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { GqlAuthGuard } from 'src/common/auth/auth.guard';
         DirectionModule,
         PackagesModule,
         ContactModule,
+        ShipmentCourierModule,
       ],
       services: [ShipmentService],
       resolvers: [
