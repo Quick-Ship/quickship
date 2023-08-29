@@ -5,7 +5,7 @@ import { Button, Header, LoadingPage, Popover, TableBody } from "@/components";
 import {
   AssignCourierShipment,
   ShipmentsQuery,
-  graphQLClient,
+  clientGeneric,
 } from "@/graphql";
 import { useGeneratedGQLQuery } from "@/hooks";
 import { UseAuthContext } from "@/hooks/login";
@@ -77,7 +77,7 @@ const AssignCourier: React.FC<AssignCourierProps> = ({
     >
       <div style={{ display: "flex", alignItems: "flex-end" }}>
         <EuiFormRow
-          label="Ingresa id mensajero"
+          label="Ingresa ID mensajero"
           style={{ marginRight: "0.5rem" }}
         >
           <EuiFieldText name="id" value={idValue.id} onChange={onChange} />
@@ -98,6 +98,8 @@ export default function Shipments() {
   const router = useRouter();
   const { user } = UseAuthContext();
   const queryCache: any = useQueryClient();
+  const apiUrl = `${API_URL}/graphql`;
+
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -114,6 +116,7 @@ export default function Shipments() {
   const [totalCount, setTotalCount] = useState(0);
   const [shipments, setShipments] = useState<any[]>([]);
   const [id, setId] = useState<number>(0);
+  const [statusShipment, setStatusShipment] = useState("");
   const { globalToasts, pushToast } = useToastsContext();
 
   const queryVars = {
@@ -127,12 +130,12 @@ export default function Shipments() {
     unknown,
     unknown,
     unknown
-  >(`${API_URL}/graphql`, "getShipments", ShipmentsQuery, queryVars);
+  >(apiUrl, "getShipments", ShipmentsQuery, queryVars);
 
   const { mutate, status: assignCourierShipmentStatus } = useMutation({
     mutationKey: ["assignCourierShipment"],
     mutationFn: (assignCourierShipment: any) => {
-      return graphQLClient.request(
+      return clientGeneric(apiUrl, user).request(
         AssignCourierShipment,
         assignCourierShipment
       );
@@ -222,11 +225,11 @@ export default function Shipments() {
     },
     {
       field: "updatedAt",
-      name: "Actualizada",
+      name: "Actualizado",
     },
     {
       field: "actions",
-      name: "Acciones",
+      name: "",
       actions: [
         {
           name: "ruta",
@@ -244,7 +247,7 @@ export default function Shipments() {
 
   useEffect(() => {
     if (user === null) {
-      router.push("/");
+      router.push("/login");
     }
   }, [user]);
 
@@ -269,7 +272,7 @@ export default function Shipments() {
                   setPageSize={setPageSize}
                   totalItemCount={totalCount}
                   pageSizeOptions={pageSizeOptions}
-                  noItemsMessage={"No se encontraron envios"}
+                  noItemsMessage={"No se encontraron envíos"}
                 />
               </EuiPanel>
             </EuiPanel>

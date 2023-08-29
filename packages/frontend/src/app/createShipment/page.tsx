@@ -21,12 +21,12 @@ import {
   AddPackagesToShipments,
   CreateManyPackages,
   GenerateShipment,
+  clientGeneric,
 } from "@/graphql";
 import { nanoid } from "nanoid";
 import { useRouter } from "next/navigation";
 import { UseAuthContext } from "@/hooks/login";
 import { API_URL, GenerateDeliveryInterface } from "@/common";
-import { GraphQLClient } from "graphql-request";
 import { useToastsContext } from "@/hooks";
 
 const packagesInterface = {
@@ -52,6 +52,7 @@ const packagesInterface = {
 export default function CreateShipment() {
   const router = useRouter();
   const { user } = UseAuthContext();
+  const apiUrl = `${API_URL}/graphql`;
   const { globalToasts, pushToast } = useToastsContext();
   const [packages, setPackages] = useState(packagesInterface);
 
@@ -87,20 +88,14 @@ export default function CreateShipment() {
     []
   );
 
-  const apiUrl = `${API_URL}/graphql`;
-
-  const client = new GraphQLClient(apiUrl, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${user?.stsTokenManager?.accessToken}`,
-    },
-  });
-
   const { mutate: mutateGeneratePackage, status: statusGeneratePakcage } =
     useMutation({
       mutationKey: ["createManyPackages"],
       mutationFn: (packages: any) => {
-        return client.request(CreateManyPackages, packages);
+        return clientGeneric(apiUrl, user).request(
+          CreateManyPackages,
+          packages
+        );
       },
     });
 
@@ -108,7 +103,7 @@ export default function CreateShipment() {
     useMutation({
       mutationKey: ["createShipment"],
       mutationFn: (shipment: any) => {
-        return client.request(GenerateShipment, shipment);
+        return clientGeneric(apiUrl, user).request(GenerateShipment, shipment);
       },
     });
 
@@ -116,7 +111,10 @@ export default function CreateShipment() {
     useMutation({
       mutationKey: ["addPackagesShipment"],
       mutationFn: (addPackages: any) => {
-        return client.request(AddPackagesToShipments, addPackages);
+        return clientGeneric(apiUrl, user).request(
+          AddPackagesToShipments,
+          addPackages
+        );
       },
     });
 
@@ -210,9 +208,7 @@ export default function CreateShipment() {
                       newToast.push({
                         id: "2",
                         title: "Delivery",
-                        text: (
-                          <p>Error al crear el delivery, intenta de nuevo</p>
-                        ),
+                        text: <p>Error al crear el envío, intenta de nuevo</p>,
                         color: "danger",
                       });
                       pushToast(newToast);
@@ -225,7 +221,7 @@ export default function CreateShipment() {
                 newToast.push({
                   id: "3",
                   title: "Delivery",
-                  text: <p>Error al crear el delivery, intenta de nuevo</p>,
+                  text: <p>Error al crear el envío, intenta de nuevo</p>,
                   color: "danger",
                 });
                 pushToast(newToast);
@@ -238,7 +234,7 @@ export default function CreateShipment() {
           newToast.push({
             id: "4",
             title: "Delivery",
-            text: <p>Error al crear el delivery, intenta de nuevo</p>,
+            text: <p>Error al crear el envío, intenta de nuevo</p>,
             color: "danger",
           });
           pushToast(newToast);
@@ -285,7 +281,7 @@ export default function CreateShipment() {
 
   useEffect(() => {
     if (user === null) {
-      router.push("/");
+      router.push("/login");
     }
   }, [user]);
 
@@ -303,7 +299,7 @@ export default function CreateShipment() {
         <>
           <EuiPanel style={{ margin: "2vh", height: "auto" }}>
             <EuiForm component="form" onSubmit={onSubmit}>
-              <Header title={`Crear envio`}>
+              <Header title={`Crear envío`}>
                 <Button
                   type="submit"
                   size="m"

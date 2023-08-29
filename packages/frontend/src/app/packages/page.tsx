@@ -13,8 +13,9 @@ import {
   AddPackagesToShipments,
   GenerateShipment,
   GetPackages,
+  clientGeneric,
 } from "@/graphql";
-import { useGeneratedGQLQuery, useGeneratedMutation } from "@/hooks";
+import { useGeneratedGQLQuery } from "@/hooks";
 import { UseAuthContext } from "@/hooks/login";
 import { useToastsContext } from "@/hooks/useToastAlertProvider/useToastContext";
 import {
@@ -30,15 +31,16 @@ import {
   EuiTableSelectionType,
 } from "@elastic/eui";
 import { Toast } from "@elastic/eui/src/components/toast/global_toast_list";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
 
 export default function Packages() {
   const router = useRouter();
   const { user } = UseAuthContext();
+  const apiUrl = `${API_URL}/graphql`;
+
   const initialIndex = 0;
   const initialPageZize = 10;
   const pageSizeOptions = [
@@ -60,12 +62,17 @@ export default function Packages() {
     []
   );
   const queryCache: any = useQueryClient();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = useForm();
+  const [generateShipmentData, setGenerateShipmentData] = useState({
+    comments: "",
+    clientId: "",
+    warehouseShipmentId: "",
+  });
+  const [validateGenerateShipmentData, setValidateGenerateShipmentData] =
+    useState({
+      comments: false,
+      clientId: false,
+      warehouseShipmentId: false,
+    });
 
   const { globalToasts, pushToast } = useToastsContext();
 
@@ -96,27 +103,42 @@ export default function Packages() {
     unknown,
     unknown,
     unknown
-  >(`${API_URL}/graphql`, "getPackages", GetPackages, queryVars);
+  >(apiUrl, "getPackages", GetPackages, queryVars);
 
   const {
     mutate: mutateGenerateShipment,
     status: statusGenerateShipment,
     error: ErrorGenerateShipment,
-  } = useGeneratedMutation(`${API_URL}/graphql`, GenerateShipment);
+  } = useMutation({
+    mutationKey: ["generateShioment"],
+    mutationFn: (shipment: any) => {
+      return clientGeneric(apiUrl, user).request(GenerateShipment, shipment);
+    },
+  });
 
   const {
     mutate: mutateAddPackagesShipment,
     status: statusAddPackagesShipment,
     error: errorAddPackagesShipment,
-  } = useGeneratedMutation(`${API_URL}/graphql`, AddPackagesToShipments);
+  } = useMutation({
+    mutationKey: ["addPackagesToShipment"],
+    mutationFn: (addPackagesShiment: any) => {
+      return clientGeneric(apiUrl, user).request(
+        AddPackagesToShipments,
+        addPackagesShiment
+      );
+    },
+  });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (e: any) => {
+    e.preventDefault();
+
     mutateGenerateShipment(
       {
         input: {
-          comments: data.comments,
-          clientId: Number(data.clientId),
-          warehouseShipmentId: Number(data.warehouseShipmentId),
+          comments: generateShipmentData.comments,
+          clientId: Number(generateShipmentData.clientId),
+          warehouseShipmentId: Number(generateShipmentData.warehouseShipmentId),
         },
       },
       {
@@ -145,11 +167,21 @@ export default function Packages() {
                   id: "2",
                   title: "Paquetes",
                   text: (
-                    <p>Se agregaron correctamente los paquetes a la orden</p>
+                    <p>
+                      Se agregaron correctamente los paquetes, orden:
+                      {data.generateShipment.id}
+                    </p>
                   ),
                   color: "success",
                 });
                 pushToast(newToast);
+
+                setGenerateShipmentData({
+                  clientId: "",
+                  comments: "",
+                  warehouseShipmentId: "",
+                });
+
                 setShowModal(!showModal);
                 if (isFetching === false) {
                   queryCache.removeQueries("getPackages", { stale: false });
@@ -160,7 +192,7 @@ export default function Packages() {
                 newToast.push({
                   id: "3",
                   title: "Paquetes",
-                  text: <p>No se pudieron agregar packates a la orden</p>,
+                  text: <p>No se pudieron agregar paquetes a la orden</p>,
                   color: "danger",
                 });
                 pushToast(newToast);
@@ -173,13 +205,30 @@ export default function Packages() {
           newToast.push({
             id: "4",
             title: "Envio",
-            text: <p>No se genero correctamenta la orden</p>,
+            text: <p>No se generó correctamente la orden</p>,
             color: "danger",
           });
           pushToast(newToast);
         },
       }
     );
+  };
+
+  const validateFields = () => {
+    let valid = true;
+
+    if (
+      generateShipmentData.clientId === "" ||
+      validateGenerateShipmentData.clientId ||
+      generateShipmentData.comments === "" ||
+      validateGenerateShipmentData.comments ||
+      generateShipmentData.warehouseShipmentId === "" ||
+      validateGenerateShipmentData.warehouseShipmentId
+    ) {
+      valid = false;
+    }
+
+    return !valid;
   };
 
   useEffect(() => {
@@ -225,7 +274,7 @@ export default function Packages() {
     },
     {
       field: "guide",
-      name: "Guia",
+      name: "Guía",
     },
     {
       field: "status.description",
@@ -233,7 +282,7 @@ export default function Packages() {
     },
     {
       field: "shipment.id",
-      name: "Numero de envio",
+      name: "Número de envio",
     },
     {
       field: "client.id",
@@ -247,7 +296,7 @@ export default function Packages() {
 
   useEffect(() => {
     if (user === null) {
-      router.push("/");
+      router.push("/login");
     }
   }, [user]);
 
@@ -271,7 +320,7 @@ export default function Packages() {
             </Header>
             <EuiHorizontalRule />
             <EuiPanel>
-              <EuiFormRow label="Id de cliente">
+              <EuiFormRow label="ID de cliente">
                 <EuiFieldSearch
                   style={{ minWidth: 160 }}
                   onChange={(e) => {
@@ -302,25 +351,29 @@ export default function Packages() {
             <>
               <Modal
                 onCloseModal={() => setShowModal(!showModal)}
-                titleModal={"Crear Orden"}
+                titleModal={"Crear orden"}
               >
-                <EuiForm component="form" onSubmit={handleSubmit(onSubmit)}>
+                <EuiForm component="form" onSubmit={onSubmit}>
                   <GenerateShipmentInput
-                    register={register}
-                    setValue={setValue}
-                    errors={errors}
+                    generateShipmentData={generateShipmentData}
+                    setGenerateShipmentData={setGenerateShipmentData}
+                    validateGenerateShipmentData={validateGenerateShipmentData}
+                    setValidateGenerateShipmentData={
+                      setValidateGenerateShipmentData
+                    }
                   />
                   <EuiSpacer />
                   <EuiModalFooter>
                     <Button onClick={() => setShowModal(!showModal)}>
-                      cancelar
+                      Cancelar
                     </Button>
                     <Button
                       type="submit"
                       fill
                       isLoading={statusGenerateShipment === "loading"}
+                      isDisabled={validateFields()}
                     >
-                      guardar
+                      Crear
                     </Button>
                   </EuiModalFooter>
                 </EuiForm>

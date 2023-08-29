@@ -1,5 +1,5 @@
-export * from "./createOneClient";
-export * from "./createOneMessenger";
+export * from "./registerOneClient";
+export * from "./registerOneMessenger";
 export * from "./createOnePackage";
 export * from "./generateShipment";
 export * from "./addPackagesToShipment";
@@ -7,3 +7,4 @@ export * from "./assignCourierShipment";
 export * from "./createWahouseShipment";
 export * from "./registerUser";
 export * from "./createManyPackages";
+export * from "./changeShipmentStatus";
