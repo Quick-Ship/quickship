@@ -116,6 +116,7 @@ export default function Shipments() {
   const [totalCount, setTotalCount] = useState(0);
   const [shipments, setShipments] = useState<any[]>([]);
   const [id, setId] = useState<number>(0);
+  const [statusShipment, setStatusShipment] = useState("");
   const { globalToasts, pushToast } = useToastsContext();
 
   const queryVars = {
