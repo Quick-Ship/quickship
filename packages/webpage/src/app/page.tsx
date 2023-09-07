@@ -1,10 +1,11 @@
 import Image from "next/image";
 import * as styles from "../components/Navbar/styles";
 import { Footer, Nabvar } from "@/components";
+import "./globals.css";
 
 export default function Home() {
   return (
-    <div className="mt-28 ">
+    <div className="mt-28">
       <Nabvar></Nabvar>
       <div className="h-96">
         <div className="object-cover h-96 w-full flex justify-center">

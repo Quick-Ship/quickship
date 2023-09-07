@@ -1,4 +1,6 @@
-// import "./globals.css";
+"use client";
+
+import { AuthProvider, ClientProvider } from "@/hooks";
 
 export default function LoginRegisterLayout({
   children,
@@ -6,10 +8,14 @@ export default function LoginRegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="relative">
-        {children}
-      </body>
-    </html>
+    <ClientProvider>
+      <AuthProvider>
+        <html lang="en">
+          <body className="max-sm:bg-slate-100" suppressHydrationWarning={true}>
+            {children}
+          </body>
+        </html>
+      </AuthProvider>
+    </ClientProvider>
   );
 }

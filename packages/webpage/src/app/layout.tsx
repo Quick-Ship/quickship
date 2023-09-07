@@ -1,4 +1,6 @@
-import { Nabvar, Footer } from "@/components";
+"use client";
+
+import { ClientProvider } from "@/hooks";
 import "./globals.css";
 
 export default function RootLayout({
@@ -6,13 +8,13 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = "";
   return (
-    <html lang="en">
-      <body className="relative">
-
-        {children}
-      </body>
-    </html>
+    <ClientProvider>
+      <html lang="en">
+        <body suppressHydrationWarning={true} className="relative">
+          {children}
+        </body>
+      </html>
+    </ClientProvider>
   );
 }
