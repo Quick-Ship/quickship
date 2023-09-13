@@ -4,15 +4,15 @@ import * as styles from "./styles";
 export const Footer = () => {
     return (
        
-        <footer className="w-full bg-[#2C2C38]">
+        <footer className="w-full bg-[#2C2C38] mt-auto">
             <div className={styles.CONTAINER_FOOTER}>
                 <div className={styles.CONTAINER_COL_1}>
                     <div className="w-full flex justify-center h-150">                
                     <Image
                         src="/logo_footer_recortado_transparente.png"
                         alt="logo footer quickship"
-                        className="bg-inherit"
-                        sizes="(max-width: 150px) 100vw, (max-width: 150px) 50vw"
+                        className="bg-inherit w-full h-full"
+                        sizes="(max-width: 150px) 100vw, (max-width: 80px) 50vw,33vw"
                         width={300}
                         height={150}
                         priority
