@@ -17,13 +17,13 @@ export const Nabvar = () => {
 
   return (
     <div
-      className={`w-full fixed top-0 left-0 right-0 h-28 max-sm:h-14 flex justify-between ${styles.DEGRADIENT}`}
+      className={`w-full fixed top-0 left-0 right-0 h-28 max-sm:h-14 flex justify-between ${styles.DEGRADIENT} z-50`}
     >
       <div className="h-24 w-72 flex justify-center bg-trasparent mt-2 max-sm:hidden">
         <Image
           src="/quickship.svg"
           alt="quickship logo"
-          className="bg-inherit cursor-pointer"
+          className="bg-inherit cursor-pointer h-auto w-auto"
           width={100}
           height={24}
           priority

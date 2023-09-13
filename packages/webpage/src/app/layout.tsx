@@ -8,11 +8,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className='relative'>
+      <body className='flex flex-col min-h-screen'>
         <Nabvar></Nabvar>
         {children}
         <Footer></Footer>
         </body>
     </html>
+    
   )
 }

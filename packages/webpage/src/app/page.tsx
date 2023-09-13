@@ -1,8 +1,15 @@
 import Image from "next/image";
+import { Slider} from "../components/Slider"
+
 import * as styles from "../components/Navbar/styles";
 export default function Home() {
   return (
-    <div className="mt-28 ">
+  
+    <div>  
+      <Slider></Slider>
+      <div>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nostrum distinctio molestias esse omnis illo qui, accusantium quas est, velit molestiae dolorum quae sit sequi? Ullam eius expedita voluptatum odit quo?</div> 
+    </div>
+    /*<div className="mt-28 ">
       <div className="h-96">
         <div className="object-cover h-96 w-full flex justify-center">
           <Image
@@ -36,6 +43,6 @@ export default function Home() {
       </div>
       <div className="h-96 text-amber-300">tres</div>
       <div className="h-96 text-amber-300">cuatro</div>
-    </div>
+    </div>*/
   );
 }
