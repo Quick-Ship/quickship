@@ -14,17 +14,6 @@ export default function LoginRegister() {
   const [login, setLogin] = useState({ email: "", password: "" });
   const { loginEmailAndPassword } = UseAuthContext();
 
-  const onSubmit = async () => {
-    // const res = await fetch("/api/send", {
-    //   method: "POST",
-    //   body: JSON.stringify({
-    //     email: "mucino.andres1990@gmail.com",
-    //     firstName: "Andres",
-    //   }),
-    // });
-    // await res.json();
-  };
-
   const { data, status } = useGenerateQuery(
     `${API_URL}/graphql`,
     "getUsers",
@@ -45,7 +34,6 @@ export default function LoginRegister() {
     const { name, value } = e.target;
 
     setLogin({ ...login, [name]: value });
-    console.log(name, value);
   };
 
   const onClick = () => {

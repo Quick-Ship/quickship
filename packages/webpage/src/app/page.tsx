@@ -10,7 +10,7 @@ export default function Home() {
       <div className="h-96">
         <div className="object-cover h-96 w-full flex justify-center">
           <Image
-            src="/quickship.init.png"
+            src="/quickship-init.svg"
             alt="init"
             className="bg-inherit cursor-pointer object-cover"
             width={900}

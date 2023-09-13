@@ -9,3 +9,4 @@ export * from "./Link";
 export * from "./Button";
 export * from "./registerEffect";
 export * from "./movilEffect";
+export * from "./Dashboard";

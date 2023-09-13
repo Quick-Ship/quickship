@@ -1,8 +1,17 @@
 "use client";
 
+import { API_URL } from "@/common";
 import "../globals.css";
-import { Button, Input, MovilEfffect, RegisterEffect, Spacer } from "@/components";
-import { useState } from "react";
+import {
+  Button,
+  Input,
+  MovilEfffect,
+  RegisterEffect,
+  Spacer,
+} from "@/components";
+import { useEffect, useState } from "react";
+import { useGenerateMutation } from "@/hooks";
+import { RegisterClient } from "@/graphql";
 
 export default function Register() {
   const [inputValue, setInputValue] = useState({
@@ -19,8 +28,53 @@ export default function Register() {
     console.log(name, value);
   };
 
-  const onSubmit = () => {
+  const { data, status, mutate } = useGenerateMutation(
+    `${API_URL}/graphql`,
+    RegisterClient
+  );
+
+  useEffect(() => {
+    if (status === "success") {
+      console.log(data);
+    }
+  }, []);
+
+  const onSubmit = async () => {
     console.log(inputValue);
+
+    // const res = await fetch("/api/send", {
+    //   method: "POST",
+    //   body: JSON.stringify({
+    //     email: "skrayzy_serd@hotmail.com",
+    //     firstName: "Andres tomas",
+    //     url: '',
+    //   }),
+    // });
+    // await res.json();
+
+    // mutate(
+    //   {
+    //     input: {
+    //       firstName: "andres",
+    //       lastName: "mucino",
+    //       phone: "+52 5598653290",
+    //       email: "email.yo1000@gmail.com",
+    //     },
+    //   },
+    //   {
+    //     onSuccess: async (data) => {
+    //       const res = await fetch("/api/send", {
+    //         method: "POST",
+    //         body: JSON.stringify({
+    //           email: "mucino.andres1990@gmail.com",
+    //           firstName: "Andres tomas",
+    //           url: data.registerClient.url,
+    //         }),
+    //       });
+    //       await res.json();
+    //     },
+    //   }
+    // );
   };
 
   return (
