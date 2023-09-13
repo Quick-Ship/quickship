@@ -70,13 +70,7 @@ export default function Packages() {
   const { globalToasts, pushToast } = useToastsContext();
 
   const queryVars = {
-    filter: {
-      ...(clientId != "" && {
-        clientId: {
-          eq: Number(clientId),
-        },
-      }),
-    },
+    filter: {},
     paging: actionsPaging,
     sorting: [],
   };

@@ -1,12 +1,16 @@
 import Image from "next/image";
 import * as styles from "../components/Navbar/styles";
+import { Footer, Nabvar } from "@/components";
+import "./globals.css";
+
 export default function Home() {
   return (
-    <div className="mt-28 ">
+    <div className="mt-28">
+      <Nabvar></Nabvar>
       <div className="h-96">
         <div className="object-cover h-96 w-full flex justify-center">
           <Image
-            src="/quickship.init.png"
+            src="/quickship-init.svg"
             alt="init"
             className="bg-inherit cursor-pointer object-cover"
             width={900}
@@ -36,6 +40,7 @@ export default function Home() {
       </div>
       <div className="h-96 text-amber-300">tres</div>
       <div className="h-96 text-amber-300">cuatro</div>
+      <Footer></Footer>
     </div>
   );
 }

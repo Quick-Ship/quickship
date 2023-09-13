@@ -9,7 +9,7 @@ export const Footer = () => {
                 <div className={styles.CONTAINER_COL_1}>
                     <div className="w-full flex justify-center h-150">                
                     <Image
-                        src="/logo_footer_recortado_transparente.png"
+                        src="/quikShip-logo.svg"
                         alt="logo footer quickship"
                         className="bg-inherit"
                         sizes="(max-width: 150px) 100vw, (max-width: 150px) 50vw"
